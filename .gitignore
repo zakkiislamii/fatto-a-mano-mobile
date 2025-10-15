@@ -2,6 +2,7 @@
 
 # dependencies
 node_modules/
+package-lock.json
 
 # Expo
 .expo/
@@ -38,6 +39,9 @@ yarn-error.*
 
 app-example
 
-# generated native folders
-/ios
-/android
+google-services.json
+.env
+.env*
+fatto-a-mano-73cc5-b6fc0809d593.json
+android/
+ios/
