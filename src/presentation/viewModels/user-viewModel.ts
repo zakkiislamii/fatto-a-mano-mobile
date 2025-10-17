@@ -28,8 +28,8 @@ export class UserViewModel {
         nama: (data.nama as string) ?? "",
         divisi: (data.divisi as string) ?? "",
         jadwal: {
-          presensi_masuk: data.jadwal?.presensi_masuk ?? "",
-          presensi_keluar: data.jadwal?.presensi_keluar ?? "",
+          jam_masuk: data.jadwal?.jam_masuk ?? "",
+          jam_keluar: data.jadwal?.jam_keluar ?? "",
           hariKerja: data.jadwal?.hariKerja ?? "",
           isWfh: data.jadwal?.isWfh ?? false,
         },

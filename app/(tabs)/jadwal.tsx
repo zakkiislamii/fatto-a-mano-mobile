@@ -1,10 +1,6 @@
+import JadwalView from "@/src/presentation/views/jadwal/jadwal-view";
 import React from "react";
-import { Text, View } from "react-native";
 
 export default function JadwalRoute() {
-  return (
-    <View>
-      <Text>Halaman Jadwal</Text>
-    </View>
-  );
+  return <JadwalView />;
 }

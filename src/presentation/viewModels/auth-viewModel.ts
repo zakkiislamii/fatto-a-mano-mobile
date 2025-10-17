@@ -31,8 +31,8 @@ export class AuthViewModel {
         nik: "",
         nomor_hp: "",
         jadwal: {
-          presensi_masuk: "",
-          presensi_keluar: "",
+          jam_masuk: "",
+          jam_keluar: "",
           hariKerja: "",
           isWfh: false,
         },

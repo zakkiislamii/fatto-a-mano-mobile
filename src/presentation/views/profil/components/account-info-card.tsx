@@ -3,7 +3,7 @@ import { ProfilKaryawan } from "@/src/domain/models/profil-karyawan";
 import { useRouter } from "expo-router";
 import React from "react";
 import { Text, View } from "react-native";
-import InfoRow from "./info-row";
+import InfoRow from "../../../../components/ui/info-row";
 import ProfilError from "./profil-error";
 import ProfilLoading from "./profil-loading";
 
