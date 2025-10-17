@@ -9,7 +9,7 @@ import React from "react";
 import { Button, Platform, StyleSheet, Text } from "react-native";
 
 export default function HomeScreen() {
-  const { handleLogout } = useLogout();
+  const { onConfirmLogout } = useLogout();
   const { uid } = useFirebaseAuth();
   return (
     <ParallaxScrollView
@@ -25,7 +25,7 @@ export default function HomeScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcom</ThemedText>
 
-        <Button title="Go to login" onPress={handleLogout} />
+        <Button title="Go to login" onPress={onConfirmLogout} />
 
         <Text className="text-white">woi</Text>
         <HelloWave />

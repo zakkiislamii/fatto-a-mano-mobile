@@ -5,8 +5,12 @@ import { AuthViewModel } from "../../viewModels/auth-viewModel";
 
 const useLogout = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [logoutModalVisible, setLogoutModalVisible] = useState<boolean>(false);
   const vmRef = useRef(new AuthViewModel());
   const router = useRouter();
+  const onLogoutPress = () => setLogoutModalVisible(true);
+  const closeLogoutModal = () => setLogoutModalVisible(false);
+
   const handleLogout = async () => {
     setLoading(true);
     try {
@@ -19,9 +23,18 @@ const useLogout = () => {
       setLoading(false);
     }
   };
+
+  const onConfirmLogout = async () => {
+    await handleLogout();
+    setLogoutModalVisible(false);
+  };
+
   return {
     loading,
-    handleLogout,
+    onConfirmLogout,
+    logoutModalVisible,
+    onLogoutPress,
+    closeLogoutModal,
   };
 };
 export default useLogout;

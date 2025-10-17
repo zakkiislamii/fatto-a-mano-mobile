@@ -1,7 +1,7 @@
 import React from "react";
 import { BaseToast, ErrorToast } from "react-native-toast-message";
 
-export const toastConfig = {
+const toastConfig = {
   success: (props: any) => (
     <BaseToast
       {...props}
@@ -34,3 +34,5 @@ export const toastConfig = {
     />
   ),
 };
+
+export default toastConfig;

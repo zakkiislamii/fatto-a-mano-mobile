@@ -1,7 +1,7 @@
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useEffect } from "react";
 
-export function useGoogleSignin() {
+const useGoogleSignin = () => {
   useEffect(() => {
     const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
 
@@ -19,4 +19,6 @@ export function useGoogleSignin() {
       forceCodeForRefreshToken: false,
     });
   }, []);
-}
+};
+
+export default useGoogleSignin;
