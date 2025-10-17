@@ -62,8 +62,10 @@ const useUpdateProfil = (
 
   const onSubmit = handleSubmit(async (values: any) => {
     if (!uid) {
-      setErrorMsg("UID tidak tersedia.");
-      Toast.show({ type: "error", text1: "UID tidak tersedia" });
+      Toast.show({
+        type: "error",
+        text1: "Terjadi kesalahan, silahkan coba lagi!",
+      });
       setShowModal(false);
       return;
     }
@@ -94,20 +96,14 @@ const useUpdateProfil = (
       if (!vmRef.current) {
         throw new Error("ViewModel tidak terinisialisasi");
       }
-
       await vmRef.current.updateProfil(payload);
+      router.replace("/(tabs)/profil");
       Toast.show({ type: "success", text1: "Profil diperbarui" });
-      setShowModal(false);
-
       reset({
         nama: values.nama ?? "",
         nik: values.nik ?? "",
         nomor_hp: values.nomor_hp ?? "",
       });
-
-      setTimeout(() => {
-        router.replace("/(tabs)/profil");
-      }, 500);
     } catch (err: any) {
       const errorMessage = err?.message ?? "Gagal memperbarui profil.";
       setErrorMsg(errorMessage);

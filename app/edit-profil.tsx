@@ -39,7 +39,6 @@ const EditProfilSkeleton = () => (
 
 export default function EditProfilView() {
   const { uid } = useFirebaseAuth();
-  console.log("ini uid:", uid);
   const { profilKaryawan, loading: loadingProfil } = useGetProfile(uid ?? null);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
