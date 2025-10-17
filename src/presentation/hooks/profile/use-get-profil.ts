@@ -1,9 +1,11 @@
 import { ProfilKaryawan } from "@/src/domain/models/profil-karyawan";
 import { useEffect, useState } from "react";
-import { UserViewModel } from "../viewModels/user-viewModel";
+import { UserViewModel } from "../../viewModels/user-viewModel";
 
 export const useGetProfile = (uid?: string | null) => {
-  const [profilKaryawan, setProfilKaryawan] = useState<ProfilKaryawan | null>(null);
+  const [profilKaryawan, setProfilKaryawan] = useState<ProfilKaryawan | null>(
+    null
+  );
   const [loading, setLoading] = useState<boolean>(!!uid);
   const [error, setError] = useState<string | null>(null);
 

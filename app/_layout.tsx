@@ -39,6 +39,10 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="login" options={{ title: "Login" }} />
             <Stack.Screen name="register" options={{ title: "Register" }} />
+            <Stack.Screen
+              name="edit-profil"
+              options={{ title: "Edit Profil", headerShown: true }}
+            />
           </Stack>
           <Toast config={toastConfig} />
           <StatusBar style="auto" />

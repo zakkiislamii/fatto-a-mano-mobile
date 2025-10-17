@@ -1,6 +1,6 @@
 import { db } from "@/src/configs/firebaseConfig";
 import { Unsubscribe } from "firebase/auth";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
 
 export class UserRepository {
   private readonly uid: string;
@@ -25,5 +25,34 @@ export class UserRepository {
       },
       (_err) => cb(null)
     );
+  }
+
+  public async updateProfil(
+    nama?: string,
+    nik?: string,
+    nomor_hp?: string
+  ): Promise<void> {
+    if (!this.uid) throw new Error("UID tidak valid.");
+
+    const data: Record<string, any> = {
+      updatedAt: serverTimestamp(),
+    };
+
+    if (nama !== undefined && nama.trim() !== "") {
+      data.nama = nama.trim();
+    }
+    if (nik !== undefined && nik !== "") {
+      data.nik = nik.trim();
+    }
+    if (nomor_hp !== undefined && nomor_hp.trim() !== "") {
+      data.nomor_hp = nomor_hp.trim();
+    }
+
+    if (Object.keys(data).length === 1) {
+      throw new Error("Tidak ada data untuk diperbarui.");
+    }
+
+    const ref = doc(db, "users", this.uid);
+    await setDoc(ref, data, { merge: true });
   }
 }

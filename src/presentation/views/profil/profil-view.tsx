@@ -10,8 +10,9 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useGetProfile } from "../../hooks/use-get-profil";
-import ProfilContent from "./components/profil-content";
+import { useGetProfile } from "../../hooks/profile/use-get-profil";
+import AccountInfoCard from "./components/account-info-card";
+import AccountSettingsCard from "./components/account-settings-card";
 
 const ProfilView = () => {
   const colorScheme = useColorScheme();
@@ -31,7 +32,6 @@ const ProfilView = () => {
   const cardBg = isDark ? "bg-cardDark" : "bg-cardLight";
   const screenBg = isDark ? "bg-screenDark" : "bg-screenLight";
   const { profilKaryawan, loading, error } = useGetProfile(uid ?? null);
-  console.log(profilKaryawan);
 
   return (
     <SafeAreaView className={`flex-1 ${screenBg}`}>
@@ -50,13 +50,18 @@ const ProfilView = () => {
               Kelola informasi akun Anda di bawah ini.
             </Text>
           </View>
-          <ProfilContent
-            user={profilKaryawan}
+          <AccountInfoCard
+            profilKaryawan={profilKaryawan}
+            isDark={isDark}
+            textColor={textColor}
+            cardBg={cardBg}
             loading={loading}
             error={error}
+            secondaryTextColor={secondaryTextColor}
+          />
+          <AccountSettingsCard
             loggingOut={loggingOut}
             onLogoutPress={onLogoutPress}
-            isDark={isDark}
             textColor={textColor}
             secondaryTextColor={secondaryTextColor}
             cardBg={cardBg}

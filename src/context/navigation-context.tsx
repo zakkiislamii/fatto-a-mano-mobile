@@ -2,6 +2,8 @@ import { useRouter, useSegments } from "expo-router";
 import React, { ReactNode, useEffect } from "react";
 import { useFirebaseAuth } from "../hooks/use-auth";
 
+const PUBLIC_ROUTES = ["login", "register"];
+
 export default function NavigationContext({
   children,
 }: {
@@ -13,11 +15,19 @@ export default function NavigationContext({
 
   useEffect(() => {
     if (isLoading) return;
-    const inAuthGroup = segments[0] === "(tabs)";
-    if (!user && inAuthGroup) {
+    const root = segments[0];
+    if (root === undefined) return;
+    const isAuthRoute = PUBLIC_ROUTES.includes(root);
+    const isAppRoute = !isAuthRoute;
+
+    if (!user && isAppRoute) {
       router.replace("/login");
-    } else if (user && !inAuthGroup && segments[0] !== undefined) {
+      return;
+    }
+
+    if (user && isAuthRoute) {
       router.replace("/(tabs)");
+      return;
     }
   }, [user, isLoading, segments, router]);
 
