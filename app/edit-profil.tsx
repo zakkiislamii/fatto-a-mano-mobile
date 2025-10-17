@@ -39,6 +39,7 @@ const EditProfilSkeleton = () => (
 
 export default function EditProfilView() {
   const { uid } = useFirebaseAuth();
+  console.log("ini uid:", uid);
   const { profilKaryawan, loading: loadingProfil } = useGetProfile(uid ?? null);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -104,7 +105,9 @@ export default function EditProfilView() {
                       placeholder="Masukkan nama lengkap"
                       placeholderTextColor={placeholderColor}
                       value={value ?? ""}
-                      onChangeText={onChange}
+                      onChangeText={(text) => {
+                        onChange(text);
+                      }}
                       onBlur={onBlur}
                       autoCapitalize="words"
                       editable={!loading}
@@ -141,9 +144,10 @@ export default function EditProfilView() {
                       placeholderTextColor={placeholderColor}
                       keyboardType="number-pad"
                       value={value ?? ""}
-                      onChangeText={(text) =>
-                        onChange(text.replace(/\D+/g, ""))
-                      }
+                      onChangeText={(text) => {
+                        const cleaned = text.replace(/\D+/g, "");
+                        onChange(cleaned);
+                      }}
                       onBlur={onBlur}
                       editable={!loading}
                       maxLength={16}
@@ -153,7 +157,7 @@ export default function EditProfilView() {
               </View>
               {errors?.nik?.message && (
                 <Text className="mt-1 text-danger-light dark:text-danger-dark">
-                  {String(errors.nik.message)}
+                  ❌ {String(errors.nik.message)}
                 </Text>
               )}
             </View>
@@ -180,9 +184,10 @@ export default function EditProfilView() {
                       placeholderTextColor={placeholderColor}
                       keyboardType="phone-pad"
                       value={value ?? ""}
-                      onChangeText={(text) =>
-                        onChange(text.replace(/\D+/g, ""))
-                      }
+                      onChangeText={(text) => {
+                        const cleaned = text.replace(/\D+/g, "");
+                        onChange(cleaned);
+                      }}
                       onBlur={onBlur}
                       editable={!loading}
                     />
@@ -191,7 +196,7 @@ export default function EditProfilView() {
               </View>
               {errors?.nomor_hp?.message && (
                 <Text className="mt-1 text-danger-light dark:text-danger-dark">
-                  {String(errors.nomor_hp.message)}
+                  ❌ {String(errors.nomor_hp.message)}
                 </Text>
               )}
             </View>
@@ -213,7 +218,9 @@ export default function EditProfilView() {
             message="Apakah Anda yakin ingin menyimpan perubahan profil ini?"
             onClose={closeModal}
             primaryButtonText="Simpan"
-            onPrimaryButtonPress={handleUpdateProfil}
+            onPrimaryButtonPress={() => {
+              handleUpdateProfil();
+            }}
             secondaryButtonText="Batal"
             onSecondaryButtonPress={closeModal}
             isDark={isDark}
