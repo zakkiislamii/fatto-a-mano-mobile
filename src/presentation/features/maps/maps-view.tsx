@@ -1,0 +1,284 @@
+import {
+  OFFICE_COORD,
+  OFFICE_RADIUS_M,
+} from "@/src/common/constants/constants";
+import { Feather, MaterialIcons } from "@expo/vector-icons";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Dimensions,
+  Platform,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import MapView, {
+  Circle,
+  Marker,
+  PROVIDER_GOOGLE,
+  Region,
+} from "react-native-maps";
+import { useLiveLocation } from "./hooks/use-live-location";
+
+interface UserLocationMapProps {
+  isDark: boolean;
+}
+
+const MapsView = ({ isDark }: UserLocationMapProps) => {
+  const { location, isInsideOffice, address } = useLiveLocation();
+  const { width } = Dimensions.get("window");
+  const mapRef = useRef<MapView>(null);
+  const [mapRegion, setMapRegion] = useState<Region | undefined>(undefined);
+  const infoBg = isDark ? "bg-blue-900/40" : "bg-blue-200";
+  const infoText = isDark ? "text-blue-300" : "text-blue-700";
+
+  useEffect(() => {
+    if (location.lat && location.lon) {
+      const initialRegion = {
+        latitude: location.lat,
+        longitude: location.lon,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005,
+      };
+      setMapRegion(initialRegion);
+    }
+  }, [location.lat, location.lon]);
+
+  const focusOnUserLocation = () => {
+    if (mapRef.current && location.lat && location.lon) {
+      const userRegion = {
+        latitude: location.lat,
+        longitude: location.lon,
+        latitudeDelta: 0.001,
+        longitudeDelta: 0.001,
+      };
+      mapRef.current.animateToRegion(userRegion, 1000);
+    }
+  };
+
+  const zoomIn = () => {
+    if (mapRef.current && mapRegion) {
+      const newRegion = {
+        ...mapRegion,
+        latitudeDelta: mapRegion.latitudeDelta / 2,
+        longitudeDelta: mapRegion.longitudeDelta / 2,
+      };
+      mapRef.current.animateToRegion(newRegion, 300);
+    }
+  };
+
+  const zoomOut = () => {
+    if (mapRef.current && mapRegion) {
+      const newRegion = {
+        ...mapRegion,
+        latitudeDelta: mapRegion.latitudeDelta * 2,
+        longitudeDelta: mapRegion.longitudeDelta * 2,
+      };
+      mapRef.current.animateToRegion(newRegion, 300);
+    }
+  };
+
+  const bgColor = isDark ? "bg-cardDark" : "bg-cardLight";
+  const primaryText = isDark ? "text-textPrimaryDark" : "text-textPrimaryLight";
+  const mutedText = isDark ? "text-textMutedDark" : "text-textMutedLight";
+
+  const statusStyle =
+    isInsideOffice === null
+      ? {
+          bg: isDark ? "bg-neutral-dark-bg" : "bg-neutral-light-bg",
+          text: isDark ? "text-neutral-dark" : "text-neutral-light",
+          icon: isDark ? "#e2e8f0" : "#334155",
+          label: "Memuat lokasi...",
+        }
+      : isInsideOffice
+      ? {
+          bg: isDark ? "bg-success-dark-bg" : "bg-success-light-bg",
+          text: isDark ? "text-success-dark" : "text-success-light",
+          icon: isDark ? "#bbf7d0" : "#166534",
+          label: "Di Area Kantor",
+        }
+      : {
+          bg: isDark ? "bg-danger-dark-bg" : "bg-danger-light-bg",
+          text: isDark ? "text-danger-dark" : "text-danger-light",
+          icon: isDark ? "#fecdd3" : "#9f1239",
+          label: "Di luar Area Kantor",
+        };
+
+  if (!location.lat || !location.lon || !mapRegion) {
+    return (
+      <View className={`${bgColor} p-6 rounded-2xl shadow-md my-3`}>
+        <View className="flex-row items-center justify-between mb-4">
+          <Text className={`text-lg font-bold ${primaryText}`}>
+            Lokasi Anda
+          </Text>
+          <View
+            className={`flex-row items-center ${statusStyle.bg} px-3 py-1 rounded-lg`}
+          >
+            <Feather name="map-pin" size={14} color={statusStyle.icon} />
+            <Text className={`ml-1 text-sm font-semibold ${statusStyle.text}`}>
+              {statusStyle.label}
+            </Text>
+          </View>
+        </View>
+
+        <View className="bg-gray-200 rounded-xl h-48 items-center justify-center">
+          <Feather name="map" size={40} color="#6b7280" />
+          <Text className={`mt-2 text-sm ${mutedText}`}>
+            Menunggu lokasi...
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View className={`${bgColor} p-6 rounded-2xl shadow-md`}>
+      <View className="flex-row items-center justify-between mb-4">
+        <Text className={`text-lg font-bold ${primaryText}`}>Lokasi Anda</Text>
+        <View
+          className={`flex-row items-center ${statusStyle.bg} px-3 py-1 rounded-lg`}
+        >
+          <Feather name="map-pin" size={14} color={statusStyle.icon} />
+          <Text className={`ml-1 text-sm font-semibold ${statusStyle.text}`}>
+            {statusStyle.label}
+          </Text>
+        </View>
+      </View>
+
+      <View className="rounded-xl overflow-hidden">
+        <MapView
+          ref={mapRef}
+          provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
+          style={{ width: width - 48, height: 200 }}
+          initialRegion={mapRegion}
+          onRegionChangeComplete={setMapRegion}
+          showsUserLocation={false}
+          mapType="standard"
+          showsMyLocationButton={true}
+          scrollEnabled={true}
+          zoomEnabled={true}
+        >
+          {/* Office area circle */}
+          <Circle
+            center={{
+              latitude: OFFICE_COORD.lat,
+              longitude: OFFICE_COORD.lon,
+            }}
+            radius={OFFICE_RADIUS_M}
+            fillColor={
+              isDark ? "rgba(34, 197, 94, 0.2)" : "rgba(34, 197, 94, 0.1)"
+            }
+            strokeColor={isDark ? "#22c55e" : "#16a34a"}
+            strokeWidth={2}
+          />
+
+          {/* Office marker */}
+          <Marker
+            coordinate={{
+              latitude: OFFICE_COORD.lat,
+              longitude: OFFICE_COORD.lon,
+            }}
+            title="Kantor"
+            description="Area kantor"
+          >
+            <View className="bg-blue-500 p-2 rounded-full">
+              <Feather name="briefcase" size={16} color="white" />
+            </View>
+          </Marker>
+
+          {/* User location marker */}
+          <Marker
+            coordinate={{ latitude: location.lat, longitude: location.lon }}
+            title="Lokasi Anda"
+            description={
+              address ||
+              `${location.lat.toFixed(6)}, ${location.lon.toFixed(6)}`
+            }
+          >
+            <View
+              className={`${
+                isInsideOffice ? "bg-green-500" : "bg-red-500"
+              } p-2 rounded-full border-2 border-white`}
+            >
+              <Feather name="user" size={16} color="white" />
+            </View>
+          </Marker>
+        </MapView>
+
+        <View className="absolute bottom-4 right-4 flex-col items-center">
+          <TouchableOpacity
+            onPress={focusOnUserLocation}
+            className={`p-3 rounded-full shadow-lg mb-2 ${
+              isDark ? "bg-gray-700" : "bg-white"
+            }`}
+          >
+            <MaterialIcons
+              name="location-searching"
+              size={18}
+              color={isDark ? "#e2e8f0" : "#334155"}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={zoomIn}
+            className={`p-3 rounded-full shadow-lg mb-2 ${
+              isDark ? "bg-gray-700" : "bg-white"
+            }`}
+          >
+            <Feather
+              name="plus"
+              size={18}
+              color={isDark ? "#e2e8f0" : "#334155"}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={zoomOut}
+            className={`p-3 rounded-full shadow-lg ${
+              isDark ? "bg-gray-700" : "bg-white"
+            }`}
+          >
+            <Feather
+              name="minus"
+              size={18}
+              color={isDark ? "#e2e8f0" : "#334155"}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View className="mt-3">
+        {address ? (
+          <View className="flex-row items-start p-3">
+            <Feather
+              name="map-pin"
+              size={15}
+              color={isDark ? "#9ca3af" : "#64748b"}
+              className="mt-1"
+            />
+            <Text className={`${mutedText} ml-2 flex-1`}>{address}</Text>
+          </View>
+        ) : (
+          <View className="flex-row items-center p-2">
+            <Feather
+              name="navigation"
+              size={15}
+              color={isDark ? "#9ca3af" : "#64748b"}
+            />
+            <Text className={`text-xs ${mutedText} ml-2`}>
+              {location.lat.toFixed(6)}, {location.lon.toFixed(6)}
+            </Text>
+          </View>
+        )}
+      </View>
+
+      <View className={`flex-row items-center mt-2 ${infoBg} p-3 rounded-lg`}>
+        <Feather name="info" size={15} color={isDark ? "#c7d2fe" : "#3730a3"} />
+        <Text className={`${infoText} ml-2`}>
+          Area hijau menunjukkan zona kantor
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+export default MapsView;
