@@ -20,7 +20,6 @@ const KaryawanView = ({ screenBg, isDark, uid }: KaryawanViewProps) => {
             <View>
               <Text className="text-2xl text-slate-300">Selamat Datang,</Text>
             </View>
-
             <View className="flex-row items-center gap-2">
               <TouchableOpacity
                 className="p-2"

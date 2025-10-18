@@ -20,6 +20,7 @@ export default {
       },
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
+      permissions: ["ACCESS_FINE_LOCATION"],
       package: "com.zakkiislami.fattoamanomobile",
       googleServicesFile: "./google-services.json",
       config: {
