@@ -24,7 +24,7 @@ interface UserLocationMapProps {
 }
 
 const MapsView = ({ isDark }: UserLocationMapProps) => {
-  const { location, isInsideOffice, address } = useLiveLocation();
+  const { location, isInsideOffice, address, refresh } = useLiveLocation();
   const { width } = Dimensions.get("window");
   const mapRef = useRef<MapView>(null);
   const [mapRegion, setMapRegion] = useState<Region | undefined>(undefined);
@@ -105,7 +105,7 @@ const MapsView = ({ isDark }: UserLocationMapProps) => {
 
   if (!location.lat || !location.lon || !mapRegion) {
     return (
-      <View className={`${bgColor} p-6 rounded-2xl shadow-md my-3`}>
+      <View className={`${bgColor} p-6 shadow-md my-3`}>
         <View className="flex-row items-center justify-between mb-4">
           <Text className={`text-lg font-bold ${primaryText}`}>
             Lokasi Anda
@@ -131,7 +131,7 @@ const MapsView = ({ isDark }: UserLocationMapProps) => {
   }
 
   return (
-    <View className={`${bgColor} p-6 rounded-2xl shadow-md`}>
+    <View className={`${bgColor} p-6 shadow-md`}>
       <View className="flex-row items-center justify-between mb-4">
         <Text className={`text-lg font-bold ${primaryText}`}>Lokasi Anda</Text>
         <View
@@ -157,7 +157,6 @@ const MapsView = ({ isDark }: UserLocationMapProps) => {
           scrollEnabled={true}
           zoomEnabled={true}
         >
-          {/* Office area circle */}
           <Circle
             center={{
               latitude: OFFICE_COORD.lat,
@@ -170,8 +169,6 @@ const MapsView = ({ isDark }: UserLocationMapProps) => {
             strokeColor={isDark ? "#22c55e" : "#16a34a"}
             strokeWidth={2}
           />
-
-          {/* Office marker */}
           <Marker
             coordinate={{
               latitude: OFFICE_COORD.lat,
@@ -184,8 +181,6 @@ const MapsView = ({ isDark }: UserLocationMapProps) => {
               <Feather name="briefcase" size={16} color="white" />
             </View>
           </Marker>
-
-          {/* User location marker */}
           <Marker
             coordinate={{ latitude: location.lat, longitude: location.lon }}
             title="Lokasi Anda"
@@ -206,6 +201,18 @@ const MapsView = ({ isDark }: UserLocationMapProps) => {
 
         <View className="absolute bottom-4 right-4 flex-col items-center">
           <TouchableOpacity
+            onPress={refresh}
+            className={`p-3 rounded-full shadow-lg mb-2 ${
+              isDark ? "bg-gray-700" : "bg-white"
+            }`}
+          >
+            <Feather
+              name="refresh-cw"
+              size={18}
+              color={isDark ? "#e2e8f0" : "#334155"}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={focusOnUserLocation}
             className={`p-3 rounded-full shadow-lg mb-2 ${
               isDark ? "bg-gray-700" : "bg-white"
@@ -217,7 +224,6 @@ const MapsView = ({ isDark }: UserLocationMapProps) => {
               color={isDark ? "#e2e8f0" : "#334155"}
             />
           </TouchableOpacity>
-
           <TouchableOpacity
             onPress={zoomIn}
             className={`p-3 rounded-full shadow-lg mb-2 ${
@@ -230,7 +236,6 @@ const MapsView = ({ isDark }: UserLocationMapProps) => {
               color={isDark ? "#e2e8f0" : "#334155"}
             />
           </TouchableOpacity>
-
           <TouchableOpacity
             onPress={zoomOut}
             className={`p-3 rounded-full shadow-lg ${

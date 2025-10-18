@@ -6,7 +6,7 @@ import { Coordinate } from "@/src/common/types/coordinate";
 import distanceMeters from "@/src/common/utils/geo";
 import { LocationService } from "@/src/domain/services/location-service";
 import * as Location from "expo-location";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 export function useLiveLocation() {
   const [location, setLocation] = useState<Coordinate>({ lat: 0, lon: 0 });
@@ -14,6 +14,28 @@ export function useLiveLocation() {
   const [isInsideOffice, setIsInsideOffice] = useState<boolean | null>(null);
   const watchRef = useRef<Location.LocationSubscription | null>(null);
   const svcRef = useRef(new LocationService());
+
+  const updateLocation = useCallback(async () => {
+    try {
+      const granted = await svcRef.current.requestForegroundPermission();
+      if (!granted) {
+        setIsInsideOffice(null);
+        return;
+      }
+      const current = await svcRef.current.getCurrent(
+        Location.Accuracy.Balanced
+      );
+      const lat = current.coords.latitude;
+      const lon = current.coords.longitude;
+      setLocation({ lat, lon });
+      const d = distanceMeters(lat, lon, OFFICE_COORD.lat, OFFICE_COORD.lon);
+      setIsInsideOffice(d <= OFFICE_RADIUS_M);
+      const name = await svcRef.current.reverseGeocode(lat, lon);
+      if (name) setAddress(name);
+    } catch {
+      setIsInsideOffice(null);
+    }
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -98,5 +120,11 @@ export function useLiveLocation() {
     [isInsideOffice, location.lat, location.lon]
   );
 
-  return { location, isInsideOffice, address, canCheck };
+  return {
+    location,
+    isInsideOffice,
+    address,
+    canCheck,
+    refresh: updateLocation,
+  };
 }

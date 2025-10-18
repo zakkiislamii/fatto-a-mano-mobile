@@ -43,6 +43,10 @@ export default function RootLayout() {
               name="edit-profil"
               options={{ title: "Edit Profil", headerShown: true }}
             />
+            <Stack.Screen
+              name="notifikasi"
+              options={{ title: "Notifikasi", headerShown: true }}
+            />
           </Stack>
           <Toast config={toastConfig} />
           <StatusBar style="auto" />

@@ -12,7 +12,7 @@ const HomeView = () => {
   const { role, uid } = useFirebaseAuth();
   const isManagement = role === "manajer";
   return (
-    <SafeAreaView className="flex-1 bg-primary">
+    <SafeAreaView className={`flex-1 ${screenBg}`}>
       {isManagement ? (
         <ManajerView screenBg={screenBg} isDark={isDark} />
       ) : (
