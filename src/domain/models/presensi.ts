@@ -1,4 +1,6 @@
 import { StatusPresensi } from "@/src/common/enums/status-presensi";
+import { PresensiKeluar } from "@/src/common/types/presensi-keluar";
+import { PresensiMasuk } from "@/src/common/types/presensi-masuk";
 import { Timestamp } from "firebase/firestore";
 
 export interface Presensi {
@@ -9,16 +11,4 @@ export interface Presensi {
   presensi_keluar: PresensiKeluar;
   created_at: Timestamp;
   updated_at: Timestamp;
-}
-
-export interface PresensiMasuk extends Presensi {
-  waktu: string;
-  terlambat: boolean;
-  durasi_terlambat?: string;
-}
-
-export interface PresensiKeluar extends Presensi {
-  waktu: string;
-  lembur: boolean;
-  durasi_lembur?: string;
 }

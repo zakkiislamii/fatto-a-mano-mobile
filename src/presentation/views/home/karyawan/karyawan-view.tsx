@@ -1,4 +1,4 @@
-import MapsView from "@/src/presentation/features/maps/maps-view";
+import PresensiView from "@/src/presentation/features/presensi/presensi-view";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -7,7 +7,7 @@ import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 interface KaryawanViewProps {
   screenBg: string;
   isDark: boolean;
-  uid: string | undefined;
+  uid: string;
 }
 
 const KaryawanView = ({ screenBg, isDark, uid }: KaryawanViewProps) => {
@@ -15,10 +15,12 @@ const KaryawanView = ({ screenBg, isDark, uid }: KaryawanViewProps) => {
   return (
     <View className={`${screenBg}`}>
       <ScrollView showsVerticalScrollIndicator={false} overScrollMode="always">
-        <View className="bg-primary px-6 pt-6 pb-5 gap-6">
+        <View className="bg-primary px-6 pt-3 pb-3">
           <View className="flex-row justify-between items-center">
             <View>
-              <Text className="text-2xl text-slate-300">Selamat Datang,</Text>
+              <Text className="text-2xl font-bold text-slate-300">
+                Selamat Datang
+              </Text>
             </View>
             <View className="flex-row items-center gap-2">
               <TouchableOpacity
@@ -31,7 +33,7 @@ const KaryawanView = ({ screenBg, isDark, uid }: KaryawanViewProps) => {
             </View>
           </View>
         </View>
-        <MapsView isDark={isDark} />
+        <PresensiView isDark={isDark} uid={uid} />
       </ScrollView>
     </View>
   );

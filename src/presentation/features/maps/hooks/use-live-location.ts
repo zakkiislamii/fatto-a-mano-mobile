@@ -8,7 +8,7 @@ import { LocationService } from "@/src/domain/services/location-service";
 import * as Location from "expo-location";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-export function useLiveLocation() {
+const useLiveLocation = () => {
   const [location, setLocation] = useState<Coordinate>({ lat: 0, lon: 0 });
   const [address, setAddress] = useState("");
   const [isInsideOffice, setIsInsideOffice] = useState<boolean | null>(null);
@@ -127,4 +127,6 @@ export function useLiveLocation() {
     canCheck,
     refresh: updateLocation,
   };
-}
+};
+
+export default useLiveLocation;

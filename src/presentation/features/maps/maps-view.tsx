@@ -17,19 +17,17 @@ import MapView, {
   PROVIDER_GOOGLE,
   Region,
 } from "react-native-maps";
-import { useLiveLocation } from "./hooks/use-live-location";
+import useLiveLocation from "./hooks/use-live-location";
 
-interface UserLocationMapProps {
+interface MapsViewProps {
   isDark: boolean;
 }
 
-const MapsView = ({ isDark }: UserLocationMapProps) => {
+const MapsView = ({ isDark }: MapsViewProps) => {
   const { location, isInsideOffice, address, refresh } = useLiveLocation();
   const { width } = Dimensions.get("window");
   const mapRef = useRef<MapView>(null);
   const [mapRegion, setMapRegion] = useState<Region | undefined>(undefined);
-  const infoBg = isDark ? "bg-blue-900/40" : "bg-blue-200";
-  const infoText = isDark ? "text-blue-300" : "text-blue-700";
 
   useEffect(() => {
     if (location.lat && location.lon) {
@@ -105,7 +103,7 @@ const MapsView = ({ isDark }: UserLocationMapProps) => {
 
   if (!location.lat || !location.lon || !mapRegion) {
     return (
-      <View className={`${bgColor} p-6 shadow-md my-3`}>
+      <View className={`${bgColor} p-6 rounded-2xl shadow-md my-3`}>
         <View className="flex-row items-center justify-between mb-4">
           <Text className={`text-lg font-bold ${primaryText}`}>
             Lokasi Anda
@@ -131,19 +129,7 @@ const MapsView = ({ isDark }: UserLocationMapProps) => {
   }
 
   return (
-    <View className={`${bgColor} p-6 shadow-md`}>
-      <View className="flex-row items-center justify-between mb-4">
-        <Text className={`text-lg font-bold ${primaryText}`}>Lokasi Anda</Text>
-        <View
-          className={`flex-row items-center ${statusStyle.bg} px-3 py-1 rounded-lg`}
-        >
-          <Feather name="map-pin" size={14} color={statusStyle.icon} />
-          <Text className={`ml-1 text-sm font-semibold ${statusStyle.text}`}>
-            {statusStyle.label}
-          </Text>
-        </View>
-      </View>
-
+    <View className={`${bgColor} w-full  p-1 shadow-md`}>
       <View className="rounded-xl overflow-hidden">
         <MapView
           ref={mapRef}
@@ -274,13 +260,6 @@ const MapsView = ({ isDark }: UserLocationMapProps) => {
             </Text>
           </View>
         )}
-      </View>
-
-      <View className={`flex-row items-center mt-2 ${infoBg} p-3 rounded-lg`}>
-        <Feather name="info" size={15} color={isDark ? "#c7d2fe" : "#3730a3"} />
-        <Text className={`${infoText} ml-2`}>
-          Area hijau menunjukkan zona kantor
-        </Text>
       </View>
     </View>
   );
