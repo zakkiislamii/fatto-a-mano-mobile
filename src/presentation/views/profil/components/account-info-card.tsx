@@ -1,5 +1,5 @@
+import { ProfilKaryawan } from "@/src/common/types/profil-karyawan";
 import Button from "@/src/components/ui/button";
-import { ProfilKaryawan } from "@/src/domain/models/profil-karyawan";
 import { useRouter } from "expo-router";
 import React from "react";
 import { Text, View } from "react-native";

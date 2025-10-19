@@ -8,51 +8,85 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-import { User } from "../models/user";
+import { doc, setDoc, Timestamp } from "firebase/firestore";
 
 export class AuthRepository {
-  public async register(email: string, password: string): Promise<void> {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
+  private email: string;
+  private password: string;
+  private readonly firebaseAuth: typeof auth;
 
-    const userData: User = {
-      uid: userCredential.user.uid,
-      email: email,
-      nama: "",
-      role: UserRole.karyawan,
-      divisi: "",
-      nik: "",
-      nomor_hp: "",
-      jadwal: {
-        jam_masuk: "",
-        jam_keluar: "",
-        hariKerja: "",
-        isWfh: false,
-      },
-    };
-
-    await setDoc(
-      doc(db, "users", userCredential.user.uid),
-      {
-        ...userData,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      },
-      {
-        merge: true,
-      }
-    );
+  public constructor() {
+    this.email = "";
+    this.password = "";
+    this.firebaseAuth = auth;
   }
 
-  public async login(email: string, password: string): Promise<void> {
+  public setEmail(email: string) {
+    this.email = (email ?? "").trim();
+  }
+
+  public setPassword(password: string) {
+    this.password = (password ?? "").toString();
+  }
+
+  public getEmail(): string {
+    return this.email;
+  }
+
+  public getPassword(): string {
+    return this.password;
+  }
+
+  public async register(): Promise<void> {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      if (!this.email || !this.password) {
+        throw new Error("Email dan password wajib diisi.");
+      }
+
+      const userCredential = await createUserWithEmailAndPassword(
+        this.firebaseAuth,
+        this.email,
+        this.password
+      );
+
+      await setDoc(
+        doc(db, "users", userCredential.user.uid),
+        {
+          uid: userCredential.user.uid,
+          email: this.email,
+          nama: "",
+          role: UserRole.karyawan,
+          divisi: "",
+          nik: "",
+          nomor_hp: "",
+          jadwal: {
+            jam_masuk: "",
+            jam_keluar: "",
+            hariKerja: "",
+            isWfh: false,
+          },
+          created_at: Timestamp.now(),
+          updated_at: Timestamp.now(),
+        },
+        {
+          merge: true,
+        }
+      );
     } catch (error: unknown) {
-      console.error("Login error:", error);
+      console.error(error);
+      throw error;
+    }
+  }
+
+  public async login(): Promise<void> {
+    try {
+      await signInWithEmailAndPassword(
+        this.firebaseAuth,
+        this.email,
+        this.password
+      );
+    } catch (error: unknown) {
+      console.error(error);
       throw error;
     }
   }
@@ -66,18 +100,21 @@ export class AuthRepository {
       if (!data?.idToken)
         throw new Error("Terjadi masalah! silahkan coba lagi");
       const googleCredential = GoogleAuthProvider.credential(data.idToken);
-      await signInWithCredential(auth, googleCredential);
+      await signInWithCredential(this.firebaseAuth, googleCredential);
     } catch (error: unknown) {
-      console.error("Google Sign-In Error:", error);
+      console.error(error);
       throw error;
     }
   }
 
   public async logout(): Promise<void> {
     try {
-      await Promise.allSettled([signOut(auth), GoogleSignin.signOut()]);
+      await Promise.allSettled([
+        signOut(this.firebaseAuth),
+        GoogleSignin.signOut(),
+      ]);
     } catch (error: unknown) {
-      console.error("Logout Error:", error);
+      console.error(error);
       throw error;
     }
   }

@@ -86,7 +86,12 @@ const useUpdateProfil = (
     setErrorMsg(null);
 
     try {
-      await repo.updateProfil(payload.nama, payload.nik, payload.nomor_hp);
+      if (payload.nama !== undefined) repo.setNama(payload.nama);
+      if (payload.nik !== undefined) repo.setNik(payload.nik);
+      if (payload.nomor_hp !== undefined) repo.setNomorHp(payload.nomor_hp);
+
+      await repo.updateProfil();
+
       router.replace("/(tabs)/profil");
       Toast.show({ type: "success", text1: "Profil diperbarui" });
       reset({

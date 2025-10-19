@@ -84,12 +84,6 @@ export const setupNotificationListeners = () => {
   const unsubForeground = onMessage(
     messaging,
     async (rm: FirebaseMessagingTypes.RemoteMessage) => {
-      console.log("📬 FCM Foreground:", {
-        title: rm.notification?.title,
-        body: rm.notification?.body,
-        data: rm.data,
-      });
-
       const title =
         rm.notification?.title ?? toText(rm.data?.title, "Notifikasi");
       const body = rm.notification?.body ?? toText(rm.data?.body, "");

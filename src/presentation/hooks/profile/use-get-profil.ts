@@ -21,7 +21,7 @@ export const useGetProfile = (uid?: string | null) => {
     setLoading(true);
     const repo = new UserRepository(uid);
 
-    const unsub = repo.getProfilRealTime((raw) => {
+    const unsub = repo.getProfilRealTime((raw: ProfilKaryawan | null) => {
       if (!raw) {
         setProfilKaryawan(null);
         setLoading(false);
@@ -31,11 +31,11 @@ export const useGetProfile = (uid?: string | null) => {
       const cleanedNik = String(raw.nik ?? "")
         .replace(/\D+/g, "")
         .slice(0, 16);
+
       setProfilKaryawan({
         nama: typeof raw.nama === "string" ? raw.nama : "",
         nik: cleanedNik,
         nomor_hp: typeof raw.nomor_hp === "string" ? raw.nomor_hp : "",
-        uid: typeof uid === "string" ? uid : "",
         email: typeof raw.email === "string" ? raw.email : "",
         divisi: typeof raw.divisi === "string" ? raw.divisi : "",
       });

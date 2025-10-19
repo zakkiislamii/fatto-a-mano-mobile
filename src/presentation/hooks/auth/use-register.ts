@@ -39,7 +39,9 @@ const useRegister = () => {
     setLoading(true);
     setSubmitError(null);
     try {
-      await vmRef.current.register(email, password);
+      vmRef.current.setEmail(email);
+      vmRef.current.setPassword(password);
+      await vmRef.current.register();
       reset();
       Toast.show({ type: "success", text1: "Registrasi berhasil!" });
       return true;

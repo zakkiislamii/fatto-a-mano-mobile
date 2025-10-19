@@ -18,8 +18,6 @@ const JadwalView = () => {
   const cardBg = isDark ? "bg-cardDark" : "bg-cardLight";
   const textColor = isDark ? "text-textPrimaryDark" : "text-textPrimaryLight";
   const { jadwalKaryawan } = useGetJadwal(uid ?? null);
-  console.log(jadwalKaryawan);
-  console.log("UID =", uid);
 
   return (
     <SafeAreaView className={`flex-1 ${screenBg}`}>

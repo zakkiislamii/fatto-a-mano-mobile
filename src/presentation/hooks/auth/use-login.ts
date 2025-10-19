@@ -33,7 +33,9 @@ const useLogin = () => {
     setLoading(true);
     setSubmitError(null);
     try {
-      await vmRef.current.login(email, password);
+      vmRef.current.setEmail(email);
+      vmRef.current.setPassword(password);
+      await vmRef.current.login();
       reset();
       Toast.show({ type: "success", text1: "Login Berhasil!" });
       router.replace("/login");
