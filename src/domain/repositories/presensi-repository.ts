@@ -6,8 +6,8 @@ import { doc, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 
 export class PresensiRepository {
   private readonly uid: string;
-  private readonly tanggal: string;
-  private readonly status: StatusPresensi;
+  private tanggal: string;
+  private status: StatusPresensi;
   private presensi_masuk: PresensiMasuk | null;
   private presensi_keluar: PresensiKeluar | null;
 
@@ -41,8 +41,7 @@ export class PresensiRepository {
         throw new Error("Data presensi masuk belum diatur.");
       }
 
-      const id = `${this.uid}_${this.tanggal}`;
-      const ref = doc(db, "presensi", id);
+      const ref = doc(db, "presensi", this.tanggal, "users", this.uid);
 
       await setDoc(
         ref,
@@ -68,8 +67,7 @@ export class PresensiRepository {
         throw new Error("Data presensi keluar belum diatur.");
       }
 
-      const id = `${this.uid}_${this.tanggal}`;
-      const ref = doc(db, "presensi", id);
+      const ref = doc(db, "presensi", this.tanggal, "users", this.uid);
 
       await updateDoc(ref, {
         presensi_keluar: this.presensi_keluar,

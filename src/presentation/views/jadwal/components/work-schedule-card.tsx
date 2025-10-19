@@ -1,5 +1,5 @@
+import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
 import InfoRow from "@/src/components/ui/info-row";
-import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import React from "react";
 import { View } from "react-native";
 

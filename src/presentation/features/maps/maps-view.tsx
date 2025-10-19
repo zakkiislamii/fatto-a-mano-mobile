@@ -76,48 +76,11 @@ const MapsView = ({ isDark }: MapsViewProps) => {
   };
 
   const bgColor = isDark ? "bg-cardDark" : "bg-cardLight";
-  const primaryText = isDark ? "text-textPrimaryDark" : "text-textPrimaryLight";
   const mutedText = isDark ? "text-textMutedDark" : "text-textMutedLight";
-
-  const statusStyle =
-    isInsideOffice === null
-      ? {
-          bg: isDark ? "bg-neutral-dark-bg" : "bg-neutral-light-bg",
-          text: isDark ? "text-neutral-dark" : "text-neutral-light",
-          icon: isDark ? "#e2e8f0" : "#334155",
-          label: "Memuat lokasi...",
-        }
-      : isInsideOffice
-      ? {
-          bg: isDark ? "bg-success-dark-bg" : "bg-success-light-bg",
-          text: isDark ? "text-success-dark" : "text-success-light",
-          icon: isDark ? "#bbf7d0" : "#166534",
-          label: "Di Area Kantor",
-        }
-      : {
-          bg: isDark ? "bg-danger-dark-bg" : "bg-danger-light-bg",
-          text: isDark ? "text-danger-dark" : "text-danger-light",
-          icon: isDark ? "#fecdd3" : "#9f1239",
-          label: "Di luar Area Kantor",
-        };
 
   if (!location.lat || !location.lon || !mapRegion) {
     return (
       <View className={`${bgColor} p-6 rounded-2xl shadow-md my-3`}>
-        <View className="flex-row items-center justify-between mb-4">
-          <Text className={`text-lg font-bold ${primaryText}`}>
-            Lokasi Anda
-          </Text>
-          <View
-            className={`flex-row items-center ${statusStyle.bg} px-3 py-1 rounded-lg`}
-          >
-            <Feather name="map-pin" size={14} color={statusStyle.icon} />
-            <Text className={`ml-1 text-sm font-semibold ${statusStyle.text}`}>
-              {statusStyle.label}
-            </Text>
-          </View>
-        </View>
-
         <View className="bg-gray-200 rounded-xl h-48 items-center justify-center">
           <Feather name="map" size={40} color="#6b7280" />
           <Text className={`mt-2 text-sm ${mutedText}`}>

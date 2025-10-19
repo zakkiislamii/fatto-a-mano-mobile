@@ -1,4 +1,3 @@
-// src/presentation/hooks/presensi/presensi-masuk/use-add-presensi-masuk.ts
 import { StatusPresensi } from "@/src/common/enums/status-presensi";
 import { PresensiMasuk } from "@/src/common/types/presensi-masuk";
 import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
@@ -6,7 +5,7 @@ import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today"
 import { PresensiRepository } from "@/src/domain/repositories/presensi-repository";
 import useLiveLocation from "@/src/presentation/features/maps/hooks/use-live-location";
 import useWifi from "@/src/presentation/features/wifi/hooks/use-wifi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
 import { useGetJadwal } from "../../jadwal/use-get-jadwal";
 
@@ -21,9 +20,50 @@ const useAddPresensiMasuk = (uid: string) => {
   } = useWifi();
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [isAlpa, setIsAlpa] = useState<boolean>(false);
   const { jadwalKaryawan } = useGetJadwal(uid);
   const jadwalReady = !!jadwalKaryawan;
   const isWfh = !!jadwalKaryawan?.isWfh;
+
+  // cek status alpa secara real-time
+  useEffect(() => {
+    if (!jadwalKaryawan) {
+      setIsAlpa(false);
+      return;
+    }
+
+    const today = new Date();
+    const workingDays = expandHariKerja(jadwalKaryawan.hariKerja);
+    const todayIdx = today.getDay();
+
+    // Jika hari ini bukan hari kerja, tidak alpa
+    if (!workingDays.includes(todayIdx)) {
+      setIsAlpa(false);
+      return;
+    }
+
+    const jamKeluarDate = parseJamToDateToday(jadwalKaryawan.jam_keluar, today);
+    if (!jamKeluarDate) {
+      setIsAlpa(false);
+      return;
+    }
+
+    const now = new Date();
+
+    // Jika sekarang > jam_keluar, maka ALPA
+    if (now > jamKeluarDate) {
+      setIsAlpa(true);
+      Toast.show({
+        type: "error",
+        text1: "Status: ALPA",
+        text2:
+          "Waktu presensi masuk telah terlewat. Hubungi HRD untuk pengurusan lebih lanjut.",
+      });
+      return;
+    }
+
+    setIsAlpa(false);
+  }, [jadwalKaryawan]);
 
   const handlePresensiMasuk = async (): Promise<boolean> => {
     // jika jadwal belum siap, beri feedback
@@ -92,6 +132,13 @@ const useAddPresensiMasuk = (uid: string) => {
       return false;
     }
 
+    // parse jam_keluar
+    const jamKeluarDate = parseJamToDateToday(jadwalKaryawan.jam_keluar, today);
+    if (!jamKeluarDate) {
+      Toast.show({ type: "error", text1: "Format jam keluar tidak valid." });
+      return false;
+    }
+
     // hitung batas waktu
     const batasAwal = new Date(jamMasukDate.getTime() - 15 * 60 * 1000); // jam_masuk - 15 menit
     const batasTerlambat = new Date(jamMasukDate.getTime() + 5 * 60 * 1000); // jam_masuk + 5 menit
@@ -107,12 +154,19 @@ const useAddPresensiMasuk = (uid: string) => {
       return false;
     }
 
-    // tentukan status
+    // tentukan status dan waktu
     let status = StatusPresensi.hadir;
+    let waktu = now.toTimeString().slice(0, 5); // "HH:MM"
     let terlambat = false;
     let durasi_terlambat: string | undefined = undefined;
 
-    if (now > batasTerlambat) {
+    // cek alpa: now > jam_keluar
+    if (now > jamKeluarDate) {
+      status = StatusPresensi.alpa;
+      waktu = "";
+      terlambat = true;
+    } else if (now > batasTerlambat) {
+      // cek terlambat: now > jam_masuk + 5 menit
       status = StatusPresensi.terlambat;
       terlambat = true;
       const diffMs = now.getTime() - jamMasukDate.getTime();
@@ -121,7 +175,6 @@ const useAddPresensiMasuk = (uid: string) => {
     }
 
     // presensi_masuk payload
-    const waktu = now.toTimeString().slice(0, 5); // "HH:MM"
     const presensiMasuk: PresensiMasuk = {
       waktu,
       terlambat,
@@ -159,6 +212,7 @@ const useAddPresensiMasuk = (uid: string) => {
   const isButtonDisabled: boolean = Boolean(
     loading ||
       !jadwalReady ||
+      isAlpa ||
       (isWfh
         ? networkLoading || !isOnline
         : wifiLoading || !isWifiConnected || !isBssid || !canCheck)
