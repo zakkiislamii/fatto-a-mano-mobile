@@ -1,12 +1,12 @@
+import { AuthRepository } from "@/src/domain/repositories/auth-repository";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import Toast from "react-native-toast-message";
-import { AuthViewModel } from "../../viewModels/auth-viewModel";
 
 const useLogout = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [logoutModalVisible, setLogoutModalVisible] = useState<boolean>(false);
-  const vmRef = useRef(new AuthViewModel());
+  const vmRef = useRef(new AuthRepository());
   const router = useRouter();
   const onLogoutPress = () => setLogoutModalVisible(true);
   const closeLogoutModal = () => setLogoutModalVisible(false);

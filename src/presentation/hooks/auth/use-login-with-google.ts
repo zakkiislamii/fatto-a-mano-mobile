@@ -1,9 +1,9 @@
+import { AuthRepository } from "@/src/domain/repositories/auth-repository";
 import { useRef, useState } from "react";
 import Toast from "react-native-toast-message";
-import { AuthViewModel } from "../../viewModels/auth-viewModel";
 
 export const useLoginWithGoogle = () => {
-  const vmRef = useRef(new AuthViewModel());
+  const vmRef = useRef(new AuthRepository());
   const [loading, setLoading] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 

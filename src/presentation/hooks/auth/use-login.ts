@@ -1,14 +1,14 @@
 import { mapFirebaseAuthError } from "@/src/common/utils/auth-error-mapper";
+import { AuthRepository } from "@/src/domain/repositories/auth-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import Toast from "react-native-toast-message";
 import { LoginFormSchema } from "../../validators/auth/login-form-schema";
-import { AuthViewModel } from "../../viewModels/auth-viewModel";
 
 const useLogin = () => {
-  const vmRef = useRef(new AuthViewModel());
+  const vmRef = useRef(new AuthRepository());
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);

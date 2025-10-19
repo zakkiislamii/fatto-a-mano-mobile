@@ -1,6 +1,6 @@
-import { ProfilKaryawan } from "@/src/domain/models/profil-karyawan";
+import { ProfilKaryawan } from "@/src/common/types/profil-karyawan";
+import { UserRepository } from "@/src/domain/repositories/user-repository";
 import { useEffect, useState } from "react";
-import { UserViewModel } from "../../viewModels/user-viewModel";
 
 export const useGetProfile = (uid?: string | null) => {
   const [profilKaryawan, setProfilKaryawan] = useState<ProfilKaryawan | null>(
@@ -19,14 +19,28 @@ export const useGetProfile = (uid?: string | null) => {
     }
 
     setLoading(true);
-    const vm = new UserViewModel(uid);
+    const repo = new UserRepository(uid);
 
-    const unsub = vm.getUserDataProfileRealtime(
-      (userData: ProfilKaryawan | null) => {
-        setProfilKaryawan(userData);
+    const unsub = repo.getProfilRealTime((raw) => {
+      if (!raw) {
+        setProfilKaryawan(null);
         setLoading(false);
+        return;
       }
-    );
+
+      const cleanedNik = String(raw.nik ?? "")
+        .replace(/\D+/g, "")
+        .slice(0, 16);
+      setProfilKaryawan({
+        nama: typeof raw.nama === "string" ? raw.nama : "",
+        nik: cleanedNik,
+        nomor_hp: typeof raw.nomor_hp === "string" ? raw.nomor_hp : "",
+        uid: typeof uid === "string" ? uid : "",
+        email: typeof raw.email === "string" ? raw.email : "",
+        divisi: typeof raw.divisi === "string" ? raw.divisi : "",
+      });
+      setLoading(false);
+    });
 
     if (!unsub) {
       setLoading(false);

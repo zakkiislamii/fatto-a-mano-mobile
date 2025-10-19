@@ -1,5 +1,3 @@
-import { JadwalKaryawan } from "./jadwal-karyawan";
-
 export interface ProfilKaryawan {
   uid: string;
   email: string;
@@ -7,5 +5,4 @@ export interface ProfilKaryawan {
   nik: string;
   nama: string;
   divisi: string;
-  jadwal: JadwalKaryawan;
 }

@@ -1,6 +1,6 @@
-import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
+import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
+import { JadwalRepository } from "@/src/domain/repositories/jadwal-repository";
 import { useEffect, useState } from "react";
-import { JadwalViewModel } from "../../viewModels/jadwal-viewModel";
 
 export const useGetJadwal = (uid?: string | null) => {
   const [jadwalKaryawan, setJadwalKaryawan] = useState<JadwalKaryawan | null>(
@@ -19,9 +19,9 @@ export const useGetJadwal = (uid?: string | null) => {
     }
 
     setLoading(true);
-    const vm = new JadwalViewModel(uid);
+    const vm = new JadwalRepository(uid);
 
-    const unsub = vm.getJadwalKaryawanRealtime(
+    const unsub = vm.getJadwalKaryawanRealTime(
       (jadwalData: JadwalKaryawan | null) => {
         setJadwalKaryawan(jadwalData);
         setLoading(false);

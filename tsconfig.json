@@ -3,6 +3,8 @@
   "compilerOptions": {
     "jsx": "react",
     "strict": true,
+    "target": "es2020",
+    "lib": ["es2020", "dom"],
     "paths": {
       "@/*": ["./*"],
       "@firebase/auth": ["./node_modules/@firebase/auth/dist/index.rn.d.ts"]
@@ -13,6 +15,7 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "nativewind-env.d.ts"
-, "app/(tabs)/riwayat.tsx"  ]
+    "nativewind-env.d.ts",
+    "app/(tabs)/riwayat.tsx"
+  ]
 }

@@ -1,10 +1,10 @@
+import { UserRepository } from "@/src/domain/repositories/user-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import Toast from "react-native-toast-message";
 import { UpdateProfilFormSchema } from "../../validators/update-profil-form-schema";
-import { UserViewModel } from "../../viewModels/user-viewModel";
 
 interface ProfilKaryawan {
   nama?: string;
@@ -19,14 +19,8 @@ const useUpdateProfil = (
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const vmRef = useRef<UserViewModel | null>(null);
+  const repo = useMemo(() => (uid ? new UserRepository(uid) : null), [uid]);
   const router = useRouter();
-
-  useEffect(() => {
-    if (uid) {
-      vmRef.current = new UserViewModel(uid);
-    }
-  }, [uid]);
 
   const {
     control,
@@ -61,7 +55,7 @@ const useUpdateProfil = (
   }, [profilKaryawan, reset]);
 
   const onSubmit = handleSubmit(async (values: any) => {
-    if (!uid) {
+    if (!uid || !repo) {
       Toast.show({
         type: "error",
         text1: "Terjadi kesalahan, silahkan coba lagi!",
@@ -70,14 +64,13 @@ const useUpdateProfil = (
       return;
     }
 
-    vmRef.current = new UserViewModel(uid);
     const payload: { nama?: string; nik?: string; nomor_hp?: string } = {};
 
     if (values?.nama && values.nama !== profilKaryawan?.nama) {
       payload.nama = String(values.nama).trim();
     }
     if (values?.nik && values.nik !== profilKaryawan?.nik) {
-      payload.nik = String(values.nik).replace(/\D+/g, "").slice(0, 16);
+      payload.nik = String(values.nik).replace(/\D+/g, "").slice(0, 16).trim();
     }
     if (values?.nomor_hp && values.nomor_hp !== profilKaryawan?.nomor_hp) {
       payload.nomor_hp = String(values.nomor_hp).trim();
@@ -93,10 +86,7 @@ const useUpdateProfil = (
     setErrorMsg(null);
 
     try {
-      if (!vmRef.current) {
-        throw new Error("ViewModel tidak terinisialisasi");
-      }
-      await vmRef.current.updateProfil(payload);
+      await repo.updateProfil(payload.nama, payload.nik, payload.nomor_hp);
       router.replace("/(tabs)/profil");
       Toast.show({ type: "success", text1: "Profil diperbarui" });
       reset({

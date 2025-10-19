@@ -1,5 +1,5 @@
 import { UserRole } from "@/src/common/enums/user-role";
-import { JadwalKaryawan } from "./jadwal-karyawan";
+import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
 
 export interface User {
   uid: string;
