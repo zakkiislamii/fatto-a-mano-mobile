@@ -2,12 +2,12 @@ import { StatusPresensi } from "@/src/common/enums/status-presensi";
 import { PresensiMasuk } from "@/src/common/types/presensi-masuk";
 import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
 import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
-import { PresensiRepository } from "@/src/domain/repositories/presensi-repository";
+import { PresensiMasukRepository } from "@/src/domain/repositories/presensi-masuk-repository";
 import useLiveLocation from "@/src/presentation/features/maps/hooks/use-live-location";
 import useWifi from "@/src/presentation/features/wifi/hooks/use-wifi";
 import { useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
-import { useGetJadwal } from "../../jadwal/use-get-jadwal";
+import { useGetJadwal } from "../../../../../hooks/jadwal/use-get-jadwal";
 
 const useAddPresensiMasuk = (uid: string) => {
   const { canCheck = false } = useLiveLocation();
@@ -189,9 +189,10 @@ const useAddPresensiMasuk = (uid: string) => {
 
     setLoading(true);
     try {
-      const presensiRepo = new PresensiRepository(uid, tanggal, status);
+      const presensiRepo = new PresensiMasukRepository(uid, tanggal);
+      presensiRepo.setStatus(status);
       presensiRepo.setPresensiMasuk(presensiMasuk);
-      await presensiRepo.addPresensiMasuk();
+      await presensiRepo.add();
       Toast.show({
         type: "success",
         text1: "Berhasil presensi masuk.",
