@@ -7,7 +7,7 @@ export default {
     icon: "./src/assets/images/icon.png",
     scheme: "fattoamanomobile",
     userInterfaceStyle: "automatic",
-    newArchEnabled: false,
+    newArchEnabled: true,
     ios: {
       supportsTablet: true,
     },
