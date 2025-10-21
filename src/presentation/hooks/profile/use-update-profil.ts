@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import Toast from "react-native-toast-message";
-import { UpdateProfilFormSchema } from "../../validators/update-profil-form-schema";
+import { UpdateProfilFormSchema } from "../../validators/profil/update-profil-form-schema";
 
 interface ProfilKaryawan {
   nama?: string;

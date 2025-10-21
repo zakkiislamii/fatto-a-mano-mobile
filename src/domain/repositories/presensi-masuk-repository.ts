@@ -3,7 +3,7 @@ import { PresensiMasukStatus } from "@/src/common/types/presensi-masuk-status";
 import { db } from "@/src/configs/firebaseConfig";
 import { Unsubscribe } from "firebase/auth";
 import { doc, onSnapshot, setDoc, Timestamp } from "firebase/firestore";
-import { PresensiRepository } from "../contracts/presensi-contracts";
+import { PresensiRepository } from "../abstracts/presensi-abstract";
 
 export class PresensiMasukRepository extends PresensiRepository {
   private presensi_masuk: PresensiMasuk | null = null;

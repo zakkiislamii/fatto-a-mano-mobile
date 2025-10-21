@@ -1,7 +1,7 @@
 import { PresensiKeluar } from "@/src/common/types/presensi-keluar";
 import { db } from "@/src/configs/firebaseConfig";
 import { doc, Timestamp, updateDoc } from "firebase/firestore";
-import { PresensiRepository } from "../contracts/presensi-contracts";
+import { PresensiRepository } from "../abstracts/presensi-abstract";
 
 export class PresensiKeluarRepository extends PresensiRepository {
   private presensi_keluar: PresensiKeluar | null = null;
