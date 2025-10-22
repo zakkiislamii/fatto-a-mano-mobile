@@ -1,5 +1,6 @@
 import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
 import { PresensiKeluar } from "@/src/common/types/presensi-keluar";
+import Today from "@/src/common/utils/get-today";
 import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
 import { PresensiKeluarRepository } from "@/src/domain/repositories/presensi-keluar-repository";
 import { useCallback, useState } from "react";
@@ -64,10 +65,7 @@ const useAddPresensiKeluarLembur = ({
         keluar_awal: false,
       };
 
-      const today = new Date();
-      const tanggal = `${today.getFullYear()}-${String(
-        today.getMonth() + 1
-      ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+      const tanggal = Today();
 
       const repo = new PresensiKeluarRepository(uid, tanggal);
       repo.setPresensiKeluar(presensiKeluarData);

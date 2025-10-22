@@ -13,7 +13,7 @@ import WifiStatus from "./components/wifi-status";
 import FormKeluarAwal from "./hooks/presensi/presensi-keluar/components/form-keluar-awal";
 import useAddPresensiKeluar from "./hooks/presensi/presensi-keluar/hooks/use-add-presensi-keluar";
 import useAddPresensiMasuk from "./hooks/presensi/presensi-masuk/use-add-presensi-masuk";
-import useGetPresensiToday from "./hooks/use-get-presensi-today";
+import useGetStatusPresensiMasukToday from "./hooks/presensi/presensi-masuk/use-get-status-presensi-masuk-today";
 
 interface PresensiViewProps {
   isDark: boolean;
@@ -28,8 +28,8 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
     loading: presensiMasukLoading,
     isButtonDisabled: presensiMasukButtonDisabled,
   } = useAddPresensiMasuk(uid);
-  const { presensiStatus, loading: statusLoading } = useGetPresensiToday(uid);
-
+  const { presensiMasukStatus, loading: presensiMasukStatusLoading } =
+    useGetStatusPresensiMasukToday(uid);
   const {
     handlePresensiKeluar,
     loading: presensiKeluarLoading,
@@ -40,6 +40,8 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
     handleAjukanLembur,
     keluarLebihAwal,
     lembur,
+    presensiKeluarStatus,
+    presensiKeluarStatusLoading,
   } = useAddPresensiKeluar(uid);
 
   const bgColor = isDark ? "bg-cardDark" : "bg-cardLight";
@@ -48,9 +50,12 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
   const textSecondary = isDark
     ? "text-textSecondaryDark"
     : "text-textSecondaryLight";
+  const successBg = isDark ? "bg-green-900/40" : "bg-green-200";
+  const successIconColor = isDark ? "#4ade80" : "#16a34a";
+  const successText = isDark ? "text-green-300" : "text-green-700";
 
   const getStatusDisplay = () => {
-    const status = presensiStatus.status;
+    const status = presensiMasukStatus.status;
     if (status === StatusPresensi.hadir) {
       return { text: "✓ HADIR", color: "text-green-500" };
     } else if (status === StatusPresensi.terlambat) {
@@ -62,8 +67,8 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
   };
 
   const statusDisplay = getStatusDisplay();
-  const buttonTitle = presensiStatus.sudah_masuk ? "Keluar" : "Masuk";
-  const title = presensiStatus.sudah_masuk
+  const buttonTitle = presensiMasukStatus.sudah_masuk ? "Keluar" : "Masuk";
+  const title = presensiMasukStatus.sudah_masuk
     ? "Presensi Keluar"
     : "Presensi Masuk";
 
@@ -76,8 +81,8 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
       </Text>
 
       {/* Status Presensi - Tampil setelah presensi masuk */}
-      {!statusLoading && presensiStatus.sudah_masuk && (
-        <View className="w-full bg-opacity-10 mb-3 p-3 border rounded-2xl">
+      {!presensiMasukStatusLoading && presensiMasukStatus.sudah_masuk && (
+        <View className="w-full mb-3 p-3 border rounded-lg">
           <View className="gap-2">
             <Text
               className={`text-lg mb-3 font-semibold text-start ${textSecondary}`}
@@ -88,13 +93,26 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
               <Text className={`text-sm font-bold ${statusDisplay.color}`}>
                 {statusDisplay.text}
               </Text>
-              {presensiStatus.terlambat && presensiStatus.durasi_terlambat && (
-                <Text className={`text-sm ${textSecondary}`}>
-                  Terlambat: {presensiStatus.durasi_terlambat}
-                </Text>
-              )}
+              {presensiMasukStatus.terlambat &&
+                presensiMasukStatus.durasi_terlambat && (
+                  <Text className={`text-sm ${textSecondary}`}>
+                    Terlambat: {presensiMasukStatus.durasi_terlambat}
+                  </Text>
+                )}
             </View>
           </View>
+        </View>
+      )}
+
+      {!presensiKeluarStatusLoading && presensiKeluarStatus.sudah_keluar && (
+        <View
+          className={`w-full mb-3 p-3 rounded-2xl items-center ${successBg}`}
+        >
+          <Text
+            className={`text-base font-semibold text-center ${successText}`}
+          >
+            Presensi anda hari ini telah dicatat !
+          </Text>
         </View>
       )}
 
@@ -115,17 +133,17 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
       <Button
         title={buttonTitle}
         onPress={
-          presensiStatus.sudah_masuk
+          presensiMasukStatus.sudah_masuk
             ? handlePresensiKeluar
             : handlePresensiMasuk
         }
         loading={
-          presensiStatus.sudah_masuk
+          presensiMasukStatus.sudah_masuk
             ? presensiKeluarLoading
             : presensiMasukLoading
         }
         disabled={
-          presensiStatus.sudah_masuk
+          presensiMasukStatus.sudah_masuk
             ? presensiKeluarButtonDisabled
             : presensiMasukButtonDisabled
         }

@@ -8,6 +8,8 @@ import { useCallback, useState } from "react";
 import Toast from "react-native-toast-message";
 import useAddPresensiKeluarLebihAwal from "./use-add-presensi-keluar-lebih-awal";
 import useAddPresensiKeluarLembur from "./use-add-presensi-keluar-lembur";
+import useGetStatusPresensiKeluarToday from "./use-get-status-presensi-keluar-today";
+import Today from "@/src/common/utils/get-today";
 
 const useAddPresensiKeluar = (uid: string) => {
   const { canCheck = false } = useLiveLocation();
@@ -21,7 +23,7 @@ const useAddPresensiKeluar = (uid: string) => {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
-
+  const { presensiKeluarStatus, loading: presensiKeluarStatusLoading } = useGetStatusPresensiKeluarToday(uid);
   const { jadwalKaryawan } = useGetJadwal(uid);
   const jadwalReady = !!jadwalKaryawan;
   const isWfh = !!jadwalKaryawan?.isWfh;
@@ -141,12 +143,7 @@ const useAddPresensiKeluar = (uid: string) => {
         presensiKeluarData.bukti_keluar_awal = buktiUrl;
       }
 
-      console.log("Presensi data to save:", presensiKeluarData);
-
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth() + 1).padStart(2, "0");
-      const dd = String(now.getDate()).padStart(2, "0");
-      const tanggal = `${yyyy}-${mm}-${dd}`;
+      const tanggal = Today();
 
       const repo = new PresensiKeluarRepository(uid, tanggal);
       repo.setPresensiKeluar(presensiKeluarData);
@@ -190,23 +187,23 @@ const useAddPresensiKeluar = (uid: string) => {
       keluarAwal.loading ||
       lembur.loading ||
       !jadwalReady ||
+      presensiKeluarStatusLoading ||
+      presensiKeluarStatus.sudah_keluar ||
       (isWfh
         ? networkLoading || !isOnline
         : wifiLoading || !isWifiConnected || !isBssid || !canCheck)
   );
 
   return {
-    // Main actions
     handlePresensiKeluar,
     loading: loading || keluarAwal.loading || lembur.loading,
     isButtonDisabled,
-
-    // Modal keluar biasa/lembur
+    presensiKeluarStatus,
+    presensiKeluarStatusLoading,
     showModal,
     closeModal,
     handleKeluarBiasa,
     handleAjukanLembur,
-
     keluarLebihAwal: {
       showBottomSheet: keluarAwal.showBottomSheet,
       closeBottomSheet: keluarAwal.closeBottomSheet,
@@ -218,7 +215,6 @@ const useAddPresensiKeluar = (uid: string) => {
       buktiKeluarAwal: keluarAwal.buktiKeluarAwal,
       loading: keluarAwal.loading,
     },
-
     lembur: {
       showLemburSheet: lembur.showLemburSheet,
       closeLemburSheet: lembur.closeLemburSheet,

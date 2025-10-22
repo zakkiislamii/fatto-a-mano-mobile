@@ -2,8 +2,8 @@ import { PresensiMasukStatus } from "@/src/common/types/presensi-masuk-status";
 import { PresensiMasukRepository } from "@/src/domain/repositories/presensi-masuk-repository";
 import { useEffect, useState } from "react";
 
-const useGetPresensiToday = (uid: string) => {
-  const [presensiStatus, setPresensiStatus] = useState<PresensiMasukStatus>({
+const useGetStatusPresensiMasukToday = (uid: string) => {
+  const [presensiMasukStatus, setPresensiMasukStatus] = useState<PresensiMasukStatus>({
     sudah_masuk: false,
     status: null,
     terlambat: false,
@@ -14,7 +14,7 @@ const useGetPresensiToday = (uid: string) => {
   useEffect(() => {
     const repo = new PresensiMasukRepository(uid, "");
     const unsubscribe = repo.getPresensiMasukToday((status) => {
-      setPresensiStatus(status);
+      setPresensiMasukStatus(status);
       setLoading(false);
     });
 
@@ -22,9 +22,9 @@ const useGetPresensiToday = (uid: string) => {
   }, [uid]);
 
   return {
-    presensiStatus,
+    presensiMasukStatus,
     loading,
   };
 };
 
-export default useGetPresensiToday;
+export default useGetStatusPresensiMasukToday;

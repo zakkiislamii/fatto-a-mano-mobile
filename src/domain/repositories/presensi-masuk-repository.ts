@@ -1,5 +1,6 @@
 import { PresensiMasuk } from "@/src/common/types/presensi-masuk";
 import { PresensiMasukStatus } from "@/src/common/types/presensi-masuk-status";
+import Today from "@/src/common/utils/get-today";
 import { db } from "@/src/configs/firebaseConfig";
 import { Unsubscribe } from "firebase/auth";
 import { doc, onSnapshot, setDoc, Timestamp } from "firebase/firestore";
@@ -46,11 +47,7 @@ export class PresensiMasukRepository extends PresensiRepository {
     cb: (status: PresensiMasukStatus) => void
   ): Unsubscribe {
     try {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, "0");
-      const dd = String(today.getDate()).padStart(2, "0");
-      const tanggal = `${yyyy}-${mm}-${dd}`;
+      const tanggal = Today();
       const docRef = doc(db, "presensi", tanggal, "users", this.uid);
 
       const unsubscribe = onSnapshot(docRef, (docSnapshot) => {
