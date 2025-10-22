@@ -2,6 +2,7 @@ import Button from "@/src/components/ui/button";
 import React from "react";
 import { Controller } from "react-hook-form";
 import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 interface FormKeluarAwalProps {
   control: any;
@@ -40,33 +41,40 @@ const FormKeluarAwal = ({
 
   return (
     <View className="gap-4">
-      <View>
-        <Text className={`mb-2 font-medium ${textSecondary}`}>
-          Alasan Keluar Awal
-        </Text>
-        <Controller
-          control={control}
-          name="alasan_keluar_awal"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              className={`h-24 p-3 border rounded-lg ${inputBg} ${borderColor} ${primaryText}`}
-              placeholder="Tuliskan alasan Anda..."
-              placeholderTextColor={isDark ? "#9CA3AF" : "#6B7280"}
-              multiline
-              numberOfLines={4}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              textAlignVertical="top"
-            />
-          )}
-        />
-        {errors.alasan_keluar_awal && (
-          <Text className="text-red-500 text-xs mt-1">
-            {errors.alasan_keluar_awal.message}
+      <KeyboardAwareScrollView
+        contentContainerStyle={{
+          justifyContent: "center",
+        }}
+        enableOnAndroid
+      >
+        <View>
+          <Text className={`mb-2 font-medium ${textSecondary}`}>
+            Alasan Keluar Awal
           </Text>
-        )}
-      </View>
+          <Controller
+            control={control}
+            name="alasan_keluar_awal"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                className={`h-24 p-3 border rounded-lg ${inputBg} ${borderColor} ${primaryText}`}
+                placeholder="Tuliskan alasan Anda..."
+                placeholderTextColor={isDark ? "#9CA3AF" : "#6B7280"}
+                multiline
+                numberOfLines={4}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                textAlignVertical="top"
+              />
+            )}
+          />
+          {errors.alasan_keluar_awal && (
+            <Text className="text-red-500 text-xs mt-1">
+              {errors.alasan_keluar_awal.message}
+            </Text>
+          )}
+        </View>
+      </KeyboardAwareScrollView>
       <View>
         <Text className={`mb-2 font-medium ${textSecondary}`}>Bukti</Text>
         <TouchableOpacity

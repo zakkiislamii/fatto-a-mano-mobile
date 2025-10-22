@@ -11,7 +11,7 @@ import LocationStatus from "./components/location-status";
 import MapInfo from "./components/map-info";
 import WifiStatus from "./components/wifi-status";
 import FormKeluarAwal from "./hooks/presensi/presensi-keluar/components/form-keluar-awal";
-import useAddPresensiKeluar from "./hooks/presensi/presensi-keluar/use-add-presensi-keluar";
+import useAddPresensiKeluar from "./hooks/presensi/presensi-keluar/hooks/use-add-presensi-keluar";
 import useAddPresensiMasuk from "./hooks/presensi/presensi-masuk/use-add-presensi-masuk";
 import useGetPresensiToday from "./hooks/use-get-presensi-today";
 
@@ -21,7 +21,7 @@ interface PresensiViewProps {
 }
 
 const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
-  const { isWifiConnected, isBssid, wifiLoading } = useWifi();
+  const { isWifiConnected, isBssid, wifiLoading, refreshWifi } = useWifi();
   const { canCheck } = useLiveLocation();
   const {
     handlePresensiMasuk,
@@ -34,22 +34,12 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
     handlePresensiKeluar,
     loading: presensiKeluarLoading,
     isButtonDisabled: presensiKeluarButtonDisabled,
-    showBottomSheet,
     showModal,
-    showLemburSheet,
-    closeEvidenceModal,
     closeModal,
-    closeLemburSheet,
-    control,
-    errors,
-    canSubmit,
-    handlePickEvidence,
-    handleSubmitKeluarAwal,
-    buktiKeluarAwal,
     handleKeluarBiasa,
     handleAjukanLembur,
-    prosesPresensiKeluarLembur,
-    lemburDurasiMenit,
+    keluarLebihAwal,
+    lembur,
   } = useAddPresensiKeluar(uid);
 
   const bgColor = isDark ? "bg-cardDark" : "bg-cardLight";
@@ -84,6 +74,7 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
         Pastikan Anda terhubung ke jaringan WiFi dan berada di lokasi kantor
         untuk melakukan presensi.
       </Text>
+
       {/* Status Presensi - Tampil setelah presensi masuk */}
       {!statusLoading && presensiStatus.sudah_masuk && (
         <View className="w-full bg-opacity-10 mb-3 p-3 border rounded-2xl">
@@ -106,6 +97,7 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
           </View>
         </View>
       )}
+
       <MapsView isDark={isDark} />
 
       <View className="w-full gap-3 mb-3">
@@ -114,6 +106,7 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
           isWifiConnected={isWifiConnected}
           isBssid={isBssid}
           isDark={isDark}
+          onRefresh={refreshWifi}
         />
         <LocationStatus canCheck={canCheck} isDark={isDark} />
         <MapInfo isDark={isDark} />
@@ -140,27 +133,29 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
         textClassName={`font-bold text-lg ${primaryText}`}
       />
 
+      {/* Bottom Sheet: Keluar Awal */}
       <DynamicBottomSheet
-        isVisible={showBottomSheet}
-        onClose={closeEvidenceModal}
+        isVisible={keluarLebihAwal.showBottomSheet}
+        onClose={keluarLebihAwal.closeBottomSheet}
         title="Keluar Lebih Awal"
         isDark={isDark}
         customContent={
           <FormKeluarAwal
-            control={control}
-            errors={errors}
-            handlePickEvidence={handlePickEvidence}
-            buktiKeluarAwal={buktiKeluarAwal}
+            control={keluarLebihAwal.control}
+            errors={keluarLebihAwal.errors}
+            handlePickEvidence={keluarLebihAwal.handlePickEvidence}
+            buktiKeluarAwal={keluarLebihAwal.buktiKeluarAwal}
             isDark={isDark}
-            onSubmit={handleSubmitKeluarAwal}
-            canSubmit={canSubmit}
-            loading={presensiKeluarLoading}
+            onSubmit={keluarLebihAwal.handleSubmit}
+            canSubmit={keluarLebihAwal.canSubmit}
+            loading={keluarLebihAwal.loading}
             buttonBg={buttonBg}
             primaryText={primaryText}
           />
         }
       />
 
+      {/* Modal: Pilihan Keluar Biasa atau Lembur */}
       <DynamicModal
         isVisible={showModal}
         onClose={closeModal}
@@ -173,9 +168,10 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
         onSecondaryButtonPress={handleKeluarBiasa}
       />
 
+      {/* Bottom Sheet: Konfirmasi Lembur */}
       <DynamicBottomSheet
-        isVisible={showLemburSheet}
-        onClose={closeLemburSheet}
+        isVisible={lembur.showLemburSheet}
+        onClose={lembur.closeLemburSheet}
         title="Konfirmasi Lembur"
         isDark={isDark}
         customContent={
@@ -186,13 +182,15 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
             <Text
               className={`text-3xl font-bold text-center my-2 ${primaryText}`}
             >
-              {lemburDurasiMenit ?? 0} menit
+              {lembur.lemburDurasiMenit ?? 0} menit
             </Text>
             <Button
               title="Konfirmasi & Keluar"
-              onPress={() => prosesPresensiKeluarLembur(lemburDurasiMenit ?? 0)}
-              loading={presensiKeluarLoading}
-              disabled={presensiKeluarLoading}
+              onPress={() =>
+                lembur.prosesPresensiKeluarLembur(lembur.lemburDurasiMenit ?? 0)
+              }
+              loading={lembur.loading}
+              disabled={lembur.loading}
               className={`py-4 w-full rounded-xl ${buttonBg} mt-4`}
               textClassName={`font-bold text-lg ${primaryText}`}
             />

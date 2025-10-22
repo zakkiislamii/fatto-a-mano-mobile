@@ -5,9 +5,10 @@ import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today"
 import { PresensiMasukRepository } from "@/src/domain/repositories/presensi-masuk-repository";
 import useLiveLocation from "@/src/presentation/features/maps/hooks/use-live-location";
 import useWifi from "@/src/presentation/features/wifi/hooks/use-wifi";
-import { useEffect, useState } from "react";
+import { useGetJadwal } from "@/src/presentation/hooks/jadwal/use-get-jadwal";
+import { useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
-import { useGetJadwal } from "../../../../../hooks/jadwal/use-get-jadwal";
+import useGetPresensiToday from "../../use-get-presensi-today";
 
 const useAddPresensiMasuk = (uid: string) => {
   const { canCheck = false } = useLiveLocation();
@@ -24,10 +25,12 @@ const useAddPresensiMasuk = (uid: string) => {
   const { jadwalKaryawan } = useGetJadwal(uid);
   const jadwalReady = !!jadwalKaryawan;
   const isWfh = !!jadwalKaryawan?.isWfh;
+  const { presensiStatus, loading: presensiLoading } = useGetPresensiToday(uid);
+  const hasShownAlpaToastRef = useRef<boolean>(false);
 
-  // cek status alpa secara real-time
   useEffect(() => {
-    if (!jadwalKaryawan) {
+    if (!jadwalKaryawan || presensiLoading) {
+      hasShownAlpaToastRef.current = false;
       setIsAlpa(false);
       return;
     }
@@ -36,34 +39,39 @@ const useAddPresensiMasuk = (uid: string) => {
     const workingDays = expandHariKerja(jadwalKaryawan.hariKerja);
     const todayIdx = today.getDay();
 
-    // Jika hari ini bukan hari kerja, tidak alpa
+    // jika hari ini bukan hari kerja -> bukan alpa
     if (!workingDays.includes(todayIdx)) {
+      hasShownAlpaToastRef.current = false;
       setIsAlpa(false);
       return;
     }
 
     const jamKeluarDate = parseJamToDateToday(jadwalKaryawan.jam_keluar, today);
     if (!jamKeluarDate) {
+      hasShownAlpaToastRef.current = false;
       setIsAlpa(false);
       return;
     }
 
     const now = new Date();
 
-    // Jika sekarang > jam_keluar, maka ALPA
-    if (now > jamKeluarDate) {
+    // Jika sekarang > jam_keluar, maka ALPA dan belum melakukan presensi masuk -> ALPA
+    if (now > jamKeluarDate && !presensiStatus.sudah_masuk) {
       setIsAlpa(true);
-      Toast.show({
-        type: "error",
-        text1: "Status: ALPA",
-        text2:
-          "Waktu presensi masuk telah terlewat. Hubungi HRD untuk pengurusan lebih lanjut.",
-      });
+      if (!hasShownAlpaToastRef.current) {
+        Toast.show({
+          type: "error",
+          text1: "Status: ALPA",
+          text2:
+            "Waktu presensi masuk telah terlewat. Hubungi HRD untuk pengurusan lebih lanjut.",
+        });
+        hasShownAlpaToastRef.current = true;
+      }
       return;
     }
-
+    hasShownAlpaToastRef.current = false;
     setIsAlpa(false);
-  }, [jadwalKaryawan]);
+  }, [jadwalKaryawan, presensiStatus, presensiLoading]);
 
   const handlePresensiMasuk = async (): Promise<boolean> => {
     // jika jadwal belum siap, beri feedback
@@ -139,34 +147,33 @@ const useAddPresensiMasuk = (uid: string) => {
       return false;
     }
 
-    // hitung batas waktu
-    const batasAwal = new Date(jamMasukDate.getTime() - 15 * 60 * 1000); // jam_masuk - 15 menit
-    const batasTerlambat = new Date(jamMasukDate.getTime() + 5 * 60 * 1000); // jam_masuk + 5 menit
-
+    // hitung batas waktu presensi
+    const batasAwal = new Date(jamMasukDate.getTime() - 15 * 60 * 1000); // -15 menit
+    const batasTerlambat = new Date(jamMasukDate.getTime() + 5 * 60 * 1000); // +5 menit
     const now = new Date();
 
     if (now < batasAwal) {
       Toast.show({
         type: "error",
-        text1: "Terlalu awal untuk melakukan presensi masuk.",
-        text2: "Coba lagi ketika 15 menit sebelum jam masuk!",
+        text1: "Presensi terlalu awal!",
+        text2: "Coba lagi 15 menit sebelum jam masuk.",
       });
       return false;
     }
 
-    // tentukan status dan waktu
+    // tentukan status & atribut presensi
     let status = StatusPresensi.hadir;
     let waktu = now.toTimeString().slice(0, 5); // "HH:MM"
     let terlambat = false;
     let durasi_terlambat: string | undefined = undefined;
 
-    // cek alpa: now > jam_keluar
+    // cek alpa: jika sudah lewat jam keluar
     if (now > jamKeluarDate) {
       status = StatusPresensi.alpa;
       waktu = "";
       terlambat = true;
     } else if (now > batasTerlambat) {
-      // cek terlambat: now > jam_masuk + 5 menit
+      // terlambat: sekarang > jam_masuk + 5 menit
       status = StatusPresensi.terlambat;
       terlambat = true;
       const diffMs = now.getTime() - jamMasukDate.getTime();
@@ -174,14 +181,12 @@ const useAddPresensiMasuk = (uid: string) => {
       durasi_terlambat = `${diffMin} menit`;
     }
 
-    // presensi_masuk payload
     const presensiMasuk: PresensiMasuk = {
       waktu,
       terlambat,
       ...(durasi_terlambat ? { durasi_terlambat } : {}),
     };
 
-    // tanggal untuk id: gunakan YYYY-MM-DD
     const yyyy = now.getFullYear();
     const mm = String(now.getMonth() + 1).padStart(2, "0");
     const dd = String(now.getDate()).padStart(2, "0");
@@ -193,10 +198,16 @@ const useAddPresensiMasuk = (uid: string) => {
       presensiRepo.setStatus(status);
       presensiRepo.setPresensiMasuk(presensiMasuk);
       await presensiRepo.add();
+
       Toast.show({
         type: "success",
         text1: "Berhasil presensi masuk.",
       });
+
+      // Jika sukses, reset flag alpa
+      hasShownAlpaToastRef.current = false;
+      setIsAlpa(false);
+
       return true;
     } catch (err) {
       console.error("addPresensiMasuk error:", err);

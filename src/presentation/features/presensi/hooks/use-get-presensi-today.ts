@@ -1,4 +1,3 @@
-import { StatusPresensi } from "@/src/common/enums/status-presensi";
 import { PresensiMasukStatus } from "@/src/common/types/presensi-masuk-status";
 import { PresensiMasukRepository } from "@/src/domain/repositories/presensi-masuk-repository";
 import { useEffect, useState } from "react";
@@ -13,8 +12,7 @@ const useGetPresensiToday = (uid: string) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const repo = new PresensiMasukRepository(uid, "", StatusPresensi.hadir);
-
+    const repo = new PresensiMasukRepository(uid, "");
     const unsubscribe = repo.getPresensiMasukToday((status) => {
       setPresensiStatus(status);
       setLoading(false);

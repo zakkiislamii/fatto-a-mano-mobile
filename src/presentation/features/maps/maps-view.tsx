@@ -80,7 +80,7 @@ const MapsView = ({ isDark }: MapsViewProps) => {
 
   if (!location.lat || !location.lon || !mapRegion) {
     return (
-      <View className={`${bgColor} p-6 rounded-2xl shadow-md my-3`}>
+      <View className={`${bgColor} w-full p-1 shadow-md my-3`}>
         <View className="bg-gray-200 rounded-xl h-48 items-center justify-center">
           <Feather name="map" size={40} color="#6b7280" />
           <Text className={`mt-2 text-sm ${mutedText}`}>
@@ -92,7 +92,7 @@ const MapsView = ({ isDark }: MapsViewProps) => {
   }
 
   return (
-    <View className={`${bgColor} w-full  p-1 shadow-md`}>
+    <View className={`${bgColor} w-full p-1 shadow-md`}>
       <View className="rounded-xl overflow-hidden">
         <MapView
           ref={mapRef}

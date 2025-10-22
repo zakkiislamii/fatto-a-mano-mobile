@@ -19,13 +19,8 @@ const LocationStatus = ({ canCheck, isDark }: LocationStatusProps) => {
       <View
         className={`flex-row items-center p-3 rounded-lg ${successBg} w-full`}
       >
-        <Feather
-          name="map-pin"
-          size={20}
-          color={successIconColor}
-          className="mr-3"
-        />
-        <Text className={`font-medium ${successText}`}>
+        <Feather name="map-pin" size={20} color={successIconColor} />
+        <Text className={`ml-3 font-medium ${successText}`}>
           Lokasi Anda valid (di dalam area kantor).
         </Text>
       </View>

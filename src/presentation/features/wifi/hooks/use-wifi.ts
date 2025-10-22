@@ -1,7 +1,6 @@
-// src/presentation/features/wifi/hooks/use-wifi.ts
 import { ALLOWED_BSSIDS } from "@/src/common/constants/constants";
 import NetInfo from "@react-native-community/netinfo";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const useWifi = () => {
   const [isWifiConnected, setIsWifiConnected] = useState<boolean>(false);
@@ -9,55 +8,64 @@ const useWifi = () => {
   const [isOnline, setIsOnline] = useState<boolean>(false);
   const [wifiLoading, setWifiLoading] = useState<boolean>(true);
   const [networkLoading, setNetworkLoading] = useState<boolean>(true);
+  const mountedRef = useRef(true);
 
-  useEffect(() => {
-    let mounted = true;
+  const checkWifi = async () => {
+    if (!mountedRef.current) return;
 
-    const fetchInfo = async () => {
-      try {
-        setNetworkLoading(true);
-        const netState = await NetInfo.fetch();
-        if (!mounted) return;
-        setIsOnline(Boolean(netState.isConnected ?? false));
-      } catch {
-        if (mounted) setIsOnline(false);
-      } finally {
-        if (mounted) setNetworkLoading(false);
-      }
+    try {
+      setNetworkLoading(true);
+      const netState = await NetInfo.fetch();
+      if (!mountedRef.current) return;
+      setIsOnline(Boolean(netState.isConnected ?? false));
+    } catch {
+      if (mountedRef.current) setIsOnline(false);
+    } finally {
+      if (mountedRef.current) setNetworkLoading(false);
+    }
 
-      try {
-        setWifiLoading(true);
-        const state = await NetInfo.fetch();
-        if (!mounted) return;
+    try {
+      setWifiLoading(true);
+      const state = await NetInfo.fetch();
+      if (!mountedRef.current) return;
 
-        if (state.type === "wifi" && state.details) {
-          const wifi = state.details as any;
-          const bssid = wifi?.bssid?.toString?.().toLowerCase?.() ?? "";
-          const match = ALLOWED_BSSIDS.some(
-            (allowed) => allowed.toLowerCase() === bssid
-          );
+      if (state.type === "wifi" && state.details) {
+        const wifi = state.details as any;
+        const bssid = wifi?.bssid?.toString?.().toLowerCase?.() ?? "";
+        const match = ALLOWED_BSSIDS.some(
+          (allowed) => allowed.toLowerCase() === bssid
+        );
 
-          setIsWifiConnected(
-            Boolean(state.isConnected === true && state.type === "wifi")
-          );
-          setIsBssid(match);
-        } else {
-          setIsWifiConnected(false);
-          setIsBssid(false);
-        }
-      } catch (error) {
-        console.error("Gagal memeriksa koneksi WiFi:", error);
+        setIsWifiConnected(
+          Boolean(state.isConnected === true && state.type === "wifi")
+        );
+        setIsBssid(match);
+      } else {
         setIsWifiConnected(false);
         setIsBssid(false);
-      } finally {
-        if (mounted) setWifiLoading(false);
       }
-    };
+    } catch (error) {
+      console.error("Gagal memeriksa koneksi WiFi:", error);
+      setIsWifiConnected(false);
+      setIsBssid(false);
+    } finally {
+      if (mountedRef.current) setWifiLoading(false);
+    }
+  };
 
-    fetchInfo();
+  const refreshWifi = async () => {
+    await checkWifi();
+  };
+
+  useEffect(() => {
+    mountedRef.current = true;
+    checkWifi();
 
     const unsubscribe = NetInfo.addEventListener((state) => {
+      if (!mountedRef.current) return;
+
       setIsOnline(Boolean(state.isConnected ?? false));
+
       if (state.type === "wifi" && state.details) {
         const wifi = state.details as any;
         const bssid = wifi?.bssid?.toString?.().toLowerCase?.() ?? "";
@@ -77,7 +85,7 @@ const useWifi = () => {
     });
 
     return () => {
-      mounted = false;
+      mountedRef.current = false;
       unsubscribe();
     };
   }, []);
@@ -88,6 +96,7 @@ const useWifi = () => {
     wifiLoading,
     isOnline,
     networkLoading,
+    refreshWifi,
   };
 };
 

@@ -31,34 +31,32 @@ export default function RegisterView() {
 
   return (
     <SafeAreaView className={`flex-1 ${styles.screenBg}`}>
-      <KeyboardAwareScrollView
-        contentContainerStyle={{
-          justifyContent: "center",
-        }}
-        enableOnAndroid
-        extraScrollHeight={60}
-      >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View className="flex-1 justify-center p-6">
-            {/* Header Icon */}
-            <View className="items-center mb-8">
-              <View
-                className={`p-4 rounded-full ${
-                  isDark ? "bg-primary-dark" : "bg-white"
-                }`}
-              >
-                <Feather name="user-plus" size={40} color={styles.buttonBg} />
-              </View>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View className="flex-1 justify-center p-6">
+          {/* Header Icon */}
+          <View className="items-center mb-8">
+            <View
+              className={`p-4 rounded-full ${
+                isDark ? "bg-primary-dark" : "bg-white"
+              }`}
+            >
+              <Feather name="user-plus" size={40} color={styles.buttonBg} />
             </View>
+          </View>
 
-            {/* Title */}
-            <Text className={`text-3xl font-bold mb-2 ${styles.textColor}`}>
-              Buat Akun Baru
-            </Text>
-            <Text className={`text-base mb-8 ${styles.secondaryTextColor}`}>
-              Daftar untuk dapat masuk ke aplikasi.
-            </Text>
-
+          {/* Title */}
+          <Text className={`text-3xl font-bold mb-2 ${styles.textColor}`}>
+            Buat Akun Baru
+          </Text>
+          <Text className={`text-base mb-8 ${styles.secondaryTextColor}`}>
+            Daftar untuk dapat masuk ke aplikasi.
+          </Text>
+          <KeyboardAwareScrollView
+            contentContainerStyle={{
+              justifyContent: "center",
+            }}
+            enableOnAndroid
+          >
             {/* Email */}
             <View className="mb-4">
               <Text className={`mb-2 font-medium ${styles.secondaryTextColor}`}>
@@ -223,14 +221,14 @@ export default function RegisterView() {
                 Sudah punya akun?{" "}
               </Text>
               <TouchableOpacity onPress={() => router.push("/login")}>
-                <Text className="font-bold" style={{ color: styles.buttonBg }}>
+                <Text className={`${styles.secondaryTextColor} font-bold`}>
                   Masuk
                 </Text>
               </TouchableOpacity>
             </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </KeyboardAwareScrollView>
+          </KeyboardAwareScrollView>
+        </View>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 }

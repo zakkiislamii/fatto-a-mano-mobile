@@ -1,12 +1,13 @@
 import { AntDesign } from "@expo/vector-icons";
 import React from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
-interface WifiStatusIndicatorProps {
+interface WifiStatusProps {
   wifiLoading: boolean;
   isWifiConnected: boolean;
   isBssid: boolean;
   isDark: boolean;
+  onRefresh: () => void;
 }
 
 const WifiStatus = ({
@@ -14,7 +15,8 @@ const WifiStatus = ({
   isWifiConnected,
   isBssid,
   isDark,
-}: WifiStatusIndicatorProps) => {
+  onRefresh,
+}: WifiStatusProps) => {
   const warningBg = isDark ? "bg-yellow-900/40" : "bg-yellow-200";
   const warningIconColor = isDark ? "#facc15" : "#f59e0b";
   const warningText = isDark ? "text-yellow-300" : "text-yellow-700";
@@ -25,71 +27,72 @@ const WifiStatus = ({
   const successIconColor = isDark ? "#4ade80" : "#16a34a";
   const successText = isDark ? "text-green-300" : "text-green-700";
 
-  if (wifiLoading) {
-    return (
-      <View
-        className={`flex-row items-center p-3 rounded-lg ${warningBg} w-full`}
-      >
-        <ActivityIndicator
-          size="small"
-          color={warningIconColor}
-          className="mr-3"
-        />
-        <Text className={`font-medium ${warningText}`}>
-          Mengecek koneksi WiFi...
-        </Text>
-      </View>
-    );
-  }
-
-  if (!isWifiConnected) {
-    return (
-      <View
-        className={`flex-row items-center p-3 rounded-lg ${errorBg} w-full`}
-      >
-        <AntDesign
-          name="wifi"
-          size={20}
-          color={errorIconColor}
-          className="mr-3"
-        />
-        <Text className={`font-medium ${errorText}`}>
-          Koneksi WiFi tidak ditemukan.
-        </Text>
-      </View>
-    );
-  }
-
-  if (!isBssid) {
-    return (
-      <View
-        className={`flex-row items-center p-3 rounded-lg ${warningBg} w-full`}
-      >
-        <AntDesign
-          name="wifi"
-          size={20}
-          color={warningIconColor}
-          className="mr-3"
-        />
-        <Text className={`font-medium ${warningText}`}>
-          Anda tidak terhubung ke jaringan WiFi yang benar.
-        </Text>
-      </View>
-    );
-  }
-
-  // Jika semua kondisi terpenuhi
   return (
-    <View
-      className={`flex-row items-center p-3 rounded-lg ${successBg} w-full`}
-    >
-      <AntDesign
-        name="wifi"
-        size={20}
-        color={successIconColor}
-        className="mr-3"
-      />
-      <Text className={`font-medium ${successText}`}>Koneksi WiFi valid.</Text>
+    <View className="w-full">
+      {wifiLoading ? (
+        <View
+          className={`flex-row items-center justify-between p-3 rounded-lg ${warningBg}`}
+        >
+          <View className="flex-row items-center">
+            <ActivityIndicator size="small" color={warningIconColor} />
+            <Text className={`ml-3 font-medium ${warningText}`}>
+              Mengecek WiFi...
+            </Text>
+          </View>
+          {/* Tombol reload dipindahkan ke sini */}
+          <TouchableOpacity onPress={onRefresh} className="p-1">
+            <AntDesign name="reload" size={18} color={warningIconColor} />
+          </TouchableOpacity>
+        </View>
+      ) : !isWifiConnected ? (
+        <View
+          className={`flex-row items-center justify-between p-3 rounded-lg ${errorBg}`}
+        >
+          <View className="flex-row items-center">
+            <AntDesign name="wifi" size={20} color={errorIconColor} />
+            <Text className={`ml-3 font-medium ${errorText}`}>
+              WiFi tidak ditemukan.
+            </Text>
+          </View>
+          {/* Tombol reload dipindahkan ke sini */}
+          <TouchableOpacity onPress={onRefresh} className="p-1">
+            <AntDesign name="reload" size={18} color={errorIconColor} />
+          </TouchableOpacity>
+        </View>
+      ) : !isBssid ? (
+        <View
+          className={`flex-row items-center justify-between p-3 rounded-lg ${warningBg}`}
+        >
+          <View className="flex-row items-center">
+            <AntDesign name="wifi" size={20} color={warningIconColor} />
+            <Text className={`ml-3 font-medium ${warningText}`}>
+              WiFi tidak sesuai.
+            </Text>
+          </View>
+          {/* Tombol reload dipindahkan ke sini */}
+          <TouchableOpacity onPress={onRefresh} className="p-1">
+            <AntDesign name="reload" size={18} color={warningIconColor} />
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View
+          className={`flex-row items-center justify-between p-3 rounded-lg ${successBg}`}
+        >
+          <View className="flex-row items-center">
+            <AntDesign name="wifi" size={20} color={successIconColor} />
+            <Text className={`ml-3 font-medium ${successText}`}>
+              WiFi valid.
+            </Text>
+          </View>
+          <TouchableOpacity onPress={onRefresh} className="p-1">
+            <AntDesign
+              name="reload"
+              size={18}
+              color={isDark ? "#ffffff" : "#111827"}
+            />
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
