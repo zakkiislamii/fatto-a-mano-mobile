@@ -1,6 +1,6 @@
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
 import React from "react";
-import { Text, useColorScheme } from "react-native";
+import { ActivityIndicator, useColorScheme, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import KaryawanView from "./karyawan/karyawan-view";
 import ManajerView from "./manajer/manajer-view";
@@ -14,9 +14,9 @@ const HomeView = () => {
 
   if (!uid) {
     return (
-      <SafeAreaView className={`flex-1 ${screenBg}`}>
-        <Text>Loading...</Text>
-      </SafeAreaView>
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" />
+      </View>
     );
   }
 

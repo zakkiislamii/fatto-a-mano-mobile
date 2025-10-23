@@ -44,10 +44,12 @@ export class PresensiKeluarRepository extends PresensiRepository {
           const data = docSnapshot.data();
           cb({
             sudah_keluar: !!data.presensi_keluar,
+            lembur: !!data.presensi_keluar.lembur,
           });
         } else {
           cb({
             sudah_keluar: false,
+            lembur: false,
           });
         }
       });

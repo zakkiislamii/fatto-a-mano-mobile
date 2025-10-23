@@ -6,6 +6,7 @@ const useGetStatusPresensiKeluarToday = (uid: string) => {
   const [presensiKeluarStatus, setPresensiKeluarStatus] =
     useState<PresensiKeluarStatus>({
       sudah_keluar: false,
+      lembur: false,
     });
   const [loading, setLoading] = useState(true);
 

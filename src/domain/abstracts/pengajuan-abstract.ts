@@ -9,8 +9,6 @@ import {
   doc,
   DocumentReference,
   onSnapshot,
-  query,
-  where,
 } from "firebase/firestore";
 import { Pengajuan } from "../models/pengajuan";
 
@@ -26,7 +24,7 @@ export abstract class PengajuanRepository {
   public constructor(uid: string, tanggal_pengajuan: string) {
     this.uid = uid;
     this.tanggal_pengajuan = tanggal_pengajuan;
-    this.colRef = collection(db, "pengajuan");
+    this.colRef = collection(db, `users/${uid}/pengajuan`);
   }
 
   public setId(id: string): void {
@@ -82,16 +80,14 @@ export abstract class PengajuanRepository {
     callback: (pengajuanList: DaftarPengajuan[]) => void
   ): Unsubscribe {
     try {
-      const q = query(this.colRef, where("uid", "==", this.uid));
-
-      const unsubscribe = onSnapshot(q, (snapshot) => {
+      const unsubscribe = onSnapshot(this.colRef, (snapshot) => {
         const pengajuanList: DaftarPengajuan[] = [];
 
         snapshot.forEach((doc) => {
           const data = doc.data();
           pengajuanList.push({
             id: doc.id,
-            uid: data.uid,
+            uid: this.uid,
             tipe: data.tipe,
             tanggal_pengajuan: data.tanggal_pengajuan,
             status: data.status,

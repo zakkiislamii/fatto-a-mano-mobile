@@ -2,8 +2,9 @@ import { StatusPresensi } from "@/src/common/enums/status-presensi";
 import Button from "@/src/components/ui/button";
 import { DynamicBottomSheet } from "@/src/components/ui/dynamic-bottom-sheet";
 import { DynamicModal } from "@/src/components/ui/dynamic-modal";
+import { router } from "expo-router";
 import React from "react";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import useLiveLocation from "../maps/hooks/use-live-location";
 import MapsView from "../maps/maps-view";
 import useWifi from "../wifi/hooks/use-wifi";
@@ -53,6 +54,7 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
     : "text-textSecondaryLight";
   const successBg = isDark ? "bg-green-900/40" : "bg-green-200";
   const successText = isDark ? "text-green-300" : "text-green-700";
+  const linkText = isDark ? "text-blue-400" : "text-blue-500";
 
   const getStatusDisplay = () => {
     const status = presensiMasukStatus.status;
@@ -113,12 +115,24 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
           >
             Presensi anda hari ini telah dicatat !
           </Text>
+
+          {presensiKeluarStatus.lembur && (
+            <TouchableOpacity
+              onPress={() => router.push("/pengajuan")}
+              className="mt-2"
+            >
+              <Text className={`text-sm font-medium underline ${linkText}`}>
+                Lihat pengajuan lembur
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       )}
 
       <MapsView isDark={isDark} />
 
       <View className="w-full gap-3 mb-3">
+        <MapInfo isDark={isDark} />
         <WifiStatus
           wifiLoading={wifiLoading}
           isWifiConnected={isWifiConnected}
@@ -127,7 +141,6 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
           onRefresh={refreshWifi}
         />
         <LocationStatus canCheck={canCheck} isDark={isDark} />
-        <MapInfo isDark={isDark} />
       </View>
 
       <Button

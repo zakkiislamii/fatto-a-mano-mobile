@@ -45,7 +45,7 @@ export class PengajuanLemburRepository extends PengajuanRepository {
           const data = docSnap.data();
           callback({
             id: docSnap.id,
-            uid: data.uid,
+            uid: this.uid,
             tipe: data.tipe,
             tanggal_pengajuan: data.tanggal_pengajuan,
             status: data.status,
