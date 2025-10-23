@@ -10,13 +10,13 @@ export abstract class PresensiRepository {
     this.tanggal = tanggal;
   }
 
-  abstract add(): Promise<void>;
-
-  public setStatus(status: StatusPresensi) {
+  public setStatus(status: StatusPresensi): void {
     this.status = status;
   }
 
-  public getStatus() {
+  public getStatus(): StatusPresensi | null {
     return this.status;
   }
+
+  abstract add(): Promise<void>;
 }

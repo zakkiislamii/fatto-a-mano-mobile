@@ -1,5 +1,5 @@
 import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
-import { JadwalRepository } from "@/src/domain/repositories/jadwal-repository";
+import { JadwalRepository } from "@/src/domain/repositories/jadwal/jadwal-repository";
 import { useEffect, useState } from "react";
 
 export const useGetJadwal = (uid?: string | null) => {

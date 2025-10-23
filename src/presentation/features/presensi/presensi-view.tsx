@@ -11,6 +11,7 @@ import LocationStatus from "./components/location-status";
 import MapInfo from "./components/map-info";
 import WifiStatus from "./components/wifi-status";
 import FormKeluarAwal from "./hooks/presensi/presensi-keluar/components/form-keluar-awal";
+import FormLembur from "./hooks/presensi/presensi-keluar/components/form-lembur";
 import useAddPresensiKeluar from "./hooks/presensi/presensi-keluar/hooks/use-add-presensi-keluar";
 import useAddPresensiMasuk from "./hooks/presensi/presensi-masuk/use-add-presensi-masuk";
 import useGetStatusPresensiMasukToday from "./hooks/presensi/presensi-masuk/use-get-status-presensi-masuk-today";
@@ -51,7 +52,6 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
     ? "text-textSecondaryDark"
     : "text-textSecondaryLight";
   const successBg = isDark ? "bg-green-900/40" : "bg-green-200";
-  const successIconColor = isDark ? "#4ade80" : "#16a34a";
   const successText = isDark ? "text-green-300" : "text-green-700";
 
   const getStatusDisplay = () => {
@@ -186,33 +186,26 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
         onSecondaryButtonPress={handleKeluarBiasa}
       />
 
-      {/* Bottom Sheet: Konfirmasi Lembur */}
+      {/* Bottom Sheet: Form Pengajuan Lembur */}
       <DynamicBottomSheet
         isVisible={lembur.showLemburSheet}
         onClose={lembur.closeLemburSheet}
-        title="Konfirmasi Lembur"
+        title="Pengajuan Lembur"
         isDark={isDark}
         customContent={
-          <View className="gap-4">
-            <Text className={textSecondary}>
-              Anda akan mengajukan lembur selama:
-            </Text>
-            <Text
-              className={`text-3xl font-bold text-center my-2 ${primaryText}`}
-            >
-              {lembur.lemburDurasiMenit ?? 0} menit
-            </Text>
-            <Button
-              title="Konfirmasi & Keluar"
-              onPress={() =>
-                lembur.prosesPresensiKeluarLembur(lembur.lemburDurasiMenit ?? 0)
-              }
-              loading={lembur.loading}
-              disabled={lembur.loading}
-              className={`py-4 w-full rounded-xl ${buttonBg} mt-4`}
-              textClassName={`font-bold text-lg ${primaryText}`}
-            />
-          </View>
+          <FormLembur
+            control={lembur.control}
+            errors={lembur.errors}
+            handlePickEvidence={lembur.handlePickEvidence}
+            buktiPendukung={lembur.buktiPendukung}
+            isDark={isDark}
+            onSubmit={lembur.prosesPresensiKeluarLembur}
+            canSubmit={lembur.canSubmit}
+            loading={lembur.loading}
+            buttonBg={buttonBg}
+            primaryText={primaryText}
+            lemburDurasiMenit={lembur.lemburDurasiMenit}
+          />
         }
       />
     </View>

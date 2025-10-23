@@ -1,5 +1,5 @@
 import { mapFirebaseAuthError } from "@/src/common/utils/auth-error-mapper";
-import { AuthRepository } from "@/src/domain/repositories/auth-repository";
+import { AuthRepository } from "@/src/domain/repositories/auth/auth-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";

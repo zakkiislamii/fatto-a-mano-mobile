@@ -1,9 +1,8 @@
 import { KeteranganFile } from "@/src/common/enums/keterangan-file";
+import { pickImageFromLibrary } from "@/src/common/utils/image-picker";
 import { uploadToSupabase } from "@/src/common/utils/upload-to-supabase";
-import { PresensiKeluarFormSchema } from "@/src/presentation/validators/presensi-keluar/presensi-keluar-form-schema";
+import { PresensiKeluarFormSchema } from "@/src/presentation/validators/presensi/presensi-keluar-form-schema";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as FileSystem from "expo-file-system/legacy";
-import * as ImagePicker from "expo-image-picker";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import Toast from "react-native-toast-message";
@@ -37,39 +36,12 @@ const useAddPresensiKeluarLebihAwal = ({
   const buktiKeluarAwal = watch("bukti_keluar_awal");
 
   const handlePickEvidence = useCallback(async () => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
+    const imageUri = await pickImageFromLibrary({ maxSizeMB: 3 });
 
-      if (!result.canceled && result.assets?.[0]) {
-        const asset = result.assets[0];
-        const fileInfo = await FileSystem.getInfoAsync(asset.uri);
-
-        if (fileInfo.exists && fileInfo.size) {
-          const sizeInMB = fileInfo.size / (1024 * 1024);
-          if (sizeInMB > 3) {
-            Toast.show({
-              type: "error",
-              text1: "Ukuran file terlalu besar",
-              text2: "Maksimal ukuran file adalah 3 MB",
-            });
-            return;
-          }
-          setValue("bukti_keluar_awal", asset.uri, {
-            shouldValidate: true,
-            shouldDirty: true,
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Error picking image:", error);
-      Toast.show({
-        type: "error",
-        text1: "Gagal memilih gambar",
+    if (imageUri) {
+      setValue("bukti_keluar_awal", imageUri, {
+        shouldValidate: true,
+        shouldDirty: true,
       });
     }
   }, [setValue]);

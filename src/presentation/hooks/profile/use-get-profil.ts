@@ -1,5 +1,5 @@
 import { ProfilKaryawan } from "@/src/common/types/profil-karyawan";
-import { UserRepository } from "@/src/domain/repositories/user-repository";
+import { UserRepository } from "@/src/domain/repositories/user/user-repository";
 import { useEffect, useState } from "react";
 
 export const useGetProfile = (uid?: string | null) => {

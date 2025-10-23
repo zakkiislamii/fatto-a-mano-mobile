@@ -1,5 +1,5 @@
 import { PresensiKeluarStatus } from "@/src/common/types/presensi-keluar-status";
-import { PresensiKeluarRepository } from "@/src/domain/repositories/presensi-keluar-repository";
+import { PresensiKeluarRepository } from "@/src/domain/repositories/presensi/presensi-keluar-repository";
 import { useEffect, useState } from "react";
 
 const useGetStatusPresensiKeluarToday = (uid: string) => {

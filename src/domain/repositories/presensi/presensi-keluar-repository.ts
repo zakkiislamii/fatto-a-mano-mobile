@@ -4,7 +4,7 @@ import Today from "@/src/common/utils/get-today";
 import { db } from "@/src/configs/firebaseConfig";
 import { Unsubscribe } from "firebase/auth";
 import { doc, onSnapshot, Timestamp, updateDoc } from "firebase/firestore";
-import { PresensiRepository } from "../abstracts/presensi-abstract";
+import { PresensiRepository } from "../../abstracts/presensi-abstract";
 
 export class PresensiKeluarRepository extends PresensiRepository {
   private presensi_keluar: PresensiKeluar | null = null;
@@ -22,8 +22,7 @@ export class PresensiKeluarRepository extends PresensiRepository {
       if (!this.presensi_keluar) {
         throw new Error("Data presensi keluar belum diatur.");
       }
-      const ref = doc(db, "presensi", this.tanggal, "users", this.uid);
-      await updateDoc(ref, {
+      await updateDoc(doc(db, "presensi", this.tanggal, "users", this.uid), {
         presensi_keluar: this.presensi_keluar,
         updated_at: Timestamp.now(),
       });
@@ -39,6 +38,7 @@ export class PresensiKeluarRepository extends PresensiRepository {
     try {
       const tanggal = Today();
       const docRef = doc(db, "presensi", tanggal, "users", this.uid);
+
       const unsubscribe = onSnapshot(docRef, (docSnapshot) => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();

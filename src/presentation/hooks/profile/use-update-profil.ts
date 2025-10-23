@@ -1,4 +1,4 @@
-import { UserRepository } from "@/src/domain/repositories/user-repository";
+import { UserRepository } from "@/src/domain/repositories/user/user-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";

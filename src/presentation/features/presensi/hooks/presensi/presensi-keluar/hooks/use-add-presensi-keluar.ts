@@ -1,6 +1,7 @@
 import { PresensiKeluar } from "@/src/common/types/presensi-keluar";
+import Today from "@/src/common/utils/get-today";
 import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
-import { PresensiKeluarRepository } from "@/src/domain/repositories/presensi-keluar-repository";
+import { PresensiKeluarRepository } from "@/src/domain/repositories/presensi/presensi-keluar-repository";
 import useLiveLocation from "@/src/presentation/features/maps/hooks/use-live-location";
 import useWifi from "@/src/presentation/features/wifi/hooks/use-wifi";
 import { useGetJadwal } from "@/src/presentation/hooks/jadwal/use-get-jadwal";
@@ -9,7 +10,6 @@ import Toast from "react-native-toast-message";
 import useAddPresensiKeluarLebihAwal from "./use-add-presensi-keluar-lebih-awal";
 import useAddPresensiKeluarLembur from "./use-add-presensi-keluar-lembur";
 import useGetStatusPresensiKeluarToday from "./use-get-status-presensi-keluar-today";
-import Today from "@/src/common/utils/get-today";
 
 const useAddPresensiKeluar = (uid: string) => {
   const { canCheck = false } = useLiveLocation();
@@ -23,7 +23,8 @@ const useAddPresensiKeluar = (uid: string) => {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const { presensiKeluarStatus, loading: presensiKeluarStatusLoading } = useGetStatusPresensiKeluarToday(uid);
+  const { presensiKeluarStatus, loading: presensiKeluarStatusLoading } =
+    useGetStatusPresensiKeluarToday(uid);
   const { jadwalKaryawan } = useGetJadwal(uid);
   const jadwalReady = !!jadwalKaryawan;
   const isWfh = !!jadwalKaryawan?.isWfh;
@@ -221,6 +222,11 @@ const useAddPresensiKeluar = (uid: string) => {
       lemburDurasiMenit: lembur.lemburDurasiMenit,
       prosesPresensiKeluarLembur: lembur.prosesPresensiKeluarLembur,
       loading: lembur.loading,
+      handlePickEvidence: lembur.handlePickEvidence,
+      control: lembur.control,
+      canSubmit: lembur.canSubmit,
+      errors: lembur.errors,
+      buktiPendukung: lembur.buktiPendukung,
     },
   };
 };

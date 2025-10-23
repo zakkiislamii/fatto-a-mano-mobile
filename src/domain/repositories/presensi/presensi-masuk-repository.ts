@@ -4,7 +4,7 @@ import Today from "@/src/common/utils/get-today";
 import { db } from "@/src/configs/firebaseConfig";
 import { Unsubscribe } from "firebase/auth";
 import { doc, onSnapshot, setDoc, Timestamp } from "firebase/firestore";
-import { PresensiRepository } from "../abstracts/presensi-abstract";
+import { PresensiRepository } from "../../abstracts/presensi-abstract";
 
 export class PresensiMasukRepository extends PresensiRepository {
   private presensi_masuk: PresensiMasuk | null = null;
@@ -23,10 +23,8 @@ export class PresensiMasukRepository extends PresensiRepository {
         throw new Error("Data presensi masuk belum diatur.");
       }
 
-      const ref = doc(db, "presensi", this.tanggal, "users", this.uid);
-
       await setDoc(
-        ref,
+        doc(db, "presensi", this.tanggal, "users", this.uid),
         {
           presensi_masuk: this.presensi_masuk,
           status: this.status,
