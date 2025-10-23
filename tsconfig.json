@@ -16,6 +16,6 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts",
-    "app/(tabs)/riwayat.tsx"
+    "app/(tabs)/(riwayat)/[uid].tsx"
   ]
 }

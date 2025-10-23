@@ -7,11 +7,13 @@ const InfoRow = ({
   label,
   value,
   isDark,
+  color,
 }: {
   icon: keyof typeof Feather.glyphMap;
   label: string;
   value: string | null | undefined;
   isDark: boolean;
+  color?: string;
 }) => {
   if (!value) return null;
 
@@ -19,7 +21,7 @@ const InfoRow = ({
   const secondaryTextColor = isDark
     ? "text-textSecondaryDark"
     : "text-textSecondaryLight";
-  const iconColor = isDark ? "#A0A0A0" : "#6B7280";
+  const iconColor = color ?? (isDark ? "#94a3b8" : "#64748b");
 
   return (
     <View className="flex-row items-center">

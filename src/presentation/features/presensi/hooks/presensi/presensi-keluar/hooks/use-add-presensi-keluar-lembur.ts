@@ -62,13 +62,13 @@ const useAddPresensiKeluarLembur = ({
     const jamKeluarDate = parseJamToDateToday(jadwalKaryawan.jam_keluar, today);
     if (!jamKeluarDate) return 0;
 
-    const keluarLembur = new Date(jamKeluarDate.getTime() + 30 * 60 * 1000);
-    const now = new Date();
-
-    const diffMs = now.getTime() - keluarLembur.getTime();
+    const keluarLembur = new Date(jamKeluarDate.getTime());
+    const diffMs = today.getTime() - keluarLembur.getTime();
     const diffMenit = Math.max(0, Math.floor(diffMs / (1000 * 60)));
 
-    return diffMenit >= 30 ? 60 : diffMenit;
+    if (diffMenit < 30) return diffMenit;
+    if (diffMenit <= 60) return 60;
+    return diffMenit;
   }, [jadwalKaryawan]);
 
   const openLemburSheet = useCallback(() => {
@@ -109,7 +109,7 @@ const useAddPresensiKeluarLembur = ({
       }
 
       const now = new Date();
-      const waktu = now.toISOString();
+      const waktu = now.toTimeString().slice(0, 5);
       const durasiLemburStr = `${lemburDurasiMenit} menit`;
       const tanggal = Today();
 

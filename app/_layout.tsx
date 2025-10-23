@@ -12,6 +12,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { ActivityIndicator, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -23,6 +24,7 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     "Poppins-Regular": require("../src/assets/fonts/Poppins-Regular.ttf"),
   });
+
   if (!loaded) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -32,26 +34,28 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <SafeAreaProvider>
-        <NavigationContext>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="login" options={{ title: "Login" }} />
-            <Stack.Screen name="register" options={{ title: "Register" }} />
-            <Stack.Screen
-              name="edit-profil"
-              options={{ title: "Edit Profil", headerShown: true }}
-            />
-            <Stack.Screen
-              name="notifikasi"
-              options={{ title: "Notifikasi", headerShown: true }}
-            />
-          </Stack>
-          <Toast config={toastConfig} />
-          <StatusBar style="auto" />
-        </NavigationContext>
-      </SafeAreaProvider>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <SafeAreaProvider>
+          <NavigationContext>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="login" options={{ title: "Login" }} />
+              <Stack.Screen name="register" options={{ title: "Register" }} />
+              <Stack.Screen
+                name="edit-profil"
+                options={{ title: "Edit Profil", headerShown: true }}
+              />
+              <Stack.Screen
+                name="notifikasi"
+                options={{ title: "Notifikasi", headerShown: true }}
+              />
+            </Stack>
+            <Toast config={toastConfig} />
+            <StatusBar style="auto" />
+          </NavigationContext>
+        </SafeAreaProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }

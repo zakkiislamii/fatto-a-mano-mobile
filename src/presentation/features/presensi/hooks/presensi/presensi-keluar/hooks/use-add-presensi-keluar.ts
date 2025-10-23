@@ -130,7 +130,7 @@ const useAddPresensiKeluar = (uid: string) => {
     setLoading(true);
     try {
       const now = new Date();
-      const waktu = now.toISOString();
+      const waktu = now.toTimeString().slice(0, 5);
 
       const presensiKeluarData: PresensiKeluar = {
         waktu,

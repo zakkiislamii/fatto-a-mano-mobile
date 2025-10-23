@@ -2,7 +2,7 @@ import { PresensiKeluar } from "@/src/common/types/presensi-keluar";
 import { PresensiKeluarStatus } from "@/src/common/types/presensi-keluar-status";
 import Today from "@/src/common/utils/get-today";
 import { db } from "@/src/configs/firebaseConfig";
-import { Unsubscribe } from "firebase/auth";
+import type { Unsubscribe } from "firebase/firestore";
 import { doc, onSnapshot, Timestamp, updateDoc } from "firebase/firestore";
 import { PresensiRepository } from "../../abstracts/presensi-abstract";
 
@@ -37,14 +37,22 @@ export class PresensiKeluarRepository extends PresensiRepository {
   ): Unsubscribe {
     try {
       const tanggal = Today();
+
+      if (!this.uid) {
+        cb({ sudah_keluar: false, lembur: false });
+        return () => {};
+      }
+
       const docRef = doc(db, "presensi", tanggal, "users", this.uid);
 
       const unsubscribe = onSnapshot(docRef, (docSnapshot) => {
         if (docSnapshot.exists()) {
-          const data = docSnapshot.data();
+          const data = docSnapshot.data() as Record<string, any> | undefined;
+          const presensiKeluar = data?.presensi_keluar ?? null;
+
           cb({
-            sudah_keluar: !!data.presensi_keluar,
-            lembur: !!data.presensi_keluar.lembur,
+            sudah_keluar: !!presensiKeluar,
+            lembur: !!presensiKeluar?.lembur,
           });
         } else {
           cb({
@@ -53,9 +61,10 @@ export class PresensiKeluarRepository extends PresensiRepository {
           });
         }
       });
+
       return unsubscribe;
     } catch (error) {
-      console.error(error);
+      console.error("getPresensiKeluarToday error:", error);
       throw error;
     }
   }

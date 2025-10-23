@@ -166,7 +166,7 @@ const useAddPresensiMasuk = (uid: string) => {
 
     // tentukan status & atribut presensi
     let status = StatusPresensi.hadir;
-    let waktu = now.toTimeString().slice(0, 5); // "HH:MM"
+    let waktu = now.toTimeString().slice(0, 5);
     let terlambat = false;
     let durasi_terlambat: string | undefined = undefined;
 
