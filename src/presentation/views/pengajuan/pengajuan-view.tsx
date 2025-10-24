@@ -14,7 +14,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import useTambahPengajuanSakit from "../../hooks/pengajuan/tambah/use-tambah-pengajuan-sakit";
 import useDaftarPengajuan from "../../hooks/pengajuan/use-daftar-pengajuan";
 import FormSakit from "./components/form-sakit";
+import PaginationControls from "./components/pagination-controls";
 import PengajuanCard from "./components/pengajuan-card";
+import usePagination from "./hooks/use-pagination";
 import usePengajuanView from "./hooks/use-pengajuan-view";
 
 const PengajuanView = () => {
@@ -49,6 +51,21 @@ const PengajuanView = () => {
     handleDelete,
     handleEdit,
   } = useDaftarPengajuan();
+
+  const {
+    currentPage,
+    paginatedData,
+    handleNextPage,
+    handlePrevPage,
+    hasNextPage,
+    hasPrevPage,
+    startIndex,
+    endIndex,
+    totalItems,
+  } = usePagination({
+    data: pengajuanList,
+    itemsPerPage: 3,
+  });
 
   const screenBg = isDark ? "bg-screenDark" : "bg-screenLight";
   const textPrimary = isDark ? "text-textPrimaryDark" : "text-textPrimaryLight";
@@ -85,7 +102,6 @@ const PengajuanView = () => {
         <Text className={`text-3xl font-bold ${textPrimary}`}>Pengajuan</Text>
       </View>
 
-      {/* --- AREA KONTEN (DAFTAR PENGAJUAN) --- */}
       <View className="flex-1 px-5">
         {loadingDaftar ? (
           <ActivityIndicator
@@ -94,14 +110,29 @@ const PengajuanView = () => {
             className="mt-10"
           />
         ) : (
-          <FlatList
-            data={pengajuanList}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            ListEmptyComponent={ListEmptyComponent}
-            contentContainerStyle={{ paddingBottom: 20 }}
-            showsVerticalScrollIndicator={false}
-          />
+          <>
+            <FlatList
+              data={paginatedData}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              ListEmptyComponent={ListEmptyComponent}
+              contentContainerStyle={{ paddingBottom: 20 }}
+              showsVerticalScrollIndicator={false}
+            />
+            {totalItems > 0 && (
+              <PaginationControls
+                currentPage={currentPage}
+                handlePrevPage={handlePrevPage}
+                handleNextPage={handleNextPage}
+                hasPrevPage={hasPrevPage}
+                hasNextPage={hasNextPage}
+                startIndex={startIndex}
+                endIndex={endIndex}
+                totalItems={totalItems}
+                isDark={isDark}
+              />
+            )}
+          </>
         )}
       </View>
 
