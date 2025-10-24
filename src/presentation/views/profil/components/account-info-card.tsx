@@ -1,9 +1,14 @@
 import { ProfilKaryawan } from "@/src/common/types/profil-karyawan";
 import Button from "@/src/components/ui/button";
-import { useRouter } from "expo-router";
+import { DynamicBottomSheet } from "@/src/components/ui/dynamic-bottom-sheet";
+import { DynamicModal } from "@/src/components/ui/dynamic-modal";
+import { useFirebaseAuth } from "@/src/hooks/use-auth";
+import { useGetProfile } from "@/src/presentation/hooks/profile/use-get-profil";
+import useUpdateProfil from "@/src/presentation/hooks/profile/use-update-profil";
 import React from "react";
 import { Text, View } from "react-native";
 import InfoRow from "../../../../components/ui/info-row";
+import FormEditProfil from "./form-edit-profil";
 import ProfilError from "./profil-error";
 import ProfilLoading from "./profil-loading";
 
@@ -26,14 +31,29 @@ const AccountInfoCard = ({
   error,
   secondaryTextColor,
 }: Props) => {
-  const r = useRouter();
+  const { uid } = useFirebaseAuth();
+  const { profilKaryawan: profil, loading: loadingProfil } = useGetProfile(
+    uid ?? null
+  );
+
+  const {
+    control,
+    errors,
+    canSubmit,
+    handleUpdateProfil,
+    loading: loadingSubmit,
+    error: submitError,
+    showModal,
+    closeModal,
+    onPress,
+    showEditSheet,
+    openEditSheet,
+    closeEditSheet,
+  } = useUpdateProfil(uid ?? null, profil);
+
   const bgButton = isDark ? "bg-button-dark" : "bg-button-light";
 
-  const editProfil = () => {
-    r.navigate("/edit-profil");
-  };
-
-  if (loading) {
+  if (loading || loadingProfil) {
     return (
       <ProfilLoading isDark={isDark} secondaryTextColor={secondaryTextColor} />
     );
@@ -101,11 +121,44 @@ const AccountInfoCard = ({
         />
         <Button
           title="Edit Profil"
-          onPress={editProfil}
+          onPress={openEditSheet}
           className={`${bgButton} flex-row items-center justify-center rounded-lg p-3`}
           textClassName="text-white font-bold text-base"
         />
       </View>
+
+      {/* Bottom sheet untuk edit profil */}
+      <DynamicBottomSheet
+        isVisible={showEditSheet}
+        title="Edit Profil"
+        onClose={closeEditSheet}
+        isDark={isDark}
+        customContent={
+          <FormEditProfil
+            control={control}
+            errors={errors}
+            onSubmit={onPress}
+            canSubmit={canSubmit}
+            loading={loadingSubmit}
+            isDark={isDark}
+          />
+        }
+      />
+
+      {/* Modal Konfirmasi (sama seperti sebelumnya, dari hook) */}
+      <DynamicModal
+        isVisible={showModal}
+        title="Konfirmasi Perubahan"
+        message="Apakah Anda yakin ingin menyimpan perubahan profil ini?"
+        onClose={closeModal}
+        primaryButtonText="Simpan"
+        onPrimaryButtonPress={() => {
+          handleUpdateProfil();
+        }}
+        secondaryButtonText="Batal"
+        onSecondaryButtonPress={closeModal}
+        isDark={isDark}
+      />
     </View>
   );
 };

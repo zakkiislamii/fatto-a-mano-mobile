@@ -21,6 +21,7 @@ const useUpdateProfil = (
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const repo = useMemo(() => (uid ? new UserRepository(uid) : null), [uid]);
   const router = useRouter();
+  const [showEditSheet, setShowEditSheet] = useState<boolean>(false);
 
   const {
     control,
@@ -54,7 +55,7 @@ const useUpdateProfil = (
     }
   }, [profilKaryawan, reset]);
 
-  const onSubmit = handleSubmit(async (values: any) => {
+  const onSubmit = handleSubmit(async (values) => {
     if (!uid || !repo) {
       Toast.show({
         type: "error",
@@ -92,13 +93,15 @@ const useUpdateProfil = (
 
       await repo.updateProfil();
 
-      router.replace("/(tabs)/profil");
+      setShowModal(false);
+      setShowEditSheet(false);
       Toast.show({ type: "success", text1: "Profil diperbarui" });
       reset({
         nama: values.nama ?? "",
         nik: values.nik ?? "",
         nomor_hp: values.nomor_hp ?? "",
       });
+      router.replace("/(tabs)/profil");
     } catch (err: any) {
       const errorMessage = err?.message ?? "Gagal memperbarui profil.";
       setErrorMsg(errorMessage);
@@ -133,6 +136,10 @@ const useUpdateProfil = (
   const closeModal = () => setShowModal(false);
   const canSubmit = isDirty && !loading && !isSubmitting;
 
+  const openEditSheet = () => setShowEditSheet(true);
+  const closeEditSheet = () => setShowEditSheet(false);
+  const toggleEditSheet = () => setShowEditSheet((s) => !s);
+
   return {
     loading,
     showModal,
@@ -144,6 +151,10 @@ const useUpdateProfil = (
     onPress,
     closeModal,
     handleUpdateProfil: onSubmit,
+    showEditSheet,
+    openEditSheet,
+    closeEditSheet,
+    toggleEditSheet,
   };
 };
 
