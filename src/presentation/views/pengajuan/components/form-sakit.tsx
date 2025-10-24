@@ -58,7 +58,7 @@ const FormSakit = ({
             name="keterangan"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                className={`h-24 p-3 border rounded-lg ${inputBg} ${borderColorKeterangan} ${primaryText}`}
+                className={`h-24 p-3 border rounded-lg ${inputBg} mb-4 ${borderColorKeterangan} ${primaryText}`}
                 placeholder="Tuliskan keterangan sakit Anda..."
                 placeholderTextColor={placeholderColor}
                 multiline
@@ -85,7 +85,7 @@ const FormSakit = ({
         </Text>
         <TouchableOpacity
           onPress={handlePickEvidence}
-          className={`border-2 border-dashed rounded-lg p-4 items-center justify-center ${
+          className={`border-2 mb-1 border-dashed rounded-lg p-4 items-center justify-center ${
             isDark ? "border-gray-600" : "border-gray-300"
           }`}
         >

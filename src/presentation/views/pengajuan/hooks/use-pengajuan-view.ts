@@ -2,7 +2,10 @@ import { useState } from "react";
 
 const ANIMATION_DELAY = 250;
 
-const usePengajuanView = (openSakitSheet: () => void) => {
+const usePengajuanView = (
+  openSakitSheet: () => void,
+  openIzinSheet: () => void
+) => {
   const [showPilihanSheet, setShowPilihanSheet] = useState<boolean>(false);
 
   const openSheet = () => {
@@ -16,7 +19,7 @@ const usePengajuanView = (openSakitSheet: () => void) => {
   const handlePilihIzin = () => {
     setShowPilihanSheet(false);
     setTimeout(() => {
-      console.log("Pengajuan Izin dipilih");
+      openIzinSheet();
     }, ANIMATION_DELAY);
   };
 

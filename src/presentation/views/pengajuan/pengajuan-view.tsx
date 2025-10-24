@@ -12,8 +12,11 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import useTambahPengajuanIzin from "../../hooks/pengajuan/tambah/use-tambah-pengajuan-izin";
 import useTambahPengajuanSakit from "../../hooks/pengajuan/tambah/use-tambah-pengajuan-sakit";
 import useDaftarPengajuan from "../../hooks/pengajuan/use-daftar-pengajuan";
+import FormDateTimePicker from "./components/form-date-time-picker";
+import FormIzin from "./components/form-izin";
 import FormSakit from "./components/form-sakit";
 import PaginationControls from "./components/pagination-controls";
 import PengajuanCard from "./components/pengajuan-card";
@@ -26,12 +29,12 @@ const PengajuanView = () => {
   const isDark = colorScheme === "dark";
 
   const {
-    loading: loadingTambah,
-    buktiPendukung,
-    handlePickEvidence,
-    canSubmit,
-    control,
-    errors,
+    loading: loadingTambahSakit,
+    buktiPendukung: buktiPendukungSakit,
+    handlePickEvidence: handlePickEvidenceSakit,
+    canSubmit: canSubmitSakit,
+    control: controlSakit,
+    errors: errorsSakit,
     showSakitSheet,
     openSakitSheet,
     closeSakitSheet,
@@ -39,12 +42,31 @@ const PengajuanView = () => {
   } = useTambahPengajuanSakit(uid);
 
   const {
+    buktiPendukung,
+    handlePickEvidence,
+    canSubmit,
+    control,
+    errors,
+    openIzinSheet,
+    closeIzinSheet,
+    showIzinSheet,
+    handleTambahPengajuanIzin,
+    loading: loadingTambahIzin,
+    showDatePicker,
+    showPickerFor,
+    onDateChange,
+    pickerFor,
+    leaveStartDate,
+    leaveEndDate,
+  } = useTambahPengajuanIzin(uid);
+
+  const {
     showPilihanSheet,
     openSheet,
     handlePilihIzin,
     handlePilihSakit,
     closeSheet,
-  } = usePengajuanView(openSakitSheet);
+  } = usePengajuanView(openSakitSheet, openIzinSheet);
 
   const {
     loading: loadingDaftar,
@@ -154,6 +176,7 @@ const PengajuanView = () => {
         />
       </View>
 
+      {/* Pilih jenis pengajuan */}
       <DynamicBottomSheet
         isVisible={showPilihanSheet}
         title="Pilih Jenis Pengajuan"
@@ -165,6 +188,7 @@ const PengajuanView = () => {
         onSecondaryButtonPress={handlePilihIzin}
       />
 
+      {/* Sakit */}
       <DynamicBottomSheet
         isVisible={showSakitSheet}
         title="Formulir Pengajuan Sakit"
@@ -172,17 +196,51 @@ const PengajuanView = () => {
         isDark={isDark}
         customContent={
           <FormSakit
+            control={controlSakit}
+            errors={errorsSakit}
+            handlePickEvidence={handlePickEvidenceSakit}
+            buktiPendukung={buktiPendukungSakit}
+            isDark={isDark}
+            onSubmit={handleTambahPengajuanSakit}
+            canSubmit={canSubmitSakit}
+            loading={loadingTambahSakit}
+          />
+        }
+      />
+
+      {/* Izin */}
+      <DynamicBottomSheet
+        isVisible={showIzinSheet}
+        title="Formulir Pengajuan Izin"
+        onClose={closeIzinSheet}
+        isDark={isDark}
+        customContent={
+          <FormIzin
             control={control}
             errors={errors}
             handlePickEvidence={handlePickEvidence}
             buktiPendukung={buktiPendukung}
             isDark={isDark}
-            onSubmit={handleTambahPengajuanSakit}
+            onSubmit={handleTambahPengajuanIzin}
             canSubmit={canSubmit}
-            loading={loadingTambah}
+            loading={loadingTambahIzin}
+            showPickerFor={showPickerFor}
+            leaveStartDate={leaveStartDate}
+            leaveEndDate={leaveEndDate}
           />
         }
       />
+
+      {showDatePicker && (
+        <View>
+          <FormDateTimePicker
+            pickerFor={pickerFor}
+            leaveStartDate={leaveStartDate}
+            leaveEndDate={leaveEndDate}
+            onDateChange={onDateChange}
+          />
+        </View>
+      )}
 
       <DynamicModal
         isVisible={confirmVisible}

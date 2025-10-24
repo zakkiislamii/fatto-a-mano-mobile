@@ -6,17 +6,8 @@ import { PengajuanRepository } from "../../abstracts/pengajuan-abstract";
 import { Pengajuan } from "../../models/pengajuan";
 
 export class PengajuanIzinRepository extends PengajuanRepository {
-  private jenis_izin: string = "";
   private tanggal_mulai: string = "";
   private tanggal_berakhir: string = "";
-
-  public setJenisIzin(jenis: string): void {
-    this.jenis_izin = jenis;
-  }
-
-  public getJenisIzin(): string {
-    return this.jenis_izin;
-  }
 
   public setTanggalMulai(tanggal: string): void {
     this.tanggal_mulai = tanggal;
@@ -41,7 +32,6 @@ export class PengajuanIzinRepository extends PengajuanRepository {
         tipe: TipePengajuan.izin,
         tanggal_pengajuan: this.tanggal_pengajuan,
         status: StatusPengajuan.menunggu,
-        jenis_izin: this.jenis_izin,
         keterangan: this.keterangan,
         bukti_pendukung: this.bukti_pendukung,
         tanggal_mulai: this.tanggal_mulai,
@@ -73,7 +63,6 @@ export class PengajuanIzinRepository extends PengajuanRepository {
             detail: {
               keterangan: data.keterangan,
               bukti_pendukung: data.bukti_pendukung,
-              jenis_izin: data.jenis_izin,
               tanggal_mulai: data.tanggal_mulai,
               tanggal_berakhir: data.tanggal_berakhir,
             },
@@ -106,10 +95,6 @@ export class PengajuanIzinRepository extends PengajuanRepository {
 
       if (this.bukti_pendukung) {
         updateData.bukti_pendukung = this.bukti_pendukung;
-      }
-
-      if (this.jenis_izin) {
-        updateData.jenis_izin = this.jenis_izin;
       }
 
       if (this.tanggal_mulai) {
