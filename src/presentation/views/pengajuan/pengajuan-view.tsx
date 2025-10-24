@@ -1,6 +1,7 @@
 import { DaftarPengajuan } from "@/src/common/types/daftar-pengajuan";
 import Button from "@/src/components/ui/button";
 import { DynamicBottomSheet } from "@/src/components/ui/dynamic-bottom-sheet";
+import { DynamicModal } from "@/src/components/ui/dynamic-modal"; // pastikan path sesuai
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
 import React from "react";
 import {
@@ -48,8 +49,12 @@ const PengajuanView = () => {
   const {
     loading: loadingDaftar,
     pengajuanList,
-    handleDelete,
     handleEdit,
+    confirmVisible,
+    requestDelete,
+    confirmDelete,
+    cancelDelete,
+    deleting,
   } = useDaftarPengajuan();
 
   const {
@@ -80,7 +85,7 @@ const PengajuanView = () => {
       item={item}
       isDark={isDark}
       onEdit={() => handleEdit(item)}
-      onDelete={() => handleDelete(item.id)}
+      onDelete={() => requestDelete(item.id)}
     />
   );
 
@@ -94,6 +99,10 @@ const PengajuanView = () => {
       </Text>
     </View>
   );
+
+  const modalMessage = deleting
+    ? "Menghapus pengajuan... Mohon tunggu."
+    : "Apakah Anda yakin ingin menghapus pengajuan ini? Tindakan ini tidak dapat dibatalkan.";
 
   return (
     <SafeAreaView className={`flex-1 ${screenBg}`}>
@@ -173,6 +182,18 @@ const PengajuanView = () => {
             loading={loadingTambah}
           />
         }
+      />
+
+      <DynamicModal
+        isVisible={confirmVisible}
+        title="Konfirmasi Hapus"
+        message={modalMessage}
+        onClose={cancelDelete}
+        primaryButtonText={deleting ? "Menghapus..." : "Hapus"}
+        onPrimaryButtonPress={confirmDelete}
+        secondaryButtonText="Batal"
+        onSecondaryButtonPress={cancelDelete}
+        isDark={isDark}
       />
     </SafeAreaView>
   );

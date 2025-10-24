@@ -9,6 +9,9 @@ const useDaftarPengajuan = () => {
   const { uid } = useFirebaseAuth();
   const [loading, setLoading] = useState<boolean>(true);
   const [pengajuanList, setPengajuanList] = useState<DaftarPengajuan[]>([]);
+  const [confirmVisible, setConfirmVisible] = useState(false);
+  const [selectedToDelete, setSelectedToDelete] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<boolean>(false);
 
   useEffect(() => {
     if (!uid) {
@@ -39,11 +42,25 @@ const useDaftarPengajuan = () => {
         });
         return;
       }
+      if (!id) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "ID pengajuan tidak valid.",
+        });
+        return;
+      }
+
       try {
+        setDeleting(true);
         const repo = new PengajuanSakitRepository(uid, "");
         repo.setId(id);
         await repo.hapus();
         Toast.show({ type: "success", text1: "Pengajuan Berhasil Dihapus" });
+        if (selectedToDelete === id) {
+          setSelectedToDelete(null);
+          setConfirmVisible(false);
+        }
       } catch (error) {
         console.error("Error deleting pengajuan:", error);
         Toast.show({
@@ -51,17 +68,48 @@ const useDaftarPengajuan = () => {
           text1: "Gagal Menghapus",
           text2: "Silakan coba lagi.",
         });
+      } finally {
+        setDeleting(false);
       }
     },
-    [uid]
+    [uid, selectedToDelete]
   );
+
+  const requestDelete = useCallback((id: string) => {
+    setSelectedToDelete(id);
+    setConfirmVisible(true);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    if (!selectedToDelete) {
+      setConfirmVisible(false);
+      return;
+    }
+    await handleDelete(selectedToDelete);
+    setConfirmVisible(false);
+    setSelectedToDelete(null);
+  }, [selectedToDelete, handleDelete]);
+
+  const cancelDelete = useCallback(() => {
+    setConfirmVisible(false);
+    setSelectedToDelete(null);
+  }, []);
 
   const handleEdit = useCallback((item: DaftarPengajuan) => {
     console.log("Edit item:", item.id);
     Toast.show({ type: "info", text1: "Fitur Edit Belum Tersedia" });
   }, []);
 
-  return { loading, pengajuanList, handleDelete, handleEdit };
+  return {
+    loading,
+    pengajuanList,
+    handleEdit,
+    confirmVisible,
+    requestDelete,
+    confirmDelete,
+    cancelDelete,
+    deleting,
+  };
 };
 
 export default useDaftarPengajuan;
