@@ -11,11 +11,11 @@ import useWifi from "../wifi/hooks/use-wifi";
 import LocationStatus from "./components/location-status";
 import MapInfo from "./components/map-info";
 import WifiStatus from "./components/wifi-status";
-import FormKeluarAwal from "./hooks/presensi/presensi-keluar/components/form-keluar-awal";
-import FormLembur from "./hooks/presensi/presensi-keluar/components/form-lembur";
-import useAddPresensiKeluar from "./hooks/presensi/presensi-keluar/hooks/use-add-presensi-keluar";
-import useAddPresensiMasuk from "./hooks/presensi/presensi-masuk/use-add-presensi-masuk";
-import useGetStatusPresensiMasukToday from "./hooks/presensi/presensi-masuk/use-get-status-presensi-masuk-today";
+import FormKeluarAwal from "./hooks/presensi-keluar/components/form-keluar-awal";
+import FormLembur from "./hooks/presensi-keluar/components/form-lembur";
+import useAddPresensiKeluar from "./hooks/presensi-keluar/hooks/use-add-presensi-keluar";
+import useAddPresensiMasuk from "./hooks/presensi-masuk/use-add-presensi-masuk";
+import useGetStatusPresensiMasukToday from "./hooks/presensi-masuk/use-get-status-presensi-masuk-today";
 
 interface PresensiViewProps {
   isDark: boolean;

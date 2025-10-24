@@ -1,5 +1,5 @@
 import { ProfilKaryawan } from "@/src/common/types/profil-karyawan";
-import { db } from "@/src/configs/firebaseConfig";
+import { db } from "@/src/configs/firebase-config";
 import {
   Timestamp,
   Unsubscribe,

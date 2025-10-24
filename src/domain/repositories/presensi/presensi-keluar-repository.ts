@@ -1,7 +1,7 @@
 import { PresensiKeluar } from "@/src/common/types/presensi-keluar";
 import { PresensiKeluarStatus } from "@/src/common/types/presensi-keluar-status";
 import Today from "@/src/common/utils/get-today";
-import { db } from "@/src/configs/firebaseConfig";
+import { db } from "@/src/configs/firebase-config";
 import type { Unsubscribe } from "firebase/firestore";
 import { doc, onSnapshot, Timestamp, updateDoc } from "firebase/firestore";
 import { PresensiRepository } from "../../abstracts/presensi-abstract";

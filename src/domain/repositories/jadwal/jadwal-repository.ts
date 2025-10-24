@@ -1,5 +1,5 @@
 import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
-import { db } from "@/src/configs/firebaseConfig";
+import { db } from "@/src/configs/firebase-config";
 import { Unsubscribe } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
 

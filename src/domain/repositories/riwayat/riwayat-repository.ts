@@ -1,6 +1,6 @@
 import { PresensiKeluar } from "@/src/common/types/presensi-keluar";
 import { PresensiMasuk } from "@/src/common/types/presensi-masuk";
-import { db } from "@/src/configs/firebaseConfig";
+import { db } from "@/src/configs/firebase-config";
 import { Unsubscribe } from "firebase/auth";
 import { doc, onSnapshot, Timestamp } from "firebase/firestore";
 import { Presensi } from "../../models/presensi";

@@ -1,5 +1,5 @@
 import { UserRole } from "@/src/common/enums/user-role";
-import { auth, db } from "@/src/configs/firebaseConfig";
+import { auth, db } from "@/src/configs/firebase-config";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import {
   createUserWithEmailAndPassword,

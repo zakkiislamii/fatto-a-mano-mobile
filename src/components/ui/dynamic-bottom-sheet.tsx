@@ -11,13 +11,11 @@ type BaseBottomSheetProps = {
   secondaryButtonText?: string;
   onSecondaryButtonPress?: () => void;
   isDark: boolean;
+  message?: string;
+  customContent?: React.ReactNode;
 };
 
-type WithMessage = { message: string; customContent?: never };
-type WithCustomContent = { message?: never; customContent: React.ReactNode };
-
-export type DynamicBottomSheetProps = BaseBottomSheetProps &
-  (WithMessage | WithCustomContent);
+export type DynamicBottomSheetProps = BaseBottomSheetProps;
 
 export function DynamicBottomSheet({
   isVisible,
@@ -68,11 +66,10 @@ export function DynamicBottomSheet({
           <Text className={`text-base mb-6 text-center ${bodyColor}`}>
             {message}
           </Text>
-        ) : (
+        ) : customContent ? (
           <View className="mb-4">{customContent}</View>
-        )}
+        ) : null}
 
-        {/* Tombol Dinamis */}
         <View className="flex-col gap-3 mt-2">
           {secondaryButtonText && onSecondaryButtonPress && (
             <TouchableOpacity

@@ -1,4 +1,4 @@
-import toastConfig from "@/src/configs/toastConfig";
+import toastConfig from "@/src/configs/toast-config";
 import NavigationContext from "@/src/context/navigation-context";
 import { useColorScheme } from "@/src/hooks/use-color-scheme";
 import useGoogleSignin from "@/src/hooks/use-google-signin";

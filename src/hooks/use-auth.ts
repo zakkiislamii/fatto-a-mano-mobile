@@ -1,8 +1,8 @@
-import { auth, db } from "@/src/configs/firebaseConfig";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { UserRole } from "../common/enums/user-role";
+import { auth, db } from "../configs/firebase-config";
 
 export function useFirebaseAuth() {
   const [user, setUser] = useState<User | null>(null);

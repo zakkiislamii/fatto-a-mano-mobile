@@ -1,6 +1,6 @@
 import { StatusPengajuan } from "@/src/common/enums/status-pengajuan";
 import { DaftarPengajuan } from "@/src/common/types/daftar-pengajuan";
-import { db } from "@/src/configs/firebaseConfig";
+import { db } from "@/src/configs/firebase-config";
 import { Unsubscribe } from "firebase/auth";
 import {
   collection,

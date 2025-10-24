@@ -40,7 +40,7 @@ const ProfilView = () => {
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="p-6">
+        <View className="p-5">
           {/* Header */}
           <View className="mb-6">
             <Text className={`text-3xl font-bold ${textColor}`}>

@@ -94,15 +94,11 @@ const useAddPresensiKeluarLembur = ({
 
     setLoading(true);
     try {
-      console.log("Uploading bukti pendukung lembur...");
-
       const uploadResult = await uploadToSupabase(
         uid,
         data.bukti_pendukung,
         KeteranganFile.bukti_lembur
       );
-
-      console.log("Upload result:", uploadResult);
 
       if (!uploadResult.url) {
         throw new Error("URL bukti tidak tersedia setelah upload");
