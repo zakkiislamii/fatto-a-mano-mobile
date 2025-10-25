@@ -9,6 +9,7 @@ import {
   setBackgroundMessageHandler,
 } from "@react-native-firebase/messaging";
 import * as Notifications from "expo-notifications";
+import { router } from "expo-router";
 import { Platform } from "react-native";
 
 function toText(v: unknown, fallback?: string): string | undefined {
@@ -80,7 +81,6 @@ export const ensureAndroidChannel = async () => {
 export const setupNotificationListeners = () => {
   const messaging = getMessaging();
 
-  // Foreground: SELALU tampilkan local notif (hindari "skipped")
   const unsubForeground = onMessage(
     messaging,
     async (rm: FirebaseMessagingTypes.RemoteMessage) => {
@@ -99,19 +99,19 @@ export const setupNotificationListeners = () => {
   );
 
   // Tap notif saat background
-  const unsubTapBg = onNotificationOpenedApp(messaging, (rm) => {
-    handleNotificationTap(rm);
+  const unsubTapBg = onNotificationOpenedApp(messaging, () => {
+    handleNotificationTap();
   });
 
   // Tap notif saat app diluncurkan dari terminated
   getInitialNotification(messaging).then((rm) => {
-    if (rm) handleNotificationTap(rm);
+    if (rm) handleNotificationTap();
   });
 
   // Tap local notif (Expo)
   const unsubLocalTap = Notifications.addNotificationResponseReceivedListener(
-    (resp) => {
-      handleLocalNotificationTap(resp);
+    () => {
+      handleLocalNotificationTap();
     }
   );
 
@@ -123,17 +123,11 @@ export const setupNotificationListeners = () => {
 };
 
 /** Navigasi dari data FCM */
-const handleNotificationTap = (
-  rm: FirebaseMessagingTypes.RemoteMessage | null
-) => {
-  // TODO: ganti dengan navigasi kamu
-  console.log("👉 Tap FCM:", rm?.data);
+const handleNotificationTap = () => {
+  router.replace("/(tabs)/jadwal");
 };
 
 /** Navigasi dari local notif (Expo) */
-const handleLocalNotificationTap = (
-  resp: Notifications.NotificationResponse
-) => {
-  // TODO: ganti dengan navigasi kamu
-  console.log("👉 Tap Local:", resp?.notification?.request?.content?.data);
+const handleLocalNotificationTap = () => {
+  router.replace("/(tabs)/jadwal");
 };

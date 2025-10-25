@@ -1,3 +1,9 @@
+import {
+  configureNotifications,
+  ensureAndroidChannel,
+  requestNotificationPermissions,
+  setupNotificationListeners,
+} from "@/src/configs/notification";
 import toastConfig from "@/src/configs/toast-config";
 import NavigationContext from "@/src/context/navigation-context";
 import { useColorScheme } from "@/src/hooks/use-color-scheme";
@@ -11,7 +17,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
@@ -27,6 +33,14 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     "Poppins-Regular": require("../src/assets/fonts/Poppins-Regular.ttf"),
   });
+
+  useEffect(() => {
+    configureNotifications();
+    ensureAndroidChannel();
+    requestNotificationPermissions();
+    const unsub = setupNotificationListeners();
+    return () => unsub?.();
+  }, []);
 
   if (!loaded) {
     return (
