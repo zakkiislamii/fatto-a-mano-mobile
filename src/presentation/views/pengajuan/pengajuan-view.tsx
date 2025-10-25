@@ -1,7 +1,7 @@
 import { DaftarPengajuan } from "@/src/common/types/daftar-pengajuan";
 import Button from "@/src/components/ui/button";
 import { DynamicBottomSheet } from "@/src/components/ui/dynamic-bottom-sheet";
-import { DynamicModal } from "@/src/components/ui/dynamic-modal"; // pastikan path sesuai
+import { DynamicModal } from "@/src/components/ui/dynamic-modal";
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
 import React from "react";
 import {

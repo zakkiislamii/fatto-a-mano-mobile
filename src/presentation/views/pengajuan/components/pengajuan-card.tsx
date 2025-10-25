@@ -10,6 +10,7 @@ interface PengajuanCardProps {
   isDark: boolean;
   onEdit: () => void;
   onDelete: () => void;
+  onViewDetail: () => void;
 }
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -44,6 +45,7 @@ const PengajuanCard = ({
   isDark,
   onEdit,
   onDelete,
+  onViewDetail,
 }: PengajuanCardProps) => {
   const cardBg = isDark ? "bg-cardDark" : "bg-cardLight";
   const textPrimary = isDark ? "text-textPrimaryDark" : "text-textPrimaryLight";
@@ -51,7 +53,6 @@ const PengajuanCard = ({
     ? "text-textSecondaryDark"
     : "text-textSecondaryLight";
   const borderColor = isDark ? "border-gray-700" : "border-gray-200";
-  const iconColor = isDark ? "#9ca3af" : "#6b7280";
 
   return (
     <View className={`rounded-lg p-4 border ${borderColor} ${cardBg} mb-3`}>
@@ -77,23 +78,37 @@ const PengajuanCard = ({
         className={`flex-row justify-end gap-3 border-t ${borderColor} pt-3`}
       >
         <TouchableOpacity
+          onPress={onViewDetail}
+          className="flex-row items-center gap-2 px-3 py-2 rounded-lg bg-purple-500/10"
+        >
+          <AntDesign
+            name="arrows-alt"
+            size={18}
+            color={isDark ? "#c084fc" : "#9333ea"}
+          />
+          <Text className="text-sm font-medium text-purple-500">
+            Lihat Detail
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           onPress={onEdit}
-          className="flex-row items-center gap-1 px-3 py-2 rounded-lg bg-blue-500/10"
+          className="flex-row items-center gap-2 px-3 py-2 rounded-lg bg-blue-500/10"
         >
           <AntDesign
             name="edit"
-            size={16}
+            size={18}
             color={isDark ? "#60a5fa" : "#3b82f6"}
           />
           <Text className="text-sm font-medium text-blue-500">Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={onDelete}
-          className="flex-row items-center gap-1 px-3 py-2 rounded-lg bg-red-500/10"
+          className="flex-row items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10"
         >
           <AntDesign
             name="delete"
-            size={16}
+            size={18}
             color={isDark ? "#f87171" : "#ef4444"}
           />
           <Text className="text-sm font-medium text-red-500">Hapus</Text>

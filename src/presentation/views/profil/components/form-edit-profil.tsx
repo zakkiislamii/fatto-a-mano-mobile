@@ -8,7 +8,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 interface FormEditProfilProps {
   control: any;
   errors: any;
-  onSubmit: () => Promise<void> | void;
+  onSubmit: () => void;
   canSubmit: boolean;
   loading: boolean;
   isDark?: boolean;
