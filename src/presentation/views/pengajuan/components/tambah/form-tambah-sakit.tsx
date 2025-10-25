@@ -1,12 +1,12 @@
 import Button from "@/src/components/ui/button";
 import React from "react";
-import { Controller } from "react-hook-form";
+import { Control, Controller, FieldErrors } from "react-hook-form";
 import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 interface FormSakitProps {
-  control: any;
-  errors: any;
+  control: Control<{ keterangan: string; bukti_pendukung: string }>;
+  errors: FieldErrors<{ keterangan: string; bukti_pendukung: string }>;
   handlePickEvidence: () => Promise<void> | void;
   buktiPendukung: string | null;
   isDark: boolean;
@@ -15,7 +15,7 @@ interface FormSakitProps {
   loading: boolean;
 }
 
-const FormSakit = ({
+const FormTambahSakit = ({
   control,
   errors,
   handlePickEvidence,
@@ -119,4 +119,4 @@ const FormSakit = ({
   );
 };
 
-export default FormSakit;
+export default FormTambahSakit;

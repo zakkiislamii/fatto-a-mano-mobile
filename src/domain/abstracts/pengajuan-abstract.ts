@@ -16,14 +16,13 @@ export abstract class PengajuanRepository {
   protected readonly uid: string;
   protected readonly colRef: CollectionReference;
   protected id: string = "";
-  protected tanggal_pengajuan: string;
+  protected tanggal_pengajuan: string = "";
   protected keterangan: string = "";
   protected status: StatusPengajuan | null = null;
   protected bukti_pendukung: string = "";
 
-  public constructor(uid: string, tanggal_pengajuan: string) {
+  public constructor(uid: string) {
     this.uid = uid;
-    this.tanggal_pengajuan = tanggal_pengajuan;
     this.colRef = collection(db, `users/${uid}/pengajuan`);
   }
 

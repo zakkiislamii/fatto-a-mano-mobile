@@ -113,7 +113,8 @@ const useTambahPengajuanIzin = (uid: string | undefined) => {
 
       const tanggal = Today();
 
-      const pengajuanIzinRepo = new PengajuanIzinRepository(uid, tanggal);
+      const pengajuanIzinRepo = new PengajuanIzinRepository(uid);
+      pengajuanIzinRepo.setTanggalPengajuan(tanggal);
       pengajuanIzinRepo.setStatus(StatusPengajuan.menunggu);
       pengajuanIzinRepo.setBuktiPendukung(uploadResult.url);
       pengajuanIzinRepo.setKeterangan(data.keterangan);

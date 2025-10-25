@@ -58,6 +58,13 @@ export function DynamicBottomSheet({
           className={`w-12 h-1.5 rounded-full self-center mb-4 ${handleColor}`}
         />
 
+        <TouchableOpacity
+          className="absolute top-3 right-8 z-10 p-1"
+          onPress={onClose}
+        >
+          <Text className={`text-4xl ${bodyColor}`}>×</Text>
+        </TouchableOpacity>
+
         <Text className={`text-xl font-bold text-center mb-4 ${titleColor}`}>
           {title}
         </Text>

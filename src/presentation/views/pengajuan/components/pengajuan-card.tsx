@@ -8,7 +8,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 interface PengajuanCardProps {
   item: DaftarPengajuan;
   isDark: boolean;
-  onEdit: () => void;
+  onEdit: (item: DaftarPengajuan) => void;
   onDelete: () => void;
   onViewDetail: () => void;
 }
@@ -82,17 +82,15 @@ const PengajuanCard = ({
           className="flex-row items-center gap-2 px-3 py-2 rounded-lg bg-purple-500/10"
         >
           <AntDesign
-            name="arrows-alt"
+            name="eye"
             size={18}
             color={isDark ? "#c084fc" : "#9333ea"}
           />
-          <Text className="text-sm font-medium text-purple-500">
-            Lihat Detail
-          </Text>
+          <Text className="text-sm font-medium text-purple-500">Detail</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={onEdit}
+          onPress={() => onEdit(item)}
           className="flex-row items-center gap-2 px-3 py-2 rounded-lg bg-blue-500/10"
         >
           <AntDesign
@@ -102,6 +100,7 @@ const PengajuanCard = ({
           />
           <Text className="text-sm font-medium text-blue-500">Edit</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           onPress={onDelete}
           className="flex-row items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10"

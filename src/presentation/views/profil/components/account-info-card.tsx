@@ -3,8 +3,8 @@ import Button from "@/src/components/ui/button";
 import { DynamicBottomSheet } from "@/src/components/ui/dynamic-bottom-sheet";
 import { DynamicModal } from "@/src/components/ui/dynamic-modal";
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
+import useEditProfil from "@/src/presentation/hooks/profile/use-edit-profil";
 import { useGetProfile } from "@/src/presentation/hooks/profile/use-get-profil";
-import useUpdateProfil from "@/src/presentation/hooks/profile/use-update-profil";
 import React from "react";
 import { Text, View } from "react-native";
 import InfoRow from "../../../../components/ui/info-row";
@@ -49,7 +49,7 @@ const AccountInfoCard = ({
     showEditSheet,
     openEditSheet,
     closeEditSheet,
-  } = useUpdateProfil(uid ?? null, profil);
+  } = useEditProfil(uid ?? null, profil);
 
   const bgButton = isDark ? "bg-button-dark" : "bg-button-light";
 

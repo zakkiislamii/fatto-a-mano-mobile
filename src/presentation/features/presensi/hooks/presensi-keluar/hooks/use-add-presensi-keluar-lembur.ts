@@ -122,7 +122,8 @@ const useAddPresensiKeluarLembur = ({
       await presensiKeluarRepo.add();
 
       // Simpan pengajuan lembur
-      const pengajuanLemburRepo = new PengajuanLemburRepository(uid, tanggal);
+      const pengajuanLemburRepo = new PengajuanLemburRepository(uid);
+      pengajuanLemburRepo.setTanggalPengajuan(tanggal);
       pengajuanLemburRepo.setKeterangan(data.keterangan);
       pengajuanLemburRepo.setBuktiPendukung(uploadResult.url);
       pengajuanLemburRepo.setDurasiLembur(durasiLemburStr);

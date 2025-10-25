@@ -1,3 +1,4 @@
+import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
 import { DaftarPengajuan } from "@/src/common/types/daftar-pengajuan";
 import Button from "@/src/components/ui/button";
 import { DynamicBottomSheet } from "@/src/components/ui/dynamic-bottom-sheet";
@@ -12,12 +13,18 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import useEditPengajuanIzin from "../../hooks/pengajuan/edit/use-edit-pengajuan-izin";
+import useEditPengajuanLembur from "../../hooks/pengajuan/edit/use-edit-pengajuan-lembur";
+import useEditPengajuanSakit from "../../hooks/pengajuan/edit/use-edit-pengajuan-sakit";
 import useTambahPengajuanIzin from "../../hooks/pengajuan/tambah/use-tambah-pengajuan-izin";
 import useTambahPengajuanSakit from "../../hooks/pengajuan/tambah/use-tambah-pengajuan-sakit";
 import useDaftarPengajuan from "../../hooks/pengajuan/use-daftar-pengajuan";
 import FormDateTimePicker from "./components/form-date-time-picker";
-import FormIzin from "./components/form-izin";
-import FormSakit from "./components/form-sakit";
+import FormEditIzin from "./components/edit/form-edit-izin";
+import FormEditLembur from "./components/edit/form-edit-lembur";
+import FormEditSakit from "./components/edit/form-edit-sakit";
+import FormTambahIzin from "./components/tambah/form-tambah-izin";
+import FormTambahSakit from "./components/tambah/form-tambah-sakit";
 import PaginationControls from "./components/pagination-controls";
 import PengajuanCard from "./components/pengajuan-card";
 import usePagination from "./hooks/use-pagination";
@@ -71,7 +78,6 @@ const PengajuanView = () => {
   const {
     loading: loadingDaftar,
     pengajuanList,
-    handleEdit,
     confirmVisible,
     requestDelete,
     confirmDelete,
@@ -94,6 +100,60 @@ const PengajuanView = () => {
     itemsPerPage: 3,
   });
 
+  const {
+    loadingEditLembur,
+    showModalEditLembur,
+    showEditLemburSheet,
+    closeEditLemburSheet,
+    closeModalEditLembur,
+    canSubmitEditLembur,
+    openEditLemburSheet,
+    handlePickEvidenceEditLembur,
+    buktiPendukungEditLembur,
+    controlEditLembur,
+    errorsEditLembur,
+    handleEditPengajuanLembur,
+    onPressEditLembur,
+  } = useEditPengajuanLembur(uid);
+
+  const {
+    loadingEditSakit,
+    showModalEditSakit,
+    showEditSakitSheet,
+    openEditSakitSheet,
+    closeEditSakitSheet,
+    closeModalEditSakit,
+    canSubmitEditSakit,
+    handlePickEvidenceEditSakit,
+    buktiPendukungEditSakit,
+    controlEditSakit,
+    errorsEditSakit,
+    handleEditPengajuanSakit,
+    onPressEditSakit,
+  } = useEditPengajuanSakit(uid);
+
+  const {
+    loadingEditIzin,
+    showModalEditIzin,
+    showEditIzinSheet,
+    openEditIzinSheet,
+    closeEditIzinSheet,
+    closeModalEditIzin,
+    canSubmitEditIzin,
+    handlePickEvidenceEditIzin,
+    buktiPendukungEditIzin,
+    controlEditIzin,
+    errorsEditIzin,
+    handleEditPengajuanIzin,
+    onPressEditIzin,
+    showDatePickerEditIzin,
+    showPickerForEditIzin,
+    onDateChangeEditIzin,
+    pickerForEditIzin,
+    leaveStartDateEditIzin,
+    leaveEndDateEditIzin,
+  } = useEditPengajuanIzin(uid);
+
   const screenBg = isDark ? "bg-screenDark" : "bg-screenLight";
   const textPrimary = isDark ? "text-textPrimaryDark" : "text-textPrimaryLight";
   const textSecondary = isDark
@@ -101,13 +161,29 @@ const PengajuanView = () => {
     : "text-textSecondaryLight";
   const buttonBg = isDark ? "bg-button-dark" : "bg-button-light";
   const borderColor = isDark ? "border-gray-700" : "border-gray-200";
+  const handleEditPress = (item: DaftarPengajuan) => {
+    if (item.tipe === TipePengajuan.lembur) {
+      openEditLemburSheet(item);
+      return;
+    }
+    if (item.tipe === TipePengajuan.sakit) {
+      openEditSakitSheet(item);
+      return;
+    }
+    if (item.tipe === TipePengajuan.izin) {
+      openEditIzinSheet(item);
+      return;
+    }
+    openEditLemburSheet(item);
+  };
 
   const renderItem = ({ item }: { item: DaftarPengajuan }) => (
     <PengajuanCard
       item={item}
       isDark={isDark}
-      onEdit={() => handleEdit(item)}
+      onEdit={handleEditPress}
       onDelete={() => requestDelete(item.id)}
+      onViewDetail={() => console.log("View detail", item.id)}
     />
   );
 
@@ -195,7 +271,7 @@ const PengajuanView = () => {
         onClose={closeSakitSheet}
         isDark={isDark}
         customContent={
-          <FormSakit
+          <FormTambahSakit
             control={controlSakit}
             errors={errorsSakit}
             handlePickEvidence={handlePickEvidenceSakit}
@@ -215,7 +291,7 @@ const PengajuanView = () => {
         onClose={closeIzinSheet}
         isDark={isDark}
         customContent={
-          <FormIzin
+          <FormTambahIzin
             control={control}
             errors={errors}
             handlePickEvidence={handlePickEvidence}
@@ -231,6 +307,87 @@ const PengajuanView = () => {
         }
       />
 
+      {/* EDIT LEMBUR */}
+      <DynamicBottomSheet
+        isVisible={showEditLemburSheet}
+        title="Edit Pengajuan Lembur"
+        onClose={closeEditLemburSheet}
+        isDark={isDark}
+        customContent={
+          <FormEditLembur
+            control={controlEditLembur}
+            errors={errorsEditLembur}
+            handlePickEvidence={handlePickEvidenceEditLembur}
+            buktiPendukung={buktiPendukungEditLembur}
+            isDark={isDark}
+            onSubmit={onPressEditLembur}
+            canSubmit={canSubmitEditLembur}
+            loading={loadingEditLembur}
+          />
+        }
+      />
+
+      {/* EDIT SAKIT */}
+      <DynamicBottomSheet
+        isVisible={showEditSakitSheet}
+        title="Edit Pengajuan Sakit"
+        onClose={closeEditSakitSheet}
+        isDark={isDark}
+        customContent={
+          <FormEditSakit
+            control={controlEditSakit}
+            errors={errorsEditSakit}
+            handlePickEvidence={handlePickEvidenceEditSakit}
+            buktiPendukung={buktiPendukungEditSakit}
+            isDark={isDark}
+            onSubmit={onPressEditSakit}
+            canSubmit={canSubmitEditSakit}
+            loading={loadingEditSakit}
+          />
+        }
+      />
+
+      {/* EDIT IZIN */}
+      <DynamicBottomSheet
+        isVisible={showEditIzinSheet}
+        title="Edit Pengajuan Izin"
+        onClose={closeEditIzinSheet}
+        isDark={isDark}
+        customContent={
+          <FormEditIzin
+            control={controlEditIzin}
+            errors={errorsEditIzin}
+            handlePickEvidence={handlePickEvidenceEditIzin}
+            buktiPendukung={buktiPendukungEditIzin}
+            isDark={isDark}
+            onSubmit={onPressEditIzin}
+            canSubmit={canSubmitEditIzin}
+            loading={loadingEditIzin}
+            showPickerFor={showPickerForEditIzin}
+            leaveStartDate={leaveStartDateEditIzin}
+            leaveEndDate={leaveEndDateEditIzin}
+          />
+        }
+      />
+
+      <DynamicModal
+        isVisible={showModalEditIzin}
+        title="Konfirmasi Perubahan"
+        message={
+          loadingEditIzin
+            ? "Menyimpan perubahan... Mohon tunggu."
+            : "Apakah Anda yakin ingin menyimpan perubahan ini?"
+        }
+        onClose={closeModalEditIzin}
+        primaryButtonText={loadingEditIzin ? "Menyimpan..." : "Simpan"}
+        onPrimaryButtonPress={handleEditPengajuanIzin}
+        secondaryButtonText={loadingEditIzin ? undefined : "Batal"}
+        onSecondaryButtonPress={
+          loadingEditIzin ? undefined : closeModalEditIzin
+        }
+        isDark={isDark}
+      />
+
       {showDatePicker && (
         <View>
           <FormDateTimePicker
@@ -242,6 +399,18 @@ const PengajuanView = () => {
         </View>
       )}
 
+      {showDatePickerEditIzin && (
+        <View>
+          <FormDateTimePicker
+            pickerFor={pickerForEditIzin}
+            leaveStartDate={leaveStartDateEditIzin}
+            leaveEndDate={leaveEndDateEditIzin}
+            onDateChange={onDateChangeEditIzin}
+          />
+        </View>
+      )}
+
+      {/* MODAL KONFIRMASI HAPUS */}
       <DynamicModal
         isVisible={confirmVisible}
         title="Konfirmasi Hapus"
@@ -251,6 +420,43 @@ const PengajuanView = () => {
         onPrimaryButtonPress={confirmDelete}
         secondaryButtonText="Batal"
         onSecondaryButtonPress={cancelDelete}
+        isDark={isDark}
+      />
+
+      {/* MODAL KONFIRMASI EDIT LEMBUR */}
+      <DynamicModal
+        isVisible={showModalEditLembur}
+        title="Konfirmasi Perubahan"
+        message={
+          loadingEditLembur
+            ? "Menyimpan perubahan... Mohon tunggu."
+            : "Apakah Anda yakin ingin menyimpan perubahan ini?"
+        }
+        onClose={closeModalEditLembur}
+        primaryButtonText={loadingEditLembur ? "Menyimpan..." : "Simpan"}
+        onPrimaryButtonPress={handleEditPengajuanLembur}
+        secondaryButtonText={loadingEditLembur ? undefined : "Batal"}
+        onSecondaryButtonPress={
+          loadingEditLembur ? undefined : closeModalEditLembur
+        }
+        isDark={isDark}
+      />
+
+      <DynamicModal
+        isVisible={showModalEditSakit}
+        title="Konfirmasi Perubahan"
+        message={
+          loadingEditSakit
+            ? "Menyimpan perubahan... Mohon tunggu."
+            : "Apakah Anda yakin ingin menyimpan perubahan ini?"
+        }
+        onClose={closeModalEditSakit}
+        primaryButtonText={loadingEditSakit ? "Menyimpan..." : "Simpan"}
+        onPrimaryButtonPress={handleEditPengajuanSakit}
+        secondaryButtonText={loadingEditSakit ? undefined : "Batal"}
+        onSecondaryButtonPress={
+          loadingEditSakit ? undefined : closeModalEditSakit
+        }
         isDark={isDark}
       />
     </SafeAreaView>

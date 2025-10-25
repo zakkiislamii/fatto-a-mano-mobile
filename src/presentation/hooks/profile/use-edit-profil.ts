@@ -12,12 +12,12 @@ interface ProfilKaryawan {
   nomor_hp?: string;
 }
 
-const useUpdateProfil = (
+const useEditProfil = (
   uid: string | null,
   profilKaryawan?: ProfilKaryawan | null
 ) => {
-  const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const repo = useMemo(() => (uid ? new UserRepository(uid) : null), [uid]);
   const router = useRouter();
@@ -91,7 +91,7 @@ const useUpdateProfil = (
       if (payload.nik !== undefined) repo.setNik(payload.nik);
       if (payload.nomor_hp !== undefined) repo.setNomorHp(payload.nomor_hp);
 
-      await repo.updateProfil();
+      await repo.editProfil();
 
       setShowModal(false);
       setShowEditSheet(false);
@@ -158,4 +158,4 @@ const useUpdateProfil = (
   };
 };
 
-export default useUpdateProfil;
+export default useEditProfil;

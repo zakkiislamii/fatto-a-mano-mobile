@@ -82,7 +82,7 @@ export class UserRepository {
     }
   }
 
-  public async updateProfil(): Promise<void> {
+  public async editProfil(): Promise<void> {
     try {
       if (!this.uid) throw new Error("UID tidak valid.");
 
