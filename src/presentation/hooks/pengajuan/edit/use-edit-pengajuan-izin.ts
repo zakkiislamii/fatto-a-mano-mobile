@@ -95,7 +95,6 @@ const useEditPengajuanIzin = (uid: string | undefined) => {
     setSelectedId(item.id);
 
     if (!uid) {
-      // jika tanpa auth, tetap tampilkan sheet kosong
       setShowEditSheet(true);
       return;
     }
@@ -184,8 +183,6 @@ const useEditPengajuanIzin = (uid: string | undefined) => {
     setLoading(true);
 
     try {
-      // --------------- PENTING --------------
-      // Gunakan repository izin, bukan lembur
       const repository = new PengajuanIzinRepository(uid);
       repository.setId(selectedId);
 

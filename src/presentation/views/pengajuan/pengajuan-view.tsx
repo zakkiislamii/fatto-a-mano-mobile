@@ -13,20 +13,22 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import useDetailPengajuanIzin from "../../hooks/pengajuan/detail/use-detail-pengajuan-izin";
 import useEditPengajuanIzin from "../../hooks/pengajuan/edit/use-edit-pengajuan-izin";
 import useEditPengajuanLembur from "../../hooks/pengajuan/edit/use-edit-pengajuan-lembur";
 import useEditPengajuanSakit from "../../hooks/pengajuan/edit/use-edit-pengajuan-sakit";
 import useTambahPengajuanIzin from "../../hooks/pengajuan/tambah/use-tambah-pengajuan-izin";
 import useTambahPengajuanSakit from "../../hooks/pengajuan/tambah/use-tambah-pengajuan-sakit";
 import useDaftarPengajuan from "../../hooks/pengajuan/use-daftar-pengajuan";
-import FormDateTimePicker from "./components/form-date-time-picker";
+import DetailContentIzin from "./components/detail/detail-content-izin";
 import FormEditIzin from "./components/edit/form-edit-izin";
 import FormEditLembur from "./components/edit/form-edit-lembur";
 import FormEditSakit from "./components/edit/form-edit-sakit";
-import FormTambahIzin from "./components/tambah/form-tambah-izin";
-import FormTambahSakit from "./components/tambah/form-tambah-sakit";
+import FormDateTimePicker from "./components/form-date-time-picker";
 import PaginationControls from "./components/pagination-controls";
 import PengajuanCard from "./components/pengajuan-card";
+import FormTambahIzin from "./components/tambah/form-tambah-izin";
+import FormTambahSakit from "./components/tambah/form-tambah-sakit";
 import usePagination from "./hooks/use-pagination";
 import usePengajuanView from "./hooks/use-pengajuan-view";
 
@@ -154,6 +156,16 @@ const PengajuanView = () => {
     leaveEndDateEditIzin,
   } = useEditPengajuanIzin(uid);
 
+  const {
+    loadingDetailIzin,
+    detailIzin,
+    selectedIdIzin,
+    showDetailSheetIzin,
+    handleViewDetailPress,
+    openDetailIzin,
+    closeDetailIzin,
+  } = useDetailPengajuanIzin(uid);
+
   const screenBg = isDark ? "bg-screenDark" : "bg-screenLight";
   const textPrimary = isDark ? "text-textPrimaryDark" : "text-textPrimaryLight";
   const textSecondary = isDark
@@ -161,6 +173,7 @@ const PengajuanView = () => {
     : "text-textSecondaryLight";
   const buttonBg = isDark ? "bg-button-dark" : "bg-button-light";
   const borderColor = isDark ? "border-gray-700" : "border-gray-200";
+
   const handleEditPress = (item: DaftarPengajuan) => {
     if (item.tipe === TipePengajuan.lembur) {
       openEditLemburSheet(item);
@@ -183,7 +196,7 @@ const PengajuanView = () => {
       isDark={isDark}
       onEdit={handleEditPress}
       onDelete={() => requestDelete(item.id)}
-      onViewDetail={() => console.log("View detail", item.id)}
+      onViewDetail={() => handleViewDetailPress(item)}
     />
   );
 
@@ -386,6 +399,27 @@ const PengajuanView = () => {
           loadingEditIzin ? undefined : closeModalEditIzin
         }
         isDark={isDark}
+      />
+
+      <DynamicBottomSheet
+        isVisible={showDetailSheetIzin}
+        title="Detail Pengajuan"
+        onClose={closeDetailIzin}
+        isDark={isDark}
+        primaryButtonText="Tutup"
+        onPrimaryButtonPress={closeDetailIzin}
+        customContent={
+          loadingDetailIzin ? (
+            <View className="p-5 items-center">
+              <ActivityIndicator
+                size="large"
+                color={isDark ? "#fff" : "#000"}
+              />
+            </View>
+          ) : (
+            <DetailContentIzin detail={detailIzin} isDark={isDark} />
+          )
+        }
       />
 
       {showDatePicker && (

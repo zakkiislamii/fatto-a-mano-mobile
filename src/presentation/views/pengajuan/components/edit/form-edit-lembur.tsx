@@ -26,20 +26,22 @@ const FormEditLembur = ({
   canSubmit,
   loading,
 }: FormEditLemburProps) => {
-  const inputBg = isDark ? "bg-gray-800" : "bg-gray-100";
+  const cardBg = isDark ? "bg-gray-800" : "bg-white";
+  const inputBg = isDark ? "bg-gray-900" : "bg-gray-50";
   const inputText = isDark ? "text-white" : "text-gray-900";
   const placeholderColor = isDark ? "#9CA3AF" : "#6B7280";
-  const borderColor = isDark ? "border-gray-700" : "border-gray-300";
+  const borderColor = isDark ? "border-gray-700" : "border-gray-200";
   const buttonBg = isDark ? "bg-button-dark" : "bg-button-light";
   const textSecondary = isDark
     ? "text-textSecondaryDark"
     : "text-textSecondaryLight";
+  const iconColor = isDark ? "#9CA3AF" : "#6B7280";
 
   return (
-    <View className="space-y-4">
+    <View className="space-y-5">
       {/* Keterangan */}
-      <View>
-        <Text className={`text-sm font-medium mb-2 ${inputText}`}>
+      <View className={`rounded-lg mb-4 p-4 ${cardBg} border ${borderColor}`}>
+        <Text className={`text-sm font-medium mb-2 ${textSecondary}`}>
           Keterangan Lembur
         </Text>
         <Controller
@@ -47,7 +49,7 @@ const FormEditLembur = ({
           name="keterangan"
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              className={`${inputBg} ${inputText} border mb-4 ${borderColor} rounded-lg px-4 py-3`}
+              className={`min-h-[50px] rounded-lg p-3 ${inputText} `}
               placeholder="Masukkan keterangan lembur..."
               placeholderTextColor={placeholderColor}
               value={value}
@@ -60,42 +62,47 @@ const FormEditLembur = ({
           )}
         />
         {errors.keterangan && (
-          <Text className="text-red-500 text-xs mt-1">
+          <Text className="text-red-500 text-xs mt-2">
             {errors.keterangan.message as string}
           </Text>
         )}
       </View>
 
       {/* Bukti Pendukung */}
-      <View>
-        <Text className={`text-sm font-medium mb-2 ${inputText}`}>
+      <View className={`rounded-lg p-4 ${cardBg} border ${borderColor}`}>
+        <Text className={`text-sm font-medium mb-5 ${textSecondary}`}>
           Bukti Pendukung (Opsional)
         </Text>
-        <TouchableOpacity
-          onPress={handlePickEvidence}
-          className={`border-2 border-dashed ${borderColor} rounded-lg p-4 items-center justify-center min-h-[120px]`}
-        >
-          {buktiPendukung ? (
-            <View className="items-center">
+
+        {buktiPendukung ? (
+          <TouchableOpacity onPress={handlePickEvidence}>
+            <View className="relative">
               <Image
                 source={{ uri: buktiPendukung }}
                 style={{
-                  width: 300,
-                  height: 200,
+                  width: "100%",
+                  height: 220,
+                  borderRadius: 8,
                 }}
-                contentFit="cover"
+                transition={300}
               />
-              <Text className={`text-sm mt-2 ${textSecondary}`}>
-                Ketuk untuk mengganti
-              </Text>
+              <View className="items-center">
+                <Text className={`text-sm mt-2 ${textSecondary}`}>
+                  Ketuk untuk mengubah gambar
+                </Text>
+                <Text className={`text-xs mt-1 ${textSecondary} opacity-70`}>
+                  Maks. 3MB
+                </Text>
+              </View>
             </View>
-          ) : (
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={handlePickEvidence}
+            className={`rounded-lg p-6 items-center justify-center min-h-[120px] ${inputBg} border ${borderColor}`}
+          >
             <View className="items-center">
-              <AntDesign
-                name="upload"
-                size={32}
-                color={isDark ? "#9CA3AF" : "#6B7280"}
-              />
+              <AntDesign name="upload" size={32} color={iconColor} />
               <Text className={`text-sm mt-2 ${textSecondary}`}>
                 Ketuk untuk memilih gambar
               </Text>
@@ -103,10 +110,11 @@ const FormEditLembur = ({
                 Maks. 3MB
               </Text>
             </View>
-          )}
-        </TouchableOpacity>
+          </TouchableOpacity>
+        )}
+
         {errors.bukti_pendukung && (
-          <Text className="text-red-500 text-xs mt-1">
+          <Text className="text-red-500 text-xs mt-2">
             {errors.bukti_pendukung.message as string}
           </Text>
         )}
