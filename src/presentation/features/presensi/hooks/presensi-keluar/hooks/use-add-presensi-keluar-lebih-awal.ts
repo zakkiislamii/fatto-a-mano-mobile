@@ -49,15 +49,11 @@ const useAddPresensiKeluarLebihAwal = ({
   const handleSubmitKeluarAwal = handleSubmit(async (data) => {
     setLoading(true);
     try {
-      console.log("Uploading bukti keluar awal...");
-
       const uploadResult = await uploadToSupabase(
         uid,
         data.bukti_keluar_awal,
         KeteranganFile.bukti_keluar_awal
       );
-
-      console.log("Upload result:", uploadResult);
 
       if (!uploadResult.url) {
         throw new Error("URL bukti tidak tersedia setelah upload");

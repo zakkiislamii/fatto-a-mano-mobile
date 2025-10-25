@@ -1,32 +1,31 @@
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
-import { PengajuanIzin } from "@/src/common/types/pengajuan_izin";
-import { PengajuanIzinRepository } from "@/src/domain/repositories/pengajuan/pengajuan-izin-repository";
+import { PengajuanSakit } from "@/src/common/types/pengajuan_sakit";
+import { PengajuanSakitRepository } from "@/src/domain/repositories/pengajuan/pengajuan-sakit-repository";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const useDetailPengajuanIzin = (uid?: string) => {
-  const [selectedIdIzin, setSelectedIdIzin] = useState<string | null>(null);
-  const [showDetailSheetIzin, setShowDetailSheetIzin] =
-    useState<boolean>(false);
-  const [detail, setDetail] = useState<PengajuanIzin | null>(null);
+const useDetailPengajuanSakit = (uid?: string) => {
+  const [selectedIdSakit, setSelectedIdSakit] = useState<string | null>(null);
+  const [showDetailSheetSakit, setShowDetailSheetSakit] = useState<boolean>(false);
+  const [detail, setDetail] = useState<PengajuanSakit | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const unsubscribeRef = useRef<(() => void) | null>(null);
 
-  const openDetailIzin = useCallback((id: string) => {
-    setSelectedIdIzin(id);
-    setShowDetailSheetIzin(true);
+  const openDetailSakit = useCallback((id: string) => {
+    setSelectedIdSakit(id);
+    setShowDetailSheetSakit(true);
   }, []);
 
-  const closeDetailIzin = useCallback(() => {
-    setShowDetailSheetIzin(false);
-    setSelectedIdIzin(null);
+  const closeDetailSakit = useCallback(() => {
+    setShowDetailSheetSakit(false);
+    setSelectedIdSakit(null);
   }, []);
 
-  const handleViewDetailIzinPress = useCallback(
+  const handleViewDetailSakitPress = useCallback(
     (itemOrId: { id: string } | string) => {
       const id = typeof itemOrId === "string" ? itemOrId : itemOrId.id;
-      openDetailIzin(id);
+      openDetailSakit(id);
     },
-    [openDetailIzin]
+    [openDetailSakit]
   );
 
   useEffect(() => {
@@ -39,15 +38,15 @@ const useDetailPengajuanIzin = (uid?: string) => {
       unsubscribeRef.current = null;
     }
 
-    if (!uid || !selectedIdIzin) {
+    if (!uid || !selectedIdSakit) {
       setDetail(null);
       setLoading(false);
       return;
     }
 
     setLoading(true);
-    const repo = new PengajuanIzinRepository(uid);
-    repo.setId(selectedIdIzin);
+    const repo = new PengajuanSakitRepository(uid);
+    repo.setId(selectedIdSakit);
 
     const unsub = repo.getDetail((data) => {
       if (!data) {
@@ -58,10 +57,10 @@ const useDetailPengajuanIzin = (uid?: string) => {
 
       const dDetail = data.detail || {};
 
-      const mapped: PengajuanIzin = {
+      const mapped: PengajuanSakit = {
         id: data.id,
         uid: data.uid,
-        tipe: data.tipe as TipePengajuan.izin,
+        tipe: data.tipe as TipePengajuan.sakit,
         tanggal_pengajuan: data.tanggal_pengajuan ?? "",
         status: data.status,
         detail: dDetail,
@@ -69,8 +68,6 @@ const useDetailPengajuanIzin = (uid?: string) => {
         updated_at: data.updated_at,
         keterangan: dDetail.keterangan ?? "",
         bukti_pendukung: dDetail.bukti_pendukung ?? "",
-        tanggal_mulai: dDetail.tanggal_mulai ?? "",
-        tanggal_berakhir: dDetail.tanggal_berakhir ?? "",
       };
 
       setDetail(mapped);
@@ -89,15 +86,15 @@ const useDetailPengajuanIzin = (uid?: string) => {
         unsubscribeRef.current = null;
       }
     };
-  }, [uid, selectedIdIzin]);
+  }, [uid, selectedIdSakit]);
 
   return {
-    loadingDetailIzin: loading,
-    detailIzin: detail,
-    showDetailSheetIzin,
-    handleViewDetailIzinPress,
-    closeDetailIzin,
+    loadingDetailSakit: loading,
+    detailSakit: detail,
+    showDetailSheetSakit,
+    handleViewDetailSakitPress,
+    closeDetailSakit,
   };
 };
 
-export default useDetailPengajuanIzin;
+export default useDetailPengajuanSakit;

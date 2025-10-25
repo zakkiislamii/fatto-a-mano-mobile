@@ -14,6 +14,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useDetailPengajuanIzin from "../../hooks/pengajuan/detail/use-detail-pengajuan-izin";
+import useDetailPengajuanLembur from "../../hooks/pengajuan/detail/use-detail-pengajuan-lembur";
+import useDetailPengajuanSakit from "../../hooks/pengajuan/detail/use-detail-pengajuan-sakit";
 import useEditPengajuanIzin from "../../hooks/pengajuan/edit/use-edit-pengajuan-izin";
 import useEditPengajuanLembur from "../../hooks/pengajuan/edit/use-edit-pengajuan-lembur";
 import useEditPengajuanSakit from "../../hooks/pengajuan/edit/use-edit-pengajuan-sakit";
@@ -21,6 +23,8 @@ import useTambahPengajuanIzin from "../../hooks/pengajuan/tambah/use-tambah-peng
 import useTambahPengajuanSakit from "../../hooks/pengajuan/tambah/use-tambah-pengajuan-sakit";
 import useDaftarPengajuan from "../../hooks/pengajuan/use-daftar-pengajuan";
 import DetailContentIzin from "./components/detail/detail-content-izin";
+import DetailContentLembur from "./components/detail/detail-content-lembur";
+import DetailContentSakit from "./components/detail/detail-content-sakit";
 import FormEditIzin from "./components/edit/form-edit-izin";
 import FormEditLembur from "./components/edit/form-edit-lembur";
 import FormEditSakit from "./components/edit/form-edit-sakit";
@@ -159,12 +163,26 @@ const PengajuanView = () => {
   const {
     loadingDetailIzin,
     detailIzin,
-    selectedIdIzin,
     showDetailSheetIzin,
-    handleViewDetailPress,
-    openDetailIzin,
+    handleViewDetailIzinPress,
     closeDetailIzin,
   } = useDetailPengajuanIzin(uid);
+
+  const {
+    loadingDetailLembur,
+    detailLembur,
+    showDetailSheetLembur,
+    handleViewDetailLemburPress,
+    closeDetailLembur,
+  } = useDetailPengajuanLembur(uid);
+
+  const {
+    loadingDetailSakit,
+    detailSakit,
+    showDetailSheetSakit,
+    handleViewDetailSakitPress,
+    closeDetailSakit,
+  } = useDetailPengajuanSakit(uid);
 
   const screenBg = isDark ? "bg-screenDark" : "bg-screenLight";
   const textPrimary = isDark ? "text-textPrimaryDark" : "text-textPrimaryLight";
@@ -190,13 +208,29 @@ const PengajuanView = () => {
     openEditLemburSheet(item);
   };
 
+  const handleDetailPress = (item: DaftarPengajuan) => {
+    if (item.tipe === TipePengajuan.lembur) {
+      handleViewDetailLemburPress(item);
+      return;
+    }
+    if (item.tipe === TipePengajuan.sakit) {
+      handleViewDetailSakitPress(item);
+      return;
+    }
+    if (item.tipe === TipePengajuan.izin) {
+      handleViewDetailIzinPress(item);
+      return;
+    }
+    openEditLemburSheet(item);
+  };
+
   const renderItem = ({ item }: { item: DaftarPengajuan }) => (
     <PengajuanCard
       item={item}
       isDark={isDark}
       onEdit={handleEditPress}
       onDelete={() => requestDelete(item.id)}
-      onViewDetail={() => handleViewDetailPress(item)}
+      onViewDetail={() => handleDetailPress(item)}
     />
   );
 
@@ -401,6 +435,7 @@ const PengajuanView = () => {
         isDark={isDark}
       />
 
+      {/* Detail Pengajuan Izin */}
       <DynamicBottomSheet
         isVisible={showDetailSheetIzin}
         title="Detail Pengajuan"
@@ -418,6 +453,50 @@ const PengajuanView = () => {
             </View>
           ) : (
             <DetailContentIzin detail={detailIzin} isDark={isDark} />
+          )
+        }
+      />
+
+      {/* Detail Pengajuan Sakit */}
+      <DynamicBottomSheet
+        isVisible={showDetailSheetSakit}
+        title="Detail Pengajuan"
+        onClose={closeDetailSakit}
+        isDark={isDark}
+        primaryButtonText="Tutup"
+        onPrimaryButtonPress={closeDetailSakit}
+        customContent={
+          loadingDetailSakit ? (
+            <View className="p-5 items-center">
+              <ActivityIndicator
+                size="large"
+                color={isDark ? "#fff" : "#000"}
+              />
+            </View>
+          ) : (
+            <DetailContentSakit detail={detailSakit} isDark={isDark} />
+          )
+        }
+      />
+
+      {/* Detail Pengajuan Lembur */}
+      <DynamicBottomSheet
+        isVisible={showDetailSheetLembur}
+        title="Detail Pengajuan"
+        onClose={closeDetailLembur}
+        isDark={isDark}
+        primaryButtonText="Tutup"
+        onPrimaryButtonPress={closeDetailLembur}
+        customContent={
+          loadingDetailLembur ? (
+            <View className="p-5 items-center">
+              <ActivityIndicator
+                size="large"
+                color={isDark ? "#fff" : "#000"}
+              />
+            </View>
+          ) : (
+            <DetailContentLembur detail={detailLembur} isDark={isDark} />
           )
         }
       />

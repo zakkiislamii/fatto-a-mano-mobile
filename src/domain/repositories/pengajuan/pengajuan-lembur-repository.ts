@@ -25,6 +25,7 @@ export class PengajuanLemburRepository extends PengajuanRepository {
         status: StatusPengajuan.menunggu,
         keterangan: this.keterangan,
         bukti_pendukung: this.bukti_pendukung,
+        durasi_lembur: this.durasi_lembur,
         created_at: Timestamp.now(),
         updated_at: Timestamp.now(),
       });
@@ -52,6 +53,7 @@ export class PengajuanLemburRepository extends PengajuanRepository {
             detail: {
               keterangan: data.keterangan,
               bukti_pendukung: data.bukti_pendukung,
+              durasi_lembur: data.durasi_lembur,
             },
             created_at: data.created_at,
             updated_at: data.updated_at,

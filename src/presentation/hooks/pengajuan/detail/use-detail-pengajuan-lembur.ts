@@ -1,32 +1,32 @@
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
-import { PengajuanIzin } from "@/src/common/types/pengajuan_izin";
-import { PengajuanIzinRepository } from "@/src/domain/repositories/pengajuan/pengajuan-izin-repository";
+import { PengajuanLembur } from "@/src/common/types/pengajuan-lembur";
+import { PengajuanLemburRepository } from "@/src/domain/repositories/pengajuan/pengajuan-lembur-repository";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const useDetailPengajuanIzin = (uid?: string) => {
-  const [selectedIdIzin, setSelectedIdIzin] = useState<string | null>(null);
-  const [showDetailSheetIzin, setShowDetailSheetIzin] =
+const useDetailPengajuanLembur = (uid?: string) => {
+  const [selectedIdLembur, setSelectedIdLembur] = useState<string | null>(null);
+  const [showDetailSheetLembur, setShowDetailSheetLembur] =
     useState<boolean>(false);
-  const [detail, setDetail] = useState<PengajuanIzin | null>(null);
+  const [detail, setDetail] = useState<PengajuanLembur | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const unsubscribeRef = useRef<(() => void) | null>(null);
 
-  const openDetailIzin = useCallback((id: string) => {
-    setSelectedIdIzin(id);
-    setShowDetailSheetIzin(true);
+  const openDetailLembur = useCallback((id: string) => {
+    setSelectedIdLembur(id);
+    setShowDetailSheetLembur(true);
   }, []);
 
-  const closeDetailIzin = useCallback(() => {
-    setShowDetailSheetIzin(false);
-    setSelectedIdIzin(null);
+  const closeDetailLembur = useCallback(() => {
+    setShowDetailSheetLembur(false);
+    setSelectedIdLembur(null);
   }, []);
 
-  const handleViewDetailIzinPress = useCallback(
+  const handleViewDetailLemburPress = useCallback(
     (itemOrId: { id: string } | string) => {
       const id = typeof itemOrId === "string" ? itemOrId : itemOrId.id;
-      openDetailIzin(id);
+      openDetailLembur(id);
     },
-    [openDetailIzin]
+    [openDetailLembur]
   );
 
   useEffect(() => {
@@ -39,15 +39,15 @@ const useDetailPengajuanIzin = (uid?: string) => {
       unsubscribeRef.current = null;
     }
 
-    if (!uid || !selectedIdIzin) {
+    if (!uid || !selectedIdLembur) {
       setDetail(null);
       setLoading(false);
       return;
     }
 
     setLoading(true);
-    const repo = new PengajuanIzinRepository(uid);
-    repo.setId(selectedIdIzin);
+    const repo = new PengajuanLemburRepository(uid);
+    repo.setId(selectedIdLembur);
 
     const unsub = repo.getDetail((data) => {
       if (!data) {
@@ -58,10 +58,10 @@ const useDetailPengajuanIzin = (uid?: string) => {
 
       const dDetail = data.detail || {};
 
-      const mapped: PengajuanIzin = {
+      const mapped: PengajuanLembur = {
         id: data.id,
         uid: data.uid,
-        tipe: data.tipe as TipePengajuan.izin,
+        tipe: data.tipe as TipePengajuan.lembur,
         tanggal_pengajuan: data.tanggal_pengajuan ?? "",
         status: data.status,
         detail: dDetail,
@@ -69,8 +69,7 @@ const useDetailPengajuanIzin = (uid?: string) => {
         updated_at: data.updated_at,
         keterangan: dDetail.keterangan ?? "",
         bukti_pendukung: dDetail.bukti_pendukung ?? "",
-        tanggal_mulai: dDetail.tanggal_mulai ?? "",
-        tanggal_berakhir: dDetail.tanggal_berakhir ?? "",
+        durasi_lembur: dDetail.durasi_lembur ?? "",
       };
 
       setDetail(mapped);
@@ -89,15 +88,15 @@ const useDetailPengajuanIzin = (uid?: string) => {
         unsubscribeRef.current = null;
       }
     };
-  }, [uid, selectedIdIzin]);
+  }, [uid, selectedIdLembur]);
 
   return {
-    loadingDetailIzin: loading,
-    detailIzin: detail,
-    showDetailSheetIzin,
-    handleViewDetailIzinPress,
-    closeDetailIzin,
+    loadingDetailLembur: loading,
+    detailLembur: detail,
+    showDetailSheetLembur,
+    handleViewDetailLemburPress,
+    closeDetailLembur,
   };
 };
 
-export default useDetailPengajuanIzin;
+export default useDetailPengajuanLembur;

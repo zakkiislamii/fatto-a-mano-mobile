@@ -1,7 +1,8 @@
 import Button from "@/src/components/ui/button";
+import { Image } from "expo-image";
 import React from "react";
 import { Control, Controller, FieldErrors } from "react-hook-form";
-import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 interface FormSakitProps {
@@ -92,8 +93,12 @@ const FormTambahSakit = ({
           {buktiPendukung ? (
             <Image
               source={{ uri: buktiPendukung }}
-              className="w-full h-32 rounded-lg"
-              resizeMode="cover"
+              style={{
+                width: "100%",
+                height: 220,
+                borderRadius: 8,
+              }}
+              transition={300}
             />
           ) : (
             <Text className={textSecondary}>Tekan untuk memilih gambar...</Text>

@@ -1,5 +1,5 @@
 import { StatusPengajuan } from "@/src/common/enums/status-pengajuan";
-import { PengajuanIzin } from "@/src/common/types/pengajuan_izin";
+import { PengajuanLembur } from "@/src/common/types/pengajuan-lembur";
 import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React from "react";
@@ -27,11 +27,11 @@ const getStatusStyle = (status: StatusPengajuan) => {
   }
 };
 
-const DetailContentIzin = ({
+const DetailContentLembur = ({
   detail,
   isDark,
 }: {
-  detail: PengajuanIzin | null;
+  detail: PengajuanLembur | null;
   isDark: boolean;
 }) => {
   const textPrimary = isDark ? "text-textPrimaryDark" : "text-textPrimaryLight";
@@ -64,7 +64,9 @@ const DetailContentIzin = ({
           <Text className={`text-2xl font-bold ${textPrimary} flex-1`}>
             Pengajuan {d.tipe}
           </Text>
-          <View className={`px-3 py-1 rounded-full ${statusStyle.container}`}>
+          <View
+            className={`px-3 py-1 rounded-full ${statusStyle.container} ml-2`}
+          >
             <Text
               className={`text-xs font-semibold capitalize ${statusStyle.text}`}
             >
@@ -92,43 +94,23 @@ const DetailContentIzin = ({
           </View>
         </View>
 
-        {/* Tanggal Mulai */}
-        {d.tanggal_mulai && (
-          <View className="flex-row items-start mb-5">
-            <Feather
-              name="calendar"
-              size={18}
-              color={iconColor}
-              className="mr-3 mt-1"
-            />
-            <View className="flex-1">
-              <Text className={`font-medium ${textSecondary}`}>
-                Tanggal Mulai
-              </Text>
-              <Text className={`${textPrimary} mt-1`}>{d.tanggal_mulai}</Text>
-            </View>
+        {/* --- [BARU] Durasi Lembur --- */}
+        <View className="flex-row items-start">
+          <Feather
+            name="clock"
+            size={18}
+            color={iconColor}
+            className="mr-3 mt-1"
+          />
+          <View className="flex-1">
+            <Text className={`font-medium ${textSecondary}`}>
+              Durasi Lembur
+            </Text>
+            <Text className={`${textPrimary} mt-1`}>
+              {d.durasi_lembur ?? "-"}
+            </Text>
           </View>
-        )}
-
-        {/* Tanggal Berakhir */}
-        {d.tanggal_berakhir && (
-          <View className="flex-row items-start">
-            <Feather
-              name="calendar"
-              size={18}
-              color={iconColor}
-              className="mr-3 mt-1"
-            />
-            <View className="flex-1">
-              <Text className={`font-medium ${textSecondary}`}>
-                Tanggal Berakhir
-              </Text>
-              <Text className={`${textPrimary} mt-1`}>
-                {d.tanggal_berakhir}
-              </Text>
-            </View>
-          </View>
-        )}
+        </View>
       </View>
 
       {d.bukti_pendukung ? (
@@ -166,4 +148,4 @@ const DetailContentIzin = ({
   );
 };
 
-export default DetailContentIzin;
+export default DetailContentLembur;

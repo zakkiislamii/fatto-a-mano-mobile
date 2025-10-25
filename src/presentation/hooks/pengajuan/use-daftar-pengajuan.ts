@@ -20,7 +20,7 @@ const useDaftarPengajuan = () => {
     }
 
     setLoading(true);
-    const repo = new PengajuanSakitRepository(uid, "");
+    const repo = new PengajuanSakitRepository(uid);
 
     const unsubscribe: Unsubscribe = repo.getDaftar((list) => {
       const sortedList = list.sort(
@@ -53,7 +53,7 @@ const useDaftarPengajuan = () => {
 
       try {
         setDeleting(true);
-        const repo = new PengajuanSakitRepository(uid, "");
+        const repo = new PengajuanSakitRepository(uid);
         repo.setId(id);
         await repo.hapus();
         Toast.show({ type: "success", text1: "Pengajuan Berhasil Dihapus" });
