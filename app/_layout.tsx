@@ -7,6 +7,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -17,10 +18,12 @@ import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import "../global.css";
+import RegisterTokenGate from "./gates/register-token-gate";
 
 export default function RootLayout() {
   useGoogleSignin();
   const colorScheme = useColorScheme();
+  const queryClient = new QueryClient();
   const [loaded] = useFonts({
     "Poppins-Regular": require("../src/assets/fonts/Poppins-Regular.ttf"),
   });
@@ -35,23 +38,28 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <SafeAreaProvider>
-          <NavigationContext>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen name="login" options={{ title: "Login" }} />
-              <Stack.Screen name="register" options={{ title: "Register" }} />
-              <Stack.Screen
-                name="notifikasi"
-                options={{ title: "Notifikasi", headerShown: true }}
-              />
-            </Stack>
-            <Toast config={toastConfig} />
-            <StatusBar style="auto" />
-          </NavigationContext>
-        </SafeAreaProvider>
-      </ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <RegisterTokenGate />
+          <SafeAreaProvider>
+            <NavigationContext>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="login" options={{ title: "Login" }} />
+                <Stack.Screen name="register" options={{ title: "Register" }} />
+                <Stack.Screen
+                  name="notifikasi"
+                  options={{ title: "Notifikasi", headerShown: true }}
+                />
+              </Stack>
+              <Toast config={toastConfig} />
+              <StatusBar style="auto" />
+            </NavigationContext>
+          </SafeAreaProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }
