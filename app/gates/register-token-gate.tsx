@@ -36,7 +36,6 @@ const RegisterTokenGate = () => {
     const sub = Notifications.addPushTokenListener((tokenData) => {
       const newToken = tokenData.data;
       if (user?.uid && newToken !== lastTokenValue.current) {
-        console.log("Push token updated, re-registering...");
         registerToken(user.uid);
         lastTokenValue.current = newToken;
       }

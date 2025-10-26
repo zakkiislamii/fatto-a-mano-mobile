@@ -11,15 +11,9 @@ import {
 import { doc, setDoc, Timestamp } from "firebase/firestore";
 
 export class AuthRepository {
-  private email: string;
-  private password: string;
-  private readonly firebaseAuth: typeof auth;
-
-  public constructor() {
-    this.email = "";
-    this.password = "";
-    this.firebaseAuth = auth;
-  }
+  private email: string = "";
+  private password: string = "";
+  private readonly firebaseAuth: typeof auth = auth;
 
   public setEmail(email: string) {
     this.email = (email ?? "").trim();
@@ -54,17 +48,7 @@ export class AuthRepository {
         {
           uid: userCredential.user.uid,
           email: this.email,
-          nama: "",
           role: UserRole.karyawan,
-          divisi: "",
-          nik: "",
-          nomor_hp: "",
-          jadwal: {
-            jam_masuk: "",
-            jam_keluar: "",
-            hariKerja: "",
-            isWfh: false,
-          },
           created_at: Timestamp.now(),
           updated_at: Timestamp.now(),
         },

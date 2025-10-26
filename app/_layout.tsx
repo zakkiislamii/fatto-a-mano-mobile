@@ -5,6 +5,7 @@ import {
   setupNotificationListeners,
 } from "@/src/configs/notification";
 import toastConfig from "@/src/configs/toast-config";
+import LengkapiProfilContext from "@/src/context/lengkapi-profil-context";
 import NavigationContext from "@/src/context/navigation-context";
 import { useColorScheme } from "@/src/hooks/use-color-scheme";
 import useGoogleSignin from "@/src/hooks/use-google-signin";
@@ -59,17 +60,29 @@ export default function RootLayout() {
           <RegisterTokenGate />
           <SafeAreaProvider>
             <NavigationContext>
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="login" options={{ title: "Login" }} />
-                <Stack.Screen name="register" options={{ title: "Register" }} />
-                <Stack.Screen
-                  name="notifikasi"
-                  options={{ title: "Notifikasi", headerShown: true }}
-                />
-              </Stack>
-              <Toast config={toastConfig} />
-              <StatusBar style="auto" />
+              <LengkapiProfilContext>
+                <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="(tabs)" />
+                  <Stack.Screen name="login" options={{ title: "Login" }} />
+                  <Stack.Screen
+                    name="register"
+                    options={{ title: "Register" }}
+                  />
+                  <Stack.Screen
+                    name="notifikasi"
+                    options={{ title: "Notifikasi", headerShown: true }}
+                  />
+                  <Stack.Screen
+                    name="lengkapi-profil"
+                    options={{
+                      headerShown: false,
+                      title: "Lengkapi Profil",
+                    }}
+                  />
+                </Stack>
+                <Toast config={toastConfig} />
+                <StatusBar style="auto" />
+              </LengkapiProfilContext>
             </NavigationContext>
           </SafeAreaProvider>
         </ThemeProvider>

@@ -5,17 +5,13 @@ import { doc, onSnapshot } from "firebase/firestore";
 
 export class JadwalRepository {
   private readonly uid: string;
-  private jamMasuk: string;
-  private jamKeluar: string;
-  private hariKerja: string;
-  private isWfh: boolean;
+  private jamMasuk: string = "";
+  private jamKeluar: string = "";
+  private hariKerja: string = "";
+  private isWfh: boolean = false;
 
   public constructor(uid: string) {
     this.uid = uid;
-    this.jamMasuk = "";
-    this.jamKeluar = "";
-    this.hariKerja = "";
-    this.isWfh = false;
   }
 
   public setJamMasuk(value: string): void {

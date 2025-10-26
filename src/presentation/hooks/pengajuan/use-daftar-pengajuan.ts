@@ -95,15 +95,9 @@ const useDaftarPengajuan = () => {
     setSelectedToDelete(null);
   }, []);
 
-  const handleEdit = useCallback((item: DaftarPengajuan) => {
-    console.log("Edit item:", item.id);
-    Toast.show({ type: "info", text1: "Fitur Edit Belum Tersedia" });
-  }, []);
-
   return {
     loading,
     pengajuanList,
-    handleEdit,
     confirmVisible,
     requestDelete,
     confirmDelete,

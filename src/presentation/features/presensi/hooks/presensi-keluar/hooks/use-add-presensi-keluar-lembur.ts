@@ -108,7 +108,7 @@ const useAddPresensiKeluarLembur = ({
       const waktu = now.toTimeString().slice(0, 5);
       const durasiLemburStr = `${lemburDurasiMenit} menit`;
       const tanggal = Today();
-      console.log(durasiLemburStr);
+
       // Simpan presensi keluar
       const presensiKeluarData: PresensiKeluar = {
         waktu,

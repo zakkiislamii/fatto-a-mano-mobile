@@ -14,7 +14,7 @@ import Toast from "react-native-toast-message";
 const useTambahPengajuanIzin = (uid: string | undefined) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [showIzinSheet, setShowIzinSheet] = useState<boolean>(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [pickerFor, setPickerFor] = useState<"start" | "end" | null>(null);
   const [leaveStartDate, setLeaveStartDate] = useState<Date | null>(null);
   const [leaveEndDate, setLeaveEndDate] = useState<Date | null>(null);
