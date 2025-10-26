@@ -6,43 +6,61 @@ import { useEffect, useRef } from "react";
 
 const RegisterTokenGate = () => {
   const { user, isLoading, role } = useFirebaseAuth();
-  const { mutate: registerToken } = useRegisterToken();
+  const { mutate: registerToken, isPending } = useRegisterToken();
   const registeredForUid = useRef<string | null>(null);
   const lastTokenValue = useRef<string | null>(null);
+  const isRegistering = useRef(false);
 
   useEffect(() => {
-    if (role === UserRole.manajer) {
-      registeredForUid.current = null;
-      lastTokenValue.current = null;
+    if (isLoading || role === UserRole.manajer) {
       return;
-    }
-
-    if (!isLoading && user?.uid && registeredForUid.current !== user.uid) {
-      registerToken(user.uid);
-      registeredForUid.current = user.uid;
     }
 
     if (!user) {
       registeredForUid.current = null;
       lastTokenValue.current = null;
-    }
-  }, [isLoading, user?.uid, role, registerToken, user]);
-
-  useEffect(() => {
-    if (role === UserRole.manajer) {
+      isRegistering.current = false;
       return;
     }
 
-    const sub = Notifications.addPushTokenListener((tokenData) => {
+    if (
+      user.uid &&
+      registeredForUid.current !== user.uid &&
+      !isRegistering.current &&
+      !isPending
+    ) {
+      isRegistering.current = true;
+
+      registerToken(user.uid, {
+        onSuccess: (success) => {
+          if (success) {
+            registeredForUid.current = user.uid;
+          }
+          isRegistering.current = false;
+        },
+        onError: () => {
+          isRegistering.current = false;
+        },
+      });
+    }
+  }, [isLoading, user, role, registerToken, isPending]);
+
+  useEffect(() => {
+    if (!user?.uid || role === UserRole.manajer) {
+      return;
+    }
+
+    const subscription = Notifications.addPushTokenListener((tokenData) => {
       const newToken = tokenData.data;
-      if (user?.uid && newToken !== lastTokenValue.current) {
-        registerToken(user.uid);
+
+      if (newToken && newToken !== lastTokenValue.current) {
         lastTokenValue.current = newToken;
+        registerToken(user.uid);
       }
     });
 
     return () => {
-      sub.remove();
+      subscription.remove();
     };
   }, [user?.uid, role, registerToken]);
 

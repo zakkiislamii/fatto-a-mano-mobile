@@ -54,11 +54,11 @@ export const LengkapiProfilFormSchema = yup.object({
           "Format jam keluar tidak valid (HH:MM)"
         )
         .required("Jam keluar wajib diisi"),
-      hariKerja: yup
+      hari_kerja: yup
         .string()
         .max(100, "Maksimal 100 karakter")
         .required("Hari kerja wajib diisi"),
-      isWfh: yup.boolean().required("Status WFH wajib diisi"),
+      is_wfh: yup.boolean().required("Status WFH wajib diisi"),
     })
     .required("Jadwal wajib diisi"),
 });

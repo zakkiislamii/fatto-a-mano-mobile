@@ -1,23 +1,14 @@
 import { UserRepository } from "@/src/domain/repositories/user/user-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useCallback, useMemo, useState } from "react";
+import { router } from "expo-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Platform } from "react-native";
+import Toast from "react-native-toast-message";
+import { LengkapiProfil } from "../common/types/lengkapi-profil";
+import { expandHariKerja } from "../common/utils/expand-hari-kerja";
 import formatHariKerja from "../common/utils/format-hari-kerja";
 import { LengkapiProfilFormSchema } from "../presentation/validators/profil/update-lengkapi-profil-schema";
-
-interface LengkapiProfil {
-  nama: string;
-  nik: string;
-  divisi: string;
-  nomor_hp: string;
-  jadwal: {
-    jam_masuk: string;
-    jam_keluar: string;
-    hariKerja: string;
-    isWfh: boolean;
-  };
-}
 
 const defaultValues: LengkapiProfil = {
   nama: "",
@@ -27,13 +18,14 @@ const defaultValues: LengkapiProfil = {
   jadwal: {
     jam_masuk: "",
     jam_keluar: "",
-    hariKerja: "",
-    isWfh: false,
+    hari_kerja: "",
+    is_wfh: false,
   },
 };
 
 const useUpdateLengkapiProfil = (uid: string | undefined) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [fetchingData, setFetchingData] = useState<boolean>(true);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
   const [showJamMasukPicker, setShowJamMasukPicker] = useState(false);
@@ -56,7 +48,53 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
     reValidateMode: "onChange",
   });
 
-  const openModal = useCallback(() => setShowModal(true), []);
+  useEffect(() => {
+    if (!uid) {
+      setFetchingData(false);
+      return;
+    }
+
+    const repo = new UserRepository(uid);
+    const unsubscribe = repo.getProfilRealTime((data) => {
+      if (data) {
+        setValue("nama", data.nama || "", { shouldValidate: false });
+        setValue("nik", data.nik || "", { shouldValidate: false });
+        setValue("nomor_hp", data.nomor_hp || "", { shouldValidate: false });
+        setValue("divisi", (data as any).divisi || "", {
+          shouldValidate: false,
+        });
+        const jadwal = (data as any).jadwal;
+        if (jadwal) {
+          setValue("jadwal.jam_masuk", jadwal.jam_masuk || "", {
+            shouldValidate: false,
+          });
+          setValue("jadwal.jam_keluar", jadwal.jam_keluar || "", {
+            shouldValidate: false,
+          });
+          setValue("jadwal.hari_kerja", jadwal.hari_kerja || "", {
+            shouldValidate: false,
+          });
+          setValue("jadwal.is_wfh", jadwal.is_wfh || false, {
+            shouldValidate: false,
+          });
+          if (jadwal.hari_kerja) {
+            const expandedDays = expandHariKerja(jadwal.hari_kerja);
+            setSelectedHari(expandedDays);
+          }
+        }
+      }
+      setFetchingData(false);
+    });
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [uid, setValue]);
+
+  const openModal = useCallback(() => {
+    setShowModal(true);
+  }, []);
+
   const closeModal = useCallback(() => {
     setShowModal(false);
     reset(defaultValues);
@@ -73,7 +111,7 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
     setLoading(true);
     try {
       if (!uid) throw new Error("UID tidak tersedia.");
-
+      console.log("data: ", data);
       const repo = new UserRepository(uid);
 
       repo.setNama(data.nama);
@@ -83,18 +121,27 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
       repo.setJadwal({
         jam_masuk: data.jadwal.jam_masuk,
         jam_keluar: data.jadwal.jam_keluar,
-        hariKerja: data.jadwal.hariKerja,
-        isWfh: !!data.jadwal.isWfh,
+        hari_kerja: data.jadwal.hari_kerja,
+        is_wfh: !!data.jadwal.is_wfh,
       });
 
       await repo.updateLengkapiProfil();
 
-      reset(defaultValues);
-      setShowModal(false);
       setShowConfirmModal(false);
+      Toast.show({
+        type: "success",
+        text1: "Berhasil",
+        text2: "Profil berhasil dilengkapi",
+      });
+      router.replace("/(tabs)");
     } catch (err) {
       console.error("[useUpdateLengkapiProfil] save error:", err);
       setError(err as Error);
+      Toast.show({
+        type: "error",
+        text1: "Gagal menyimpan",
+        text2: "Terjadi kesalahan saat menyimpan profil",
+      });
       throw err;
     } finally {
       setLoading(false);
@@ -109,7 +156,7 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
           : [...prev, day];
 
         const formatted = formatHariKerja(newSelection);
-        setValue("jadwal.hariKerja", formatted, {
+        setValue("jadwal.hari_kerja", formatted, {
           shouldValidate: true,
           shouldDirty: true,
         });
@@ -175,6 +222,7 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
   return {
     canSubmit,
     loading,
+    fetchingData,
     control,
     errors,
     watch,

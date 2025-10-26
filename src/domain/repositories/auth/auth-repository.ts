@@ -8,12 +8,12 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { doc, setDoc, Timestamp } from "firebase/firestore";
+import { doc, getDoc, setDoc, Timestamp } from "firebase/firestore";
 
 export class AuthRepository {
   private email: string = "";
   private password: string = "";
-  private readonly firebaseAuth: typeof auth = auth;
+  private readonly firebase_auth: typeof auth = auth;
 
   public setEmail(email: string) {
     this.email = (email ?? "").trim();
@@ -38,7 +38,7 @@ export class AuthRepository {
       }
 
       const userCredential = await createUserWithEmailAndPassword(
-        this.firebaseAuth,
+        this.firebase_auth,
         this.email,
         this.password
       );
@@ -65,7 +65,7 @@ export class AuthRepository {
   public async login(): Promise<void> {
     try {
       await signInWithEmailAndPassword(
-        this.firebaseAuth,
+        this.firebase_auth,
         this.email,
         this.password
       );
@@ -80,11 +80,52 @@ export class AuthRepository {
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       });
+
       const { data } = await GoogleSignin.signIn();
-      if (!data?.idToken)
+
+      if (!data?.idToken) {
         throw new Error("Terjadi masalah! silahkan coba lagi");
+      }
+
       const googleCredential = GoogleAuthProvider.credential(data.idToken);
-      await signInWithCredential(this.firebaseAuth, googleCredential);
+      const userCredential = await signInWithCredential(
+        this.firebase_auth,
+        googleCredential
+      );
+
+      const user = userCredential.user;
+      const googleUser = data.user;
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (!userDocSnap.exists()) {
+        await setDoc(
+          userDocRef,
+          {
+            uid: user.uid,
+            email: user.email || googleUser.email,
+            nama: user.displayName || googleUser.name || "",
+            role: UserRole.karyawan,
+            created_at: Timestamp.now(),
+            updated_at: Timestamp.now(),
+          },
+          {
+            merge: true,
+          }
+        );
+      } else {
+        await setDoc(
+          userDocRef,
+          {
+            email: user.email || googleUser.email,
+            nama: user.displayName || googleUser.name || "",
+            updated_at: Timestamp.now(),
+          },
+          {
+            merge: true,
+          }
+        );
+      }
     } catch (error: unknown) {
       console.error(error);
       throw error;
@@ -94,7 +135,7 @@ export class AuthRepository {
   public async logout(): Promise<void> {
     try {
       await Promise.allSettled([
-        signOut(this.firebaseAuth),
+        signOut(this.firebase_auth),
         GoogleSignin.signOut(),
       ]);
     } catch (error: unknown) {

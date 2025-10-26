@@ -1,6 +1,6 @@
 export interface JadwalKaryawan {
   jam_masuk: string;
   jam_keluar: string;
-  hariKerja: string;
-  isWfh: boolean;
+  hari_kerja: string;
+  is_wfh: boolean;
 }

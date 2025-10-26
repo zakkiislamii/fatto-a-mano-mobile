@@ -5,9 +5,11 @@ import {
   Timestamp,
   Unsubscribe,
   doc,
+  getDoc,
   onSnapshot,
   setDoc,
 } from "firebase/firestore";
+import { ExcelService } from "../../services/excel-service";
 
 export class UserRepository {
   private readonly uid: string;
@@ -122,6 +124,7 @@ export class UserRepository {
   public async updateLengkapiProfil(): Promise<void> {
     try {
       if (!this.uid) throw new Error("UID tidak valid.");
+
       const dataToWrite = {
         updated_at: Timestamp.now(),
         nama: this.nama?.trim() || undefined,
@@ -130,15 +133,38 @@ export class UserRepository {
         divisi: this.divisi?.trim() || undefined,
         jadwal: this.jadwal || undefined,
       };
+
       Object.keys(dataToWrite).forEach((key) => {
         if ((dataToWrite as any)[key] === undefined) {
           delete (dataToWrite as any)[key];
         }
       });
+
       const ref = doc(db, "users", this.uid);
       await setDoc(ref, dataToWrite, { merge: true });
+
+      const snapshot = await getDoc(ref);
+      if (!snapshot.exists())
+        throw new Error("User tidak ditemukan di Firestore.");
+      const userData = snapshot.data();
+
+      const excel = new ExcelService(this.uid);
+      excel.setEmail(userData.email ?? "");
+      excel.setNama(userData.nama ?? "");
+      excel.setNik(userData.nik ?? "");
+      excel.setNomorHp(userData.nomor_hp ?? "");
+      excel.setDivisi(userData.divisi ?? "");
+
+      if (userData.jadwal) {
+        excel.setHariKerja(userData.jadwal.hari_kerja ?? "");
+        excel.setJamMasuk(userData.jadwal.jam_masuk ?? "");
+        excel.setJamKeluar(userData.jadwal.jam_keluar ?? "");
+        excel.setIsWfh(!!userData.jadwal.is_wfh);
+      }
+
+      await excel.addRow();
     } catch (err) {
-      console.error(err);
+      console.error("[UserRepository] updateLengkapiProfil error:", err);
       throw err;
     }
   }
@@ -154,8 +180,8 @@ export class UserRepository {
         if (!j || typeof j !== "object") return false;
         if (!isNonEmptyString(j.jam_masuk)) return false;
         if (!isNonEmptyString(j.jam_keluar)) return false;
-        if (!isNonEmptyString(j.hariKerja)) return false;
-        if (typeof j.isWfh !== "boolean") return false;
+        if (!isNonEmptyString(j.hari_kerja)) return false;
+        if (typeof j.is_wfh !== "boolean") return false;
         return true;
       };
       return onSnapshot(
@@ -172,11 +198,25 @@ export class UserRepository {
             divisi?: string;
             jadwal?: JadwalKaryawan;
           }>;
+
+          // 🔍 Debug log untuk melihat data jadwal
+          console.log("📋 Validating jadwal:", data.jadwal);
+
           const namaOk = isNonEmptyString(data.nama);
           const nikOk = isNonEmptyString(data.nik);
           const nomorOk = isNonEmptyString(data.nomor_hp);
           const divisiOk = isNonEmptyString(data.divisi);
           const jadwalOk = isJadwalValid(data.jadwal);
+
+          // 🔍 Debug log untuk setiap field
+          console.log("✅ Validation:", {
+            namaOk,
+            nikOk,
+            nomorOk,
+            divisiOk,
+            jadwalOk,
+          });
+
           const isComplete = namaOk && nikOk && nomorOk && divisiOk && jadwalOk;
           cb(isComplete);
         },

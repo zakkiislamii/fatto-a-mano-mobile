@@ -1,16 +1,20 @@
 import { useMutation } from "@tanstack/react-query";
 import { NotifikasiService } from "../domain/services/notifikasi-service";
 
-const notificationService = new NotifikasiService();
-
 export const useRegisterToken = () => {
   return useMutation({
-    mutationFn: (uid: string) => notificationService.RegisterToken(uid),
+    mutationFn: (uid: string) => {
+      const notificationService = new NotifikasiService(uid);
+      return notificationService.RegisterToken();
+    },
   });
 };
 
 export const useDeleteToken = () => {
   return useMutation({
-    mutationFn: (uid: string) => notificationService.DeleteToken(uid),
+    mutationFn: (uid: string) => {
+      const notificationService = new NotifikasiService(uid);
+      return notificationService.DeleteToken();
+    },
   });
 };

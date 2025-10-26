@@ -5,29 +5,29 @@ import { doc, onSnapshot } from "firebase/firestore";
 
 export class JadwalRepository {
   private readonly uid: string;
-  private jamMasuk: string = "";
-  private jamKeluar: string = "";
-  private hariKerja: string = "";
-  private isWfh: boolean = false;
+  private jam_masuk: string = "";
+  private jam_keluar: string = "";
+  private hari_kerja: string = "";
+  private is_wfh: boolean = false;
 
   public constructor(uid: string) {
     this.uid = uid;
   }
 
-  public setJamMasuk(value: string): void {
-    this.jamMasuk = value.trim();
+  public setJamMasuk(jam_keluar: string): void {
+    this.jam_masuk = jam_keluar.trim();
   }
 
-  public setJamKeluar(value: string): void {
-    this.jamKeluar = value.trim();
+  public setJamKeluar(jam_keluar: string): void {
+    this.jam_keluar = jam_keluar.trim();
   }
 
-  public setHariKerja(value: string): void {
-    this.hariKerja = value.trim();
+  public setHariKerja(hari_kerja: string): void {
+    this.hari_kerja = hari_kerja.trim();
   }
 
-  public setIsWfh(value: boolean): void {
-    this.isWfh = value;
+  public setIsWfh(is_wfh: boolean): void {
+    this.is_wfh = is_wfh;
   }
 
   public getUid(): string {
@@ -35,19 +35,19 @@ export class JadwalRepository {
   }
 
   public getJamMasuk(): string {
-    return this.jamMasuk;
+    return this.jam_masuk;
   }
 
   public getJamKeluar(): string {
-    return this.jamKeluar;
+    return this.jam_keluar;
   }
 
   public getHariKerja(): string {
-    return this.hariKerja;
+    return this.hari_kerja;
   }
 
   public getIsWfh(): boolean {
-    return this.isWfh;
+    return this.is_wfh;
   }
 
   public getJadwalKaryawanRealTime(
@@ -74,14 +74,14 @@ export class JadwalRepository {
 
           this.setJamMasuk(j.jam_masuk ?? "");
           this.setJamKeluar(j.jam_keluar ?? "");
-          this.setHariKerja(j.hariKerja ?? "");
+          this.setHariKerja(j.hari_kerja ?? "");
           this.setIsWfh(!!j.isWfh);
 
           cb({
-            jam_masuk: this.jamMasuk,
-            jam_keluar: this.jamKeluar,
-            hariKerja: this.hariKerja,
-            isWfh: this.isWfh,
+            jam_masuk: this.jam_masuk,
+            jam_keluar: this.jam_keluar,
+            hari_kerja: this.hari_kerja,
+            is_wfh: this.is_wfh,
           });
         },
         () => cb(null)

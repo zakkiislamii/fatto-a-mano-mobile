@@ -3,9 +3,14 @@ import Constants, { ExecutionEnvironment } from "expo-constants";
 import * as Notifications from "expo-notifications";
 
 export class NotifikasiService {
+  private readonly uid: string;
   private url: string = process.env.EXPO_PUBLIC_BE_URL || "";
 
-  public async RegisterToken(uid: string): Promise<boolean> {
+  public constructor(uid: string) {
+    this.uid = uid;
+  }
+
+  public async RegisterToken(): Promise<boolean> {
     try {
       const isExpoGo =
         Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
@@ -24,7 +29,7 @@ export class NotifikasiService {
       }
 
       await axios.post(`${this.url}/notifications/register-token`, {
-        uid,
+        uid: this.uid,
         token,
       });
       return true;
@@ -34,7 +39,7 @@ export class NotifikasiService {
     }
   }
 
-  public async DeleteToken(uid: string): Promise<boolean> {
+  public async DeleteToken(): Promise<boolean> {
     try {
       const isExpoGo =
         Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
@@ -53,7 +58,7 @@ export class NotifikasiService {
       }
 
       await axios.post(`${this.url}/notifications/unregister-token`, {
-        uid,
+        uid: this.uid,
         token,
       });
       return true;

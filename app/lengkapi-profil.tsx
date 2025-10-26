@@ -1,5 +1,4 @@
 import { DIVISI_OPTIONS, HARI_OPTIONS } from "@/src/common/constants/constants";
-import formatHariKerja from "@/src/common/utils/format-hari-kerja";
 import { parseTimeToDate } from "@/src/common/utils/parse-time-to-date";
 import Button from "@/src/components/ui/button";
 import { DynamicModal } from "@/src/components/ui/dynamic-modal";
@@ -10,6 +9,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import React from "react";
 import { Controller } from "react-hook-form";
 import {
+  ActivityIndicator,
   Platform,
   ScrollView,
   Text,
@@ -28,6 +28,7 @@ const LengkapiProfilRoute = () => {
   const {
     canSubmit,
     loading,
+    fetchingData,
     control,
     errors,
     watch,
@@ -56,6 +57,20 @@ const LengkapiProfilRoute = () => {
   const inputBg = isDark ? "bg-slate-700" : "bg-gray-100";
   const inputBorder = isDark ? "border-slate-600" : "border-gray-300";
   const buttonBg = isDark ? "bg-button-dark" : "bg-button-light";
+
+  if (fetchingData) {
+    return (
+      <SafeAreaView className={`flex-1 ${bgColor}`}>
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator
+            size="large"
+            color={isDark ? "#3f3f9a" : "#2C2C54"}
+          />
+          <Text className={`mt-4 ${textSecondary}`}>Memuat data profil...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className={`flex-1 p-4 ${bgColor}`}>
@@ -313,14 +328,9 @@ const LengkapiProfilRoute = () => {
                 </TouchableOpacity>
               ))}
             </View>
-            {errors.jadwal?.hariKerja && (
+            {errors.jadwal?.hari_kerja && (
               <Text className="text-danger-light text-xs mt-1">
-                {errors.jadwal.hariKerja.message}
-              </Text>
-            )}
-            {selectedHari.length > 0 && (
-              <Text className={`text-xs mt-2 ${textSecondary}`}>
-                Format: {formatHariKerja(selectedHari)}
+                {errors.jadwal.hari_kerja.message}
               </Text>
             )}
           </View>
@@ -329,7 +339,7 @@ const LengkapiProfilRoute = () => {
           <View className="mb-6">
             <Controller
               control={control}
-              name="jadwal.isWfh"
+              name="jadwal.is_wfh"
               render={({ field: { onChange, value } }) => (
                 <TouchableOpacity
                   className="flex-row items-center"
@@ -345,7 +355,7 @@ const LengkapiProfilRoute = () => {
                     {value && <Feather name="check" size={14} color="white" />}
                   </View>
                   <Text className={`${textPrimary} font-medium`}>
-                    Work From Office (WFO)
+                    Work From Home (WFH)
                   </Text>
                 </TouchableOpacity>
               )}

@@ -8,7 +8,7 @@ import Toast from "react-native-toast-message";
 
 const useLogout = () => {
   const { uid, role } = useFirebaseAuth();
-  const { mutate: deleteToken } = useDeleteToken();
+  const { mutateAsync: deleteToken } = useDeleteToken();
   const [loading, setLoading] = useState<boolean>(false);
   const [logoutModalVisible, setLogoutModalVisible] = useState<boolean>(false);
   const vmRef = useRef(new AuthRepository());
@@ -20,11 +20,11 @@ const useLogout = () => {
     setLoading(true);
     try {
       if (uid && role === UserRole.karyawan) {
-        await new Promise<void>((resolve) => {
-          deleteToken(uid, {
-            onSettled: () => resolve(),
-          });
-        });
+        try {
+          await deleteToken(uid);
+        } catch (tokenError) {
+          console.error("Delete token error (non-blocking):", tokenError);
+        }
       }
 
       await vmRef.current.logout();
@@ -32,7 +32,7 @@ const useLogout = () => {
       setLogoutModalVisible(false);
       router.replace("/(tabs)");
       Toast.show({ type: "success", text1: "Logout Berhasil!" });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Logout error:", error);
       Toast.show({
         type: "error",

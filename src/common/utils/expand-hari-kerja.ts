@@ -1,8 +1,15 @@
 import { IND_DAY_MAP } from "./ind-day-map";
 
-export function expandHariKerja(hariKerja: string): number[] {
+export function expandHariKerja(
+  hariKerja: string | undefined | null
+): number[] {
+  if (!hariKerja || typeof hariKerja !== "string" || hariKerja.trim() === "") {
+    return [];
+  }
+
   const parts = hariKerja.split(",").map((p) => p.trim().toLowerCase());
   const out = new Set<number>();
+
   for (const part of parts) {
     if (part.includes("-")) {
       const [startRaw, endRaw] = part.split("-").map((s) => s.trim());
@@ -20,5 +27,6 @@ export function expandHariKerja(hariKerja: string): number[] {
       if (v !== undefined) out.add(v);
     }
   }
+
   return Array.from(out.values());
 }
