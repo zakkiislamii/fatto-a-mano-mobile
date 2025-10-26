@@ -30,6 +30,7 @@ export const configureNotifications = () => {
       shouldSetBadge: true,
       shouldShowBanner: true,
       shouldShowList: true as any,
+      priority: Notifications.AndroidNotificationPriority.HIGH,
     }),
   });
 
@@ -43,6 +44,7 @@ export const configureNotifications = () => {
           title: toText(remoteMessage?.data?.title, "Notifikasi"),
           body: toText(remoteMessage?.data?.body, ""),
           data: remoteMessage?.data ?? {},
+          priority: Notifications.AndroidNotificationPriority.HIGH,
         },
         trigger: null,
       });
@@ -75,6 +77,9 @@ export const ensureAndroidChannel = async () => {
     importance: Notifications.AndroidImportance.MAX,
     vibrationPattern: [0, 250, 250, 250],
     lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+    showBadge: true,
+    enableLights: true,
+    enableVibrate: true,
   });
 };
 
@@ -92,42 +97,28 @@ export const setupNotificationListeners = () => {
           title: title ?? "Notifikasi",
           body: body ?? "",
           data: rm.data ?? {},
+          priority: Notifications.AndroidNotificationPriority.HIGH,
+          sound: true,
         },
         trigger: null,
       });
     }
   );
 
-  // Tap notif saat background
   const unsubTapBg = onNotificationOpenedApp(messaging, () => {
     handleNotificationTap();
   });
 
-  // Tap notif saat app diluncurkan dari terminated
   getInitialNotification(messaging).then((rm) => {
     if (rm) handleNotificationTap();
   });
 
-  // Tap local notif (Expo)
-  const unsubLocalTap = Notifications.addNotificationResponseReceivedListener(
-    () => {
-      handleLocalNotificationTap();
-    }
-  );
-
   return () => {
     unsubForeground();
     unsubTapBg?.();
-    unsubLocalTap.remove();
   };
 };
 
-/** Navigasi dari data FCM */
 const handleNotificationTap = () => {
-  router.replace("/(tabs)/jadwal");
-};
-
-/** Navigasi dari local notif (Expo) */
-const handleLocalNotificationTap = () => {
   router.replace("/(tabs)/jadwal");
 };

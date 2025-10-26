@@ -75,7 +75,7 @@ export class JadwalRepository {
           this.setJamMasuk(j.jam_masuk ?? "");
           this.setJamKeluar(j.jam_keluar ?? "");
           this.setHariKerja(j.hari_kerja ?? "");
-          this.setIsWfh(!!j.isWfh);
+          this.setIsWfh(!!j.is_wfh);
 
           cb({
             jam_masuk: this.jam_masuk,

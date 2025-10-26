@@ -4,7 +4,7 @@ export default {
     slug: "fatto-a-mano-mobile",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./src/assets/images/icon.png",
+    icon: "./src/assets/images/notification-icon.jpeg",
     scheme: "fattoamanomobile",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
@@ -39,7 +39,12 @@ export default {
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       "@react-native-firebase/messaging",
-      "expo-notifications",
+      [
+        "expo-notifications",
+        {
+          icon: "./src/assets/images/notification-icon.jpeg",
+        },
+      ],
       [
         "expo-location",
         {
@@ -50,7 +55,7 @@ export default {
       [
         "expo-splash-screen",
         {
-          image: "./src/assets/images/splash-icon.png",
+          image: "./src/assets/images/notification-icon.jpeg",
           imageWidth: 200,
           resizeMode: "contain",
           backgroundColor: "#ffffff",

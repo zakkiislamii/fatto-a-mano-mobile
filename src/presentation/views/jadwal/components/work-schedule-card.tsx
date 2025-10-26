@@ -12,8 +12,8 @@ interface Props {
 export const WorkScheduleCard = ({ user, isDark, cardBg }: Props) => {
   const checkInText = user?.jam_masuk?.trim() || "-";
   const checkOutText = user?.jam_keluar?.trim() || "-";
-  const workingDays = user?.hariKerja.trim?.() || "-";
-  const isWfh = user.isWfh;
+  const workingDays = user?.hari_kerja?.trim() || "-";
+  const isWfh = user.is_wfh;
   const modeKerjaText = isWfh ? "WFH (Work From Home)" : "WFO (On-site)";
 
   return (

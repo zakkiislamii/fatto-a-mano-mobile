@@ -25,7 +25,7 @@ const useAddPresensiMasuk = (uid: string) => {
   const [isAlpa, setIsAlpa] = useState<boolean>(false);
   const { jadwalKaryawan } = useGetJadwal(uid);
   const jadwalReady = !!jadwalKaryawan;
-  const isWfh = !!jadwalKaryawan?.isWfh;
+  const isWfh = !!jadwalKaryawan?.is_wfh;
   const { presensiMasukStatus, loading: presensiMasukStatusLoading } =
     useGetStatusPresensiMasukToday(uid);
 
@@ -39,7 +39,7 @@ const useAddPresensiMasuk = (uid: string) => {
     }
 
     const today = new Date();
-    const workingDays = expandHariKerja(jadwalKaryawan.hariKerja);
+    const workingDays = expandHariKerja(jadwalKaryawan.hari_kerja);
     const todayIdx = today.getDay();
 
     // jika hari ini bukan hari kerja -> bukan alpa
@@ -127,7 +127,7 @@ const useAddPresensiMasuk = (uid: string) => {
     // cek hari kerja
     const today = new Date();
     const todayIdx = today.getDay();
-    const workingDays = expandHariKerja(jadwalKaryawan.hariKerja);
+    const workingDays = expandHariKerja(jadwalKaryawan.hari_kerja);
     if (!workingDays.includes(todayIdx)) {
       Toast.show({
         type: "error",

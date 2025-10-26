@@ -111,7 +111,7 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
     setLoading(true);
     try {
       if (!uid) throw new Error("UID tidak tersedia.");
-      console.log("data: ", data);
+
       const repo = new UserRepository(uid);
 
       repo.setNama(data.nama);

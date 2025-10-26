@@ -199,23 +199,11 @@ export class UserRepository {
             jadwal?: JadwalKaryawan;
           }>;
 
-          // 🔍 Debug log untuk melihat data jadwal
-          console.log("📋 Validating jadwal:", data.jadwal);
-
           const namaOk = isNonEmptyString(data.nama);
           const nikOk = isNonEmptyString(data.nik);
           const nomorOk = isNonEmptyString(data.nomor_hp);
           const divisiOk = isNonEmptyString(data.divisi);
           const jadwalOk = isJadwalValid(data.jadwal);
-
-          // 🔍 Debug log untuk setiap field
-          console.log("✅ Validation:", {
-            namaOk,
-            nikOk,
-            nomorOk,
-            divisiOk,
-            jadwalOk,
-          });
 
           const isComplete = namaOk && nikOk && nomorOk && divisiOk && jadwalOk;
           cb(isComplete);

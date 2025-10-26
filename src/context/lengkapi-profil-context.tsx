@@ -14,7 +14,6 @@ const LengkapiProfilContext = ({ children }: ProfilCompletionContextProps) => {
   const { isComplete, loading: profileLoading } = useProfilLengkap(uid);
   const segments = useSegments();
   const router = useRouter();
-  console.log("is complete: ", isComplete);
 
   useEffect(() => {
     if (authLoading || profileLoading) return;
@@ -24,7 +23,7 @@ const LengkapiProfilContext = ({ children }: ProfilCompletionContextProps) => {
     if (!current) return;
 
     const isIgnored = IGNORED_ROUTES.includes(current);
-    console.log("isIgnored", isIgnored);
+
     if (isComplete === false && !isIgnored) {
       router.replace("/lengkapi-profil");
       return;

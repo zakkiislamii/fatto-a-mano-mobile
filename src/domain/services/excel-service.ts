@@ -87,8 +87,8 @@ export class ExcelService {
     this.divisi = (divisi ?? "").trim();
   }
 
-  public setHariKerja(hari: string): void {
-    this.hari_kerja = (hari ?? "").trim();
+  public setHariKerja(hari_kerja: string): void {
+    this.hari_kerja = (hari_kerja ?? "").trim();
   }
 
   public setJamMasuk(jam: string): void {
@@ -99,8 +99,8 @@ export class ExcelService {
     this.jam_keluar = (jam ?? "").trim();
   }
 
-  public setIsWfh(isWfh: boolean): void {
-    this.is_wfh = !!isWfh;
+  public setIsWfh(is_wfh: boolean): void {
+    this.is_wfh = !!is_wfh;
   }
 
   public async getRows(): Promise<Sheets[]> {
@@ -127,7 +127,6 @@ export class ExcelService {
         jamKeluar: this.jam_keluar,
         isWfh: this.is_wfh,
       };
-      console.log(rowData);
       const response = await axios.post(this.url, {
         sheet1: rowData,
       });

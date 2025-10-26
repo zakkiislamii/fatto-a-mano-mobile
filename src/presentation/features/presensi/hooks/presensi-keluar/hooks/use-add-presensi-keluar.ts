@@ -27,7 +27,7 @@ const useAddPresensiKeluar = (uid: string) => {
     useGetStatusPresensiKeluarToday(uid);
   const { jadwalKaryawan } = useGetJadwal(uid);
   const jadwalReady = !!jadwalKaryawan;
-  const isWfh = !!jadwalKaryawan?.isWfh;
+  const isWfh = !!jadwalKaryawan?.is_wfh;
 
   const keluarAwal = useAddPresensiKeluarLebihAwal({
     uid,
