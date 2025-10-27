@@ -53,6 +53,9 @@ const PengajuanCard = ({
     ? "text-textSecondaryDark"
     : "text-textSecondaryLight";
   const borderColor = isDark ? "border-gray-700" : "border-gray-200";
+  const pengajuanDisetujui =
+    item.status === StatusPengajuan.disetujui ||
+    item.status === StatusPengajuan.ditolak;
 
   return (
     <View className={`rounded-lg p-4 border ${borderColor} ${cardBg} mb-3`}>
@@ -88,30 +91,33 @@ const PengajuanCard = ({
           />
           <Text className="text-sm font-medium text-purple-500">Detail</Text>
         </TouchableOpacity>
+        {!pengajuanDisetujui && (
+          <>
+            <TouchableOpacity
+              onPress={() => onEdit(item)}
+              className="flex-row items-center gap-2 px-3 py-2 rounded-lg bg-blue-500/10"
+            >
+              <AntDesign
+                name="edit"
+                size={18}
+                color={isDark ? "#60a5fa" : "#3b82f6"}
+              />
+              <Text className="text-sm font-medium text-blue-500">Edit</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => onEdit(item)}
-          className="flex-row items-center gap-2 px-3 py-2 rounded-lg bg-blue-500/10"
-        >
-          <AntDesign
-            name="edit"
-            size={18}
-            color={isDark ? "#60a5fa" : "#3b82f6"}
-          />
-          <Text className="text-sm font-medium text-blue-500">Edit</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={onDelete}
-          className="flex-row items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10"
-        >
-          <AntDesign
-            name="delete"
-            size={18}
-            color={isDark ? "#f87171" : "#ef4444"}
-          />
-          <Text className="text-sm font-medium text-red-500">Hapus</Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              onPress={onDelete}
+              className="flex-row items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10"
+            >
+              <AntDesign
+                name="delete"
+                size={18}
+                color={isDark ? "#f87171" : "#ef4444"}
+              />
+              <Text className="text-sm font-medium text-red-500">Hapus</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </View>
   );

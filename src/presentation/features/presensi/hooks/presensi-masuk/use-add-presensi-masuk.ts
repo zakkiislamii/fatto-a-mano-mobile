@@ -7,6 +7,8 @@ import { PresensiMasukRepository } from "@/src/domain/repositories/presensi/pres
 import useLiveLocation from "@/src/presentation/features/maps/hooks/use-live-location";
 import useWifi from "@/src/presentation/features/wifi/hooks/use-wifi";
 import { useGetJadwal } from "@/src/presentation/hooks/jadwal/use-get-jadwal";
+import useGetStatusIzinAktif from "@/src/presentation/hooks/pengajuan/status-aktif/use-get-status-izin-aktif";
+import useGetStatusSakitAktif from "@/src/presentation/hooks/pengajuan/status-aktif/use-get-status-sakit-aktif";
 import { useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
 import useGetStatusPresensiMasukToday from "./use-get-status-presensi-masuk-today";
@@ -29,9 +31,16 @@ const useAddPresensiMasuk = (uid: string) => {
   const { presensiMasukStatus, loading: presensiMasukStatusLoading } =
     useGetStatusPresensiMasukToday(uid);
 
+  const { isIzinAktif, loading: izinLoading } = useGetStatusIzinAktif(uid);
+  const { isSakitAktif, loading: sakitLoading } = useGetStatusSakitAktif(uid);
   const hasShownAlpaToastRef = useRef<boolean>(false);
   const hasCreatedAlpaRecordRef = useRef<boolean>(false);
+  const hasShownIzinToastRef = useRef<boolean>(false);
+  const hasCreatedIzinRecordRef = useRef<boolean>(false);
+  const hasShownSakitToastRef = useRef<boolean>(false);
+  const hasCreatedSakitRecordRef = useRef<boolean>(false);
 
+  // record ALPA otomatis
   const createAutoAlpa = async () => {
     if (hasCreatedAlpaRecordRef.current) return;
 
@@ -53,8 +62,125 @@ const useAddPresensiMasuk = (uid: string) => {
     }
   };
 
+  // record IZIN otomatis
+  const createAutoIzin = async () => {
+    if (hasCreatedIzinRecordRef.current) return;
+
+    try {
+      const presensiMasuk: PresensiMasuk = {
+        waktu: "",
+        terlambat: false,
+      };
+
+      const tanggal = Today();
+      const presensiRepo = new PresensiMasukRepository(uid, tanggal);
+      presensiRepo.setStatus(StatusPresensi.izin);
+      presensiRepo.setPresensiMasuk(presensiMasuk);
+      await presensiRepo.add();
+
+      hasCreatedIzinRecordRef.current = true;
+    } catch (err) {
+      console.error("createAutoIzin error:", err);
+    }
+  };
+
+  // record SAKIT otomatis
+  const createAutoSakit = async () => {
+    if (hasCreatedSakitRecordRef.current) return;
+
+    try {
+      const presensiMasuk: PresensiMasuk = {
+        waktu: "",
+        terlambat: false,
+      };
+
+      const tanggal = Today();
+      const presensiRepo = new PresensiMasukRepository(uid, tanggal);
+      presensiRepo.setStatus(StatusPresensi.sakit);
+      presensiRepo.setPresensiMasuk(presensiMasuk);
+      await presensiRepo.add();
+
+      hasCreatedSakitRecordRef.current = true;
+    } catch (err) {
+      console.error("createAutoSakit error:", err);
+    }
+  };
+
+  // handle IZIN otomatis
   useEffect(() => {
-    if (!jadwalKaryawan || presensiMasukStatusLoading) {
+    if (izinLoading || presensiMasukStatusLoading) return;
+
+    // Jika user sedang izin dan belum ada record presensi
+    if (isIzinAktif && !presensiMasukStatus.sudah_masuk) {
+      if (!hasShownIzinToastRef.current) {
+        createAutoIzin();
+        Toast.show({
+          type: "info",
+          text1: "Status: IZIN",
+          text2: "Anda sedang dalam periode izin yang disetujui.",
+        });
+        hasShownIzinToastRef.current = true;
+      }
+      return;
+    }
+
+    // Reset flag jika tidak sedang izin
+    if (!isIzinAktif) {
+      hasShownIzinToastRef.current = false;
+      hasCreatedIzinRecordRef.current = false;
+    }
+  }, [
+    isIzinAktif,
+    presensiMasukStatus.sudah_masuk,
+    izinLoading,
+    presensiMasukStatusLoading,
+  ]);
+
+  // handle SAKIT otomatis
+  useEffect(() => {
+    if (sakitLoading || presensiMasukStatusLoading) return;
+
+    // Jika user sedang sakit dan belum ada record presensi
+    if (isSakitAktif && !presensiMasukStatus.sudah_masuk) {
+      if (!hasShownSakitToastRef.current) {
+        createAutoSakit();
+        Toast.show({
+          type: "info",
+          text1: "Status: SAKIT",
+          text2: "Anda sedang dalam kondisi sakit yang disetujui.",
+        });
+        hasShownSakitToastRef.current = true;
+      }
+      return;
+    }
+
+    // Reset flag jika tidak sedang sakit
+    if (!isSakitAktif) {
+      hasShownSakitToastRef.current = false;
+      hasCreatedSakitRecordRef.current = false;
+    }
+  }, [
+    isSakitAktif,
+    presensiMasukStatus.sudah_masuk,
+    sakitLoading,
+    presensiMasukStatusLoading,
+  ]);
+
+  // handle ALPA otomatis
+  useEffect(() => {
+    if (
+      !jadwalKaryawan ||
+      presensiMasukStatusLoading ||
+      izinLoading ||
+      sakitLoading
+    ) {
+      hasShownAlpaToastRef.current = false;
+      setIsAlpa(false);
+      return;
+    }
+
+    // Jika sedang izin atau sakit, tidak perlu cek ALPA
+    if (isIzinAktif || isSakitAktif) {
       hasShownAlpaToastRef.current = false;
       setIsAlpa(false);
       return;
@@ -81,7 +207,8 @@ const useAddPresensiMasuk = (uid: string) => {
 
     const now = new Date();
 
-    if (now > jamKeluarDate) {
+    // Jika sekarang > jam_keluar dan belum presensi -> ALPA
+    if (now > jamKeluarDate && !presensiMasukStatus.sudah_masuk) {
       setIsAlpa(true);
       if (!hasShownAlpaToastRef.current) {
         createAutoAlpa();
@@ -97,13 +224,42 @@ const useAddPresensiMasuk = (uid: string) => {
     }
     hasShownAlpaToastRef.current = false;
     setIsAlpa(false);
-  }, [jadwalKaryawan, presensiMasukStatus, presensiMasukStatusLoading, uid]);
+  }, [
+    jadwalKaryawan,
+    presensiMasukStatus,
+    presensiMasukStatusLoading,
+    isIzinAktif,
+    isSakitAktif,
+    izinLoading,
+    sakitLoading,
+    uid,
+  ]);
 
   const handlePresensiMasuk = async (): Promise<boolean> => {
     if (!jadwalKaryawan) {
       Toast.show({
         type: "error",
         text1: "Jadwal karyawan belum tersedia. Mohon tunggu.",
+      });
+      return false;
+    }
+
+    // Cek apakah sedang izin
+    if (isIzinAktif) {
+      Toast.show({
+        type: "info",
+        text1: "Anda sedang dalam periode izin.",
+        text2: "Tidak perlu melakukan presensi manual.",
+      });
+      return false;
+    }
+
+    // Cek apakah sedang sakit
+    if (isSakitAktif) {
+      Toast.show({
+        type: "info",
+        text1: "Anda sedang dalam kondisi sakit.",
+        text2: "Tidak perlu melakukan presensi manual.",
       });
       return false;
     }
@@ -247,6 +403,8 @@ const useAddPresensiMasuk = (uid: string) => {
     loading ||
       !jadwalReady ||
       isAlpa ||
+      isIzinAktif || // Disable jika sedang izin
+      isSakitAktif || // Disable jika sedang sakit
       (isWfh
         ? networkLoading || !isOnline
         : wifiLoading || !isWifiConnected || !isBssid || !canCheck)

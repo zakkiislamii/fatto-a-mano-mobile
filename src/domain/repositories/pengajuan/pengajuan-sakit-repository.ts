@@ -1,7 +1,7 @@
 import { StatusPengajuan } from "@/src/common/enums/status-pengajuan";
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
 import { Unsubscribe } from "firebase/auth";
-import { addDoc, onSnapshot, Timestamp, updateDoc } from "firebase/firestore";
+import { addDoc, onSnapshot, query, Timestamp, updateDoc, where } from "firebase/firestore";
 import { PengajuanRepository } from "../../abstracts/pengajuan-abstract";
 import { Pengajuan } from "../../models/pengajuan";
 
@@ -77,6 +77,31 @@ export class PengajuanSakitRepository extends PengajuanRepository {
       await updateDoc(docRef, updateData);
     } catch (error) {
       console.error("Error editing pengajuan lembur:", error);
+      throw error;
+    }
+  }
+
+  public getStatusSakitAktifRealtime(
+    tanggalHariIni: string,
+    callback: (isSakitAktif: boolean) => void
+  ): Unsubscribe {
+    try {
+      const q = query(
+        this.colRef,
+        where("uid", "==", this.uid),
+        where("tipe", "==", TipePengajuan.sakit),
+        where("status", "==", StatusPengajuan.disetujui),
+        where("tanggal_pengajuan", "==", tanggalHariIni)
+      );
+
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const isSakitAktif = !querySnapshot.empty;
+        callback(isSakitAktif);
+      });
+
+      return unsubscribe;
+    } catch (error) {
+      console.error("Error getting status sakit aktif realtime:", error);
       throw error;
     }
   }

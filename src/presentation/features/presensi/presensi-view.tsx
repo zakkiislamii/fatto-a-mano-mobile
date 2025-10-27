@@ -5,6 +5,8 @@ import { DynamicModal } from "@/src/components/ui/dynamic-modal";
 import { router } from "expo-router";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import useGetStatusIzinAktif from "../../hooks/pengajuan/status-aktif/use-get-status-izin-aktif";
+import useGetStatusSakitAktif from "../../hooks/pengajuan/status-aktif/use-get-status-sakit-aktif";
 import useLiveLocation from "../maps/hooks/use-live-location";
 import MapsView from "../maps/maps-view";
 import useWifi from "../wifi/hooks/use-wifi";
@@ -45,6 +47,8 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
     presensiKeluarStatus,
     presensiKeluarStatusLoading,
   } = useAddPresensiKeluar(uid);
+  const { isIzinAktif } = useGetStatusIzinAktif(uid);
+  const { isSakitAktif } = useGetStatusSakitAktif(uid);
 
   const bgColor = isDark ? "bg-cardDark" : "bg-cardLight";
   const buttonBg = isDark ? "bg-button-dark" : "bg-button-light";
@@ -62,22 +66,42 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
       return { text: "✓ HADIR", color: "text-green-500" };
     } else if (status === StatusPresensi.terlambat) {
       return { text: "⏱ TERLAMBAT", color: "text-yellow-500" };
-    } else if (status === StatusPresensi.alpa) {
-      return { text: "✗ ALPA", color: "text-red-500" };
     }
     return { text: "", color: "" };
   };
 
   const statusDisplay = getStatusDisplay();
-  const buttonTitle = presensiMasukStatus.sudah_masuk ? "Keluar" : "Masuk";
-  const title = presensiMasukStatus.sudah_masuk
-    ? "Presensi Keluar"
-    : "Presensi Masuk";
 
   const isAlpa = presensiMasukStatus.status === StatusPresensi.alpa;
+  const isSakit = presensiMasukStatus.status === StatusPresensi.sakit;
+  const isIzin = presensiMasukStatus.status === StatusPresensi.izin;
+  const hasSpecialStatus = isAlpa || isSakit || isIzin;
+
+  const buttonTitle = presensiMasukStatus.sudah_masuk ? "Keluar" : "Masuk";
+
+  const getTitle = () => {
+    if (isSakit) {
+      return "Status: Sakit";
+    }
+    if (isIzin) {
+      return "Status: Izin";
+    }
+    if (isAlpa) {
+      return "Status: Alpa";
+    }
+
+    if (presensiMasukStatus.sudah_masuk) {
+      return "Presensi Keluar";
+    }
+
+    return "Presensi Masuk";
+  };
+
+  const title = getTitle();
+
   const finalButtonDisabled = presensiMasukStatus.sudah_masuk
-    ? presensiKeluarButtonDisabled || isAlpa
-    : presensiMasukButtonDisabled || isAlpa;
+    ? presensiKeluarButtonDisabled || isAlpa || isIzinAktif || isSakitAktif
+    : presensiMasukButtonDisabled || isAlpa || isIzinAktif || isSakitAktif;
 
   return (
     <View className={`p-6 w-full shadow-md items-center ${bgColor}`}>
@@ -87,29 +111,30 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
         untuk melakukan presensi.
       </Text>
 
-      {/* Status Presensi - Tampil setelah presensi masuk */}
-      {!presensiMasukStatusLoading && presensiMasukStatus.sudah_masuk && (
-        <View className="w-full mb-3 p-3 border rounded-lg">
-          <View className="gap-2">
-            <Text
-              className={`text-lg mb-3 font-semibold text-start ${textSecondary}`}
-            >
-              Status Presensi Masuk
-            </Text>
-            <View className="flex-row items-center justify-between">
-              <Text className={`text-sm font-bold ${statusDisplay.color}`}>
-                {statusDisplay.text}
+      {!presensiMasukStatusLoading &&
+        presensiMasukStatus.sudah_masuk &&
+        !hasSpecialStatus && (
+          <View className="w-full mb-3 p-3 justify-center border rounded-lg">
+            <View className="items-center">
+              <Text
+                className={`text-2xl mb-1 font-semibold text-center ${textSecondary}`}
+              >
+                Status Presensi
               </Text>
-              {presensiMasukStatus.terlambat &&
-                presensiMasukStatus.durasi_terlambat && (
-                  <Text className={`text-sm ${textSecondary}`}>
-                    Terlambat: {presensiMasukStatus.durasi_terlambat}
-                  </Text>
-                )}
+              <View className="flex-row items-center justify-between">
+                <Text className={`text-xl font-bold ${statusDisplay.color}`}>
+                  {statusDisplay.text}
+                </Text>
+                {presensiMasukStatus.terlambat &&
+                  presensiMasukStatus.durasi_terlambat && (
+                    <Text className={`text-sm ${textSecondary}`}>
+                      Terlambat: {presensiMasukStatus.durasi_terlambat}
+                    </Text>
+                  )}
+              </View>
             </View>
           </View>
-        </View>
-      )}
+        )}
 
       {!presensiKeluarStatusLoading && presensiKeluarStatus.sudah_keluar && (
         <View
@@ -165,7 +190,6 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
         textClassName={`font-bold text-lg ${primaryText}`}
       />
 
-      {/* Bottom Sheet: Keluar Awal */}
       <DynamicBottomSheet
         isVisible={keluarLebihAwal.showBottomSheet}
         onClose={keluarLebihAwal.closeBottomSheet}
@@ -187,7 +211,6 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
         }
       />
 
-      {/* Modal: Pilihan Keluar Biasa atau Lembur */}
       <DynamicModal
         isVisible={showModal}
         onClose={closeModal}
@@ -200,7 +223,6 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
         onSecondaryButtonPress={handleKeluarBiasa}
       />
 
-      {/* Bottom Sheet: Form Pengajuan Lembur */}
       <DynamicBottomSheet
         isVisible={lembur.showLemburSheet}
         onClose={lembur.closeLemburSheet}

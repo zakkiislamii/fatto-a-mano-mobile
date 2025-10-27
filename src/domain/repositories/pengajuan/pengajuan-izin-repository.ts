@@ -1,7 +1,7 @@
 import { StatusPengajuan } from "@/src/common/enums/status-pengajuan";
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
 import { Unsubscribe } from "firebase/auth";
-import { addDoc, onSnapshot, Timestamp, updateDoc } from "firebase/firestore";
+import { addDoc, onSnapshot, query, Timestamp, updateDoc, where } from "firebase/firestore";
 import { PengajuanRepository } from "../../abstracts/pengajuan-abstract";
 import { Pengajuan } from "../../models/pengajuan";
 
@@ -108,6 +108,45 @@ export class PengajuanIzinRepository extends PengajuanRepository {
       await updateDoc(docRef, updateData);
     } catch (error) {
       console.error("Error editing pengajuan lembur:", error);
+      throw error;
+    }
+  }
+
+  public getStatusIzinAktifRealtime(
+    tanggalHariIni: string,
+    callback: (isIzinAktif: boolean) => void
+  ): Unsubscribe {
+    try {
+      const q = query(
+        this.colRef,
+        where("uid", "==", this.uid),
+        where("tipe", "==", TipePengajuan.izin),
+        where("status", "==", StatusPengajuan.disetujui)
+      );
+
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        let isIzinAktif = false;
+
+        for (const doc of querySnapshot.docs) {
+          const data = doc.data();
+          const tanggalMulai = data.tanggal_mulai;
+          const tanggalBerakhir = data.tanggal_berakhir;
+
+          if (
+            tanggalHariIni >= tanggalMulai &&
+            tanggalHariIni <= tanggalBerakhir
+          ) {
+            isIzinAktif = true;
+            break;
+          }
+        }
+
+        callback(isIzinAktif);
+      });
+
+      return unsubscribe;
+    } catch (error) {
+      console.error("Error getting status izin aktif realtime:", error);
       throw error;
     }
   }
