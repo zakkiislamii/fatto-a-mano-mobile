@@ -14,9 +14,9 @@ export default {
     android: {
       adaptiveIcon: {
         backgroundColor: "#E6F4FE",
-        foregroundImage: "./src/assets/images/android-icon-foreground.png",
-        backgroundImage: "./src/assets/images/android-icon-background.png",
-        monochromeImage: "./src/assets/images/android-icon-monochrome.png",
+        foregroundImage: "./src/assets/images/notification-icon.jpeg",
+        backgroundImage: "./src/assets/images/notification-icon.jpeg",
+        monochromeImage: "./src/assets/images/notification-icon.jpeg",
       },
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,

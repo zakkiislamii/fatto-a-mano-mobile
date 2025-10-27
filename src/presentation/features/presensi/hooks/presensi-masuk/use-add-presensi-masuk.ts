@@ -30,6 +30,28 @@ const useAddPresensiMasuk = (uid: string) => {
     useGetStatusPresensiMasukToday(uid);
 
   const hasShownAlpaToastRef = useRef<boolean>(false);
+  const hasCreatedAlpaRecordRef = useRef<boolean>(false);
+
+  const createAutoAlpa = async () => {
+    if (hasCreatedAlpaRecordRef.current) return;
+
+    try {
+      const presensiMasuk: PresensiMasuk = {
+        waktu: "",
+        terlambat: true,
+      };
+
+      const tanggal = Today();
+      const presensiRepo = new PresensiMasukRepository(uid, tanggal);
+      presensiRepo.setStatus(StatusPresensi.alpa);
+      presensiRepo.setPresensiMasuk(presensiMasuk);
+      await presensiRepo.add();
+
+      hasCreatedAlpaRecordRef.current = true;
+    } catch (err) {
+      console.error("createAutoAlpa error:", err);
+    }
+  };
 
   useEffect(() => {
     if (!jadwalKaryawan || presensiMasukStatusLoading) {
@@ -50,6 +72,7 @@ const useAddPresensiMasuk = (uid: string) => {
     }
 
     const jamKeluarDate = parseJamToDateToday(jadwalKaryawan.jam_keluar, today);
+
     if (!jamKeluarDate) {
       hasShownAlpaToastRef.current = false;
       setIsAlpa(false);
@@ -58,10 +81,10 @@ const useAddPresensiMasuk = (uid: string) => {
 
     const now = new Date();
 
-    // Jika sekarang > jam_keluar, maka ALPA dan belum melakukan presensi masuk -> ALPA
-    if (now > jamKeluarDate && !presensiMasukStatus.sudah_masuk) {
+    if (now > jamKeluarDate) {
       setIsAlpa(true);
       if (!hasShownAlpaToastRef.current) {
+        createAutoAlpa();
         Toast.show({
           type: "error",
           text1: "Status: ALPA",
@@ -74,10 +97,9 @@ const useAddPresensiMasuk = (uid: string) => {
     }
     hasShownAlpaToastRef.current = false;
     setIsAlpa(false);
-  }, [jadwalKaryawan, presensiMasukStatus, presensiMasukStatusLoading]);
+  }, [jadwalKaryawan, presensiMasukStatus, presensiMasukStatusLoading, uid]);
 
   const handlePresensiMasuk = async (): Promise<boolean> => {
-    // jika jadwal belum siap, beri feedback
     if (!jadwalKaryawan) {
       Toast.show({
         type: "error",

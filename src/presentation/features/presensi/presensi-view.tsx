@@ -74,6 +74,11 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
     ? "Presensi Keluar"
     : "Presensi Masuk";
 
+  const isAlpa = presensiMasukStatus.status === StatusPresensi.alpa;
+  const finalButtonDisabled = presensiMasukStatus.sudah_masuk
+    ? presensiKeluarButtonDisabled || isAlpa
+    : presensiMasukButtonDisabled || isAlpa;
+
   return (
     <View className={`p-6 w-full shadow-md items-center ${bgColor}`}>
       <Text className={`text-2xl font-bold mb-2 ${primaryText}`}>{title}</Text>
@@ -155,11 +160,7 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
             ? presensiKeluarLoading
             : presensiMasukLoading
         }
-        disabled={
-          presensiMasukStatus.sudah_masuk
-            ? presensiKeluarButtonDisabled
-            : presensiMasukButtonDisabled
-        }
+        disabled={finalButtonDisabled}
         className={`py-4 w-full rounded-xl ${buttonBg} mt-auto`}
         textClassName={`font-bold text-lg ${primaryText}`}
       />
