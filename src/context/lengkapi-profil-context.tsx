@@ -1,3 +1,4 @@
+import { UserRole } from "@/src/common/enums/user-role";
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
 import { useRouter, useSegments } from "expo-router";
 import React, { ReactNode, useEffect } from "react";
@@ -10,7 +11,7 @@ interface ProfilCompletionContextProps {
 }
 
 const LengkapiProfilContext = ({ children }: ProfilCompletionContextProps) => {
-  const { user, uid, isLoading: authLoading } = useFirebaseAuth();
+  const { user, uid, isLoading: authLoading, role } = useFirebaseAuth();
   const { isComplete, loading: profileLoading } = useProfilLengkap(uid);
   const segments = useSegments();
   const router = useRouter();
@@ -24,6 +25,13 @@ const LengkapiProfilContext = ({ children }: ProfilCompletionContextProps) => {
 
     const isIgnored = IGNORED_ROUTES.includes(current);
 
+    if (role === UserRole.manajer) {
+      if (current === "lengkapi-profil") {
+        router.replace("/(tabs)");
+      }
+      return;
+    }
+
     if (isComplete === false && !isIgnored) {
       router.replace("/lengkapi-profil");
       return;
@@ -33,7 +41,16 @@ const LengkapiProfilContext = ({ children }: ProfilCompletionContextProps) => {
       router.replace("/(tabs)");
       return;
     }
-  }, [user, isComplete, authLoading, profileLoading, segments, router, uid]);
+  }, [
+    user,
+    isComplete,
+    authLoading,
+    profileLoading,
+    segments,
+    router,
+    uid,
+    role,
+  ]);
 
   return <>{children}</>;
 };

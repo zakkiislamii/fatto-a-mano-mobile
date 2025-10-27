@@ -20,52 +20,51 @@ interface UsePaginationReturn<T> {
 
 const usePagination = <T>({
   data,
-  itemsPerPage = 3,
+  itemsPerPage = 10,
 }: UsePaginationProps<T>): UsePaginationReturn<T> => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Hitung total halaman
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  // Calculate total pages
+  const totalPages = Math.max(1, Math.ceil(data.length / itemsPerPage));
 
-  // Hitung data yang dipaginate
+  // Calculate paginated data
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return data.slice(startIndex, endIndex);
   }, [data, currentPage, itemsPerPage]);
 
-  // Reset ke halaman 1 jika data berubah dan halaman sekarang melebihi total
+  // Reset to page 1 if current page exceeds total pages
   useEffect(() => {
-    if (currentPage > totalPages && totalPages > 0) {
-      setCurrentPage(totalPages);
-    } else if (totalPages === 0) {
+    if (currentPage > totalPages) {
       setCurrentPage(1);
     }
-  }, [totalPages, currentPage]);
+  }, [data.length, currentPage, totalPages]);
 
-  // Handler untuk halaman berikutnya
+  // Navigate to next page
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
     }
   };
 
-  // Handler untuk halaman sebelumnya
+  // Navigate to previous page
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
     }
   };
 
-  // Handler untuk pergi ke halaman tertentu
+  // Navigate to specific page
   const goToPage = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
   };
 
-  // Hitung index untuk info
-  const startIndex = (currentPage - 1) * itemsPerPage + 1;
+  // Calculate display indices
+  const startIndex =
+    data.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
   const endIndex = Math.min(currentPage * itemsPerPage, data.length);
 
   return {

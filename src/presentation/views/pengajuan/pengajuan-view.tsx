@@ -30,11 +30,11 @@ import FormEditIzin from "./components/edit/form-edit-izin";
 import FormEditLembur from "./components/edit/form-edit-lembur";
 import FormEditSakit from "./components/edit/form-edit-sakit";
 import FormDateTimePicker from "./components/form-date-time-picker";
-import PaginationControls from "./components/pagination-controls";
+import PaginationControls from "../../../components/ui/pagination-controls";
 import PengajuanCard from "./components/pengajuan-card";
 import FormTambahIzin from "./components/tambah/form-tambah-izin";
 import FormTambahSakit from "./components/tambah/form-tambah-sakit";
-import usePagination from "./hooks/use-pagination";
+import usePagination from "../../../hooks/use-pagination";
 import usePengajuanView from "./hooks/use-pengajuan-view";
 
 const PengajuanView = () => {

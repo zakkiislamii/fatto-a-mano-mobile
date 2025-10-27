@@ -78,17 +78,6 @@ export function DynamicBottomSheet({
         ) : null}
 
         <View className="flex-col gap-3 mt-2">
-          {secondaryButtonText && onSecondaryButtonPress && (
-            <TouchableOpacity
-              className={`w-full py-3 rounded-lg items-center justify-center ${secondaryBtnBg}`}
-              onPress={onSecondaryButtonPress}
-            >
-              <Text className={`font-semibold ${secondaryBtnText}`}>
-                {secondaryButtonText}
-              </Text>
-            </TouchableOpacity>
-          )}
-
           {primaryButtonText && onPrimaryButtonPress && (
             <TouchableOpacity
               className={`w-full py-3 rounded-lg items-center justify-center ${buttonBg}`}
@@ -96,6 +85,16 @@ export function DynamicBottomSheet({
             >
               <Text className="font-semibold text-white">
                 {primaryButtonText}
+              </Text>
+            </TouchableOpacity>
+          )}
+          {secondaryButtonText && onSecondaryButtonPress && (
+            <TouchableOpacity
+              className={`w-full py-3 rounded-lg items-center justify-center ${secondaryBtnBg}`}
+              onPress={onSecondaryButtonPress}
+            >
+              <Text className={`font-semibold ${secondaryBtnText}`}>
+                {secondaryButtonText}
               </Text>
             </TouchableOpacity>
           )}
