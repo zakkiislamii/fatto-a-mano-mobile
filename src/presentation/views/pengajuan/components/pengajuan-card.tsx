@@ -1,7 +1,7 @@
 import { StatusPengajuan } from "@/src/common/enums/status-pengajuan";
 import { DaftarPengajuan } from "@/src/common/types/daftar-pengajuan";
+import formatTimestamp from "@/src/common/utils/format-timestamp";
 import { AntDesign } from "@expo/vector-icons";
-import { Timestamp } from "firebase/firestore";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
@@ -14,17 +14,6 @@ interface PengajuanCardProps {
 }
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-
-const formatTimestamp = (timestamp: Timestamp) => {
-  if (!timestamp) return "N/A";
-  return timestamp.toDate().toLocaleDateString("id-ID", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
 
 const getStatusBadge = (status: StatusPengajuan) => {
   const baseClasses = "px-3 py-1 rounded-full text-xs font-medium self-start";

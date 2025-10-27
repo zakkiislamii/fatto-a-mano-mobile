@@ -1,14 +1,15 @@
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
 import { DaftarPengajuan } from "@/src/common/types/daftar-pengajuan";
-import Button from "@/src/components/ui/button";
 import { DynamicBottomSheet } from "@/src/components/ui/dynamic-bottom-sheet";
 import { DynamicModal } from "@/src/components/ui/dynamic-modal";
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
+import { Feather } from "@expo/vector-icons";
 import React from "react";
 import {
   ActivityIndicator,
   FlatList,
   Text,
+  TouchableOpacity,
   useColorScheme,
   View,
 } from "react-native";
@@ -190,7 +191,6 @@ const PengajuanView = () => {
     ? "text-textSecondaryDark"
     : "text-textSecondaryLight";
   const buttonBg = isDark ? "bg-button-dark" : "bg-button-light";
-  const borderColor = isDark ? "border-gray-700" : "border-gray-200";
 
   const handleEditPress = (item: DaftarPengajuan) => {
     if (item.tipe === TipePengajuan.lembur) {
@@ -251,9 +251,14 @@ const PengajuanView = () => {
 
   return (
     <SafeAreaView className={`flex-1 ${screenBg}`}>
-      {/* HEADER */}
-      <View className="px-5 pt-5 pb-3 mb-4">
+      <View className="flex-row items-center justify-between px-5 pt-5 pb-3 mb-3">
         <Text className={`text-3xl font-bold ${textPrimary}`}>Pengajuan</Text>
+        <TouchableOpacity
+          onPress={openSheet}
+          className={`p-2 rounded-lg ${buttonBg}`}
+        >
+          <Feather name="plus" size={24} color="white" />
+        </TouchableOpacity>
       </View>
 
       <View className="flex-1 px-5">
@@ -288,15 +293,6 @@ const PengajuanView = () => {
             )}
           </>
         )}
-      </View>
-
-      <View className={`p-5 pt-3 border-t ${borderColor}`}>
-        <Button
-          title="Tambah Pengajuan"
-          onPress={openSheet}
-          className={`py-4 w-full rounded-xl ${buttonBg}`}
-          textClassName={`font-bold text-lg text-white`}
-        />
       </View>
 
       {/* Pilih jenis pengajuan */}

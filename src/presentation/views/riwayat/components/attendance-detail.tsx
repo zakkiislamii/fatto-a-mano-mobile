@@ -5,7 +5,6 @@ import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
-// Fungsi formatDate (tidak berubah)
 const formatDate = (date: Date, format: "full" | "day"): string => {
   const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
   const months = [
@@ -43,7 +42,6 @@ export const AttendanceDetail = ({
   selectedPresensi: Presensi | null;
   isDark: boolean;
 }) => {
-  // --- PERBAIKAN: Menggunakan state tunggal untuk menampilkan bukti ---
   const [evidence, setEvidence] = useState<{
     url: string;
     title: string;
@@ -57,7 +55,7 @@ export const AttendanceDetail = ({
   const separator = isDark ? "border-slate-700" : "border-slate-200";
   const successColor = isDark ? "#22c55e" : "#16a34a";
   const warningColor = isDark ? "#f97316" : "#ea580c";
-  const infoColor = isDark ? "#3b82f6" : "#2563eb"; // Diperbarui untuk konsistensi
+  const infoColor = isDark ? "#3b82f6" : "#2563eb";
 
   if (!selectedPresensi) {
     return (
@@ -83,6 +81,10 @@ export const AttendanceDetail = ({
       ? "Terlambat"
       : selectedPresensi.status;
 
+  const lowerStatus = displayStatus?.toLowerCase();
+  const showFullDetails =
+    lowerStatus === "hadir" || lowerStatus === "terlambat";
+
   const getStatusColor = () => {
     switch (displayStatus?.toLowerCase()) {
       case "hadir":
@@ -92,9 +94,22 @@ export const AttendanceDetail = ({
       case "sakit":
         return isDark ? "#ef4444" : "#dc2626";
       case "izin":
-        return infoColor; // Menggunakan infoColor yang sudah didefinisi
+        return infoColor;
       default:
         return isDark ? "#6b7280" : "#4b5563";
+    }
+  };
+
+  const getStatusIcon = () => {
+    switch (lowerStatus) {
+      case "sakit":
+        return "thermometer";
+      case "izin":
+        return "file-text";
+      case "alpa":
+        return "x-circle";
+      default:
+        return "alert-triangle";
     }
   };
 
@@ -116,7 +131,6 @@ export const AttendanceDetail = ({
         <View
           className={`${cardBg} mx-5 rounded-xl p-5 shadow-sm border ${separator}`}
         >
-          {/* Bagian Header (Tanggal & Status) */}
           <View className="flex-row justify-between items-center mb-5">
             <Text className={`font-bold text-lg ${textPrimary}`}>
               {formatDate(selectedDate, "day")}
@@ -134,97 +148,120 @@ export const AttendanceDetail = ({
             </View>
           </View>
 
-          {/* Bagian Waktu Masuk & Keluar */}
-          <View className="flex-row gap-6">
-            <View className="flex-1">
-              <View className="flex-row items-center gap-3">
-                <View className="w-8 h-8 rounded-full bg-blue-500/20 items-center justify-center">
-                  <Feather name="log-in" size={16} color="#3b82f6" />
-                </View>
-                <View className="flex-1">
-                  <Text className={`text-xs ${textSecondary}`}>
-                    Waktu Masuk
-                  </Text>
-                  <Text className={`text-2xl font-bold ${textPrimary}`}>
-                    {checkInTime}
-                  </Text>
-                </View>
-              </View>
-            </View>
-            <View className="flex-1">
-              <View className="flex-row items-center gap-3">
-                <View className="w-8 h-8 rounded-full bg-green-500/20 items-center justify-center">
-                  <Feather name="log-out" size={16} color="#22c55e" />
-                </View>
-                <View className="flex-1">
-                  <Text className={`text-xs ${textSecondary}`}>
-                    Waktu Keluar
-                  </Text>
-                  <Text className={`text-2xl font-bold ${textPrimary}`}>
-                    {checkOutTime}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* --- PERBAIKAN: Kartu Rincian Presensi --- */}
-        <View
-          className={`${cardBg} mx-5 mt-4 rounded-xl p-5 shadow-sm border ${separator}`}
-        >
-          <Text className={`font-bold mb-4 ${textPrimary}`}>
-            Rincian Presensi
-          </Text>
-          <View className="gap-4">
-            <InfoRow
-              icon="map-pin"
-              label="Lokasi"
-              value="Di Kantor" // Asumsi hardcode
-              isDark={isDark}
-            />
-            {selectedPresensi.presensi_masuk.terlambat && (
-              <InfoRow
-                icon="clock"
-                label="Terlambat"
-                value={selectedPresensi.presensi_masuk.durasi_terlambat || "-"}
-                isDark={isDark}
-                color={warningColor}
-              />
-            )}
-            {keluarLebihAwal && (
-              <View className="justify-center items-center gap-3">
-                <InfoRow
-                  icon="alert-circle"
-                  label="Keluar Awal"
-                  value={alasanKeluarAwal || "-"}
-                  isDark={isDark}
-                  color={infoColor}
-                />
-                {buktiKeluarAwalUrl && (
-                  <TouchableOpacity
-                    onPress={() =>
-                      setEvidence({
-                        url: buktiKeluarAwalUrl,
-                        title: "Bukti Keluar Awal",
-                      })
-                    }
-                    className="pl-1"
-                  >
-                    <Text
-                      className={`text-sm font-medium underline`}
-                      style={{ color: infoColor }}
-                    >
-                      Lihat Bukti Keluar Awal
+          {showFullDetails && (
+            <View className="flex-row gap-6">
+              <View className="flex-1">
+                <View className="flex-row items-center gap-3">
+                  <View className="w-8 h-8 rounded-full bg-blue-500/20 items-center justify-center">
+                    <Feather name="log-in" size={16} color="#3b82f6" />
+                  </View>
+                  <View className="flex-1">
+                    <Text className={`text-xs ${textSecondary}`}>
+                      Waktu Masuk
                     </Text>
-                  </TouchableOpacity>
-                )}
+                    <Text className={`text-2xl font-bold ${textPrimary}`}>
+                      {checkInTime}
+                    </Text>
+                  </View>
+                </View>
               </View>
-            )}
-          </View>
+              <View className="flex-1">
+                <View className="flex-row items-center gap-3">
+                  <View className="w-8 h-8 rounded-full bg-green-500/20 items-center justify-center">
+                    <Feather name="log-out" size={16} color="#22c55e" />
+                  </View>
+                  <View className="flex-1">
+                    <Text className={`text-xs ${textSecondary}`}>
+                      Waktu Keluar
+                    </Text>
+                    <Text className={`text-2xl font-bold ${textPrimary}`}>
+                      {checkOutTime}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          )}
+
+          {!showFullDetails && (
+            <View className="items-center justify-center py-8">
+              <Feather
+                name={getStatusIcon() as any}
+                size={40}
+                color={getStatusColor()}
+              />
+              <Text
+                className={`text-xl font-bold mt-4 capitalize`}
+                style={{ color: getStatusColor() }}
+              >
+                {displayStatus}
+              </Text>
+              <Text className={`text-sm mt-1 ${textSecondary}`}>
+                Anda tidak melakukan presensi hari ini.
+              </Text>
+            </View>
+          )}
         </View>
 
-        {hasOvertime && (
+        {showFullDetails && (
+          <View
+            className={`${cardBg} mx-5 mt-4 rounded-xl p-5 shadow-sm border ${separator}`}
+          >
+            <Text className={`font-bold mb-4 ${textPrimary}`}>
+              Rincian Presensi
+            </Text>
+            <View className="gap-4">
+              <InfoRow
+                icon="map-pin"
+                label="Lokasi"
+                value="Di Kantor"
+                isDark={isDark}
+              />
+              {selectedPresensi.presensi_masuk.terlambat && (
+                <InfoRow
+                  icon="clock"
+                  label="Terlambat"
+                  value={
+                    selectedPresensi.presensi_masuk.durasi_terlambat || "-"
+                  }
+                  isDark={isDark}
+                  color={warningColor}
+                />
+              )}
+              {keluarLebihAwal && (
+                <View className="justify-center items-center gap-3">
+                  <InfoRow
+                    icon="alert-circle"
+                    label="Keluar Awal"
+                    value={alasanKeluarAwal || "-"}
+                    isDark={isDark}
+                    color={infoColor}
+                  />
+                  {buktiKeluarAwalUrl && (
+                    <TouchableOpacity
+                      onPress={() =>
+                        setEvidence({
+                          url: buktiKeluarAwalUrl,
+                          title: "Bukti Keluar Awal",
+                        })
+                      }
+                      className="pl-1"
+                    >
+                      <Text
+                        className={`text-sm font-medium underline`}
+                        style={{ color: infoColor }}
+                      >
+                        Lihat Bukti Keluar Awal
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
+            </View>
+          </View>
+        )}
+
+        {showFullDetails && hasOvertime && (
           <View
             className={`${cardBg} mx-5 mt-4 rounded-xl p-5 shadow-sm border ${separator}`}
           >

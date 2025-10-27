@@ -1,10 +1,6 @@
+import NotifikasiView from "@/src/presentation/views/notifikasi/notifikasi-view";
 import React from "react";
-import { Text, View } from "react-native";
 
 export default function NotifikasiRoute() {
-  return (
-    <View>
-      <Text>tes</Text>
-    </View>
-  );
+  return <NotifikasiView />;
 }

@@ -70,8 +70,15 @@ export default function RootLayout() {
                   />
                   <Stack.Screen
                     name="notifikasi"
-                    options={{ title: "Notifikasi", headerShown: true }}
+                    options={{
+                      title: "Notifikasi",
+                      headerShown: true,
+                      headerStyle: { backgroundColor: "#2C2C54" },
+                      headerTintColor: "#FFFFFF",
+                      headerTitleStyle: { fontWeight: "bold" },
+                    }}
                   />
+
                   <Stack.Screen
                     name="lengkapi-profil"
                     options={{

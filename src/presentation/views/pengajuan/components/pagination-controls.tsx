@@ -74,7 +74,7 @@ const PaginationControls = ({
           )}
         </View>
       </View>
-      <Text className={`text-center text-sm ${textSecondary} mt-3`}>
+      <Text className={`text-center text-sm ${textSecondary}`}>
         Menampilkan {startIndex} - {endIndex} dari {totalItems} pengajuan
       </Text>
     </View>
