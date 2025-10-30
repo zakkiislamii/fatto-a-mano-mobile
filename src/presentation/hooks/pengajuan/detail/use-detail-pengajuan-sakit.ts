@@ -1,12 +1,13 @@
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
 import { PengajuanSakit } from "@/src/common/types/pengajuan_sakit";
-import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
-import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
+import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
+import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const useDetailPengajuanSakit = (uid?: string) => {
   const [selectedIdSakit, setSelectedIdSakit] = useState<string | null>(null);
-  const [showDetailSheetSakit, setShowDetailSheetSakit] = useState<boolean>(false);
+  const [showDetailSheetSakit, setShowDetailSheetSakit] =
+    useState<boolean>(false);
   const [detail, setDetail] = useState<PengajuanSakit | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const unsubscribeRef = useRef<(() => void) | null>(null);

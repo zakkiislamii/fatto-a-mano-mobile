@@ -1,5 +1,5 @@
 import { UserRole } from "@/src/common/enums/user-role";
-import { AuthRepositoryImpl } from "@/src/data/repositories/auth/auth-repository-impl";
+import { AuthRepositoryImpl } from "@/src/data/repositories/auth-repository-impl";
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
 import { useDeleteToken } from "@/src/hooks/use-notifikasi";
 import { useRouter } from "expo-router";

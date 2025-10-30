@@ -1,7 +1,7 @@
 import { EditProfilData } from "@/src/common/types/user-data";
 import { UpdateProfilFormSchema } from "@/src/common/validators/profil/update-profil-form-schema";
-import { UserRepositoryImpl } from "@/src/data/repositories/user/user-repository-impl";
-import { IUserRepository } from "@/src/domain/repositories/user/i-user-repository";
+import { UserRepositoryImpl } from "@/src/data/repositories/user-repository-impl";
+import { IUserRepository } from "@/src/domain/repositories/i-user-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";

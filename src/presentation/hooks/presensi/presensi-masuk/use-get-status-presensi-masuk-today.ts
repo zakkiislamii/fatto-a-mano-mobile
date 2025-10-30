@@ -1,6 +1,6 @@
 import { PresensiMasukStatus } from "@/src/common/types/presensi-masuk-status";
-import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi/presensi-repository-impl";
-import { IPresensiRepository } from "@/src/domain/repositories/presensi/i-presensi-repository";
+import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
+import { IPresensiRepository } from "@/src/domain/repositories/i-presensi-repository";
 import { useEffect, useState } from "react";
 
 const useGetStatusPresensiMasukToday = (uid: string) => {

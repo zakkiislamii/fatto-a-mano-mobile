@@ -1,8 +1,8 @@
 import { PresensiKeluar } from "@/src/common/types/presensi-keluar";
 import Today from "@/src/common/utils/get-today";
 import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
-import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi/presensi-repository-impl";
-import { IPresensiRepository } from "@/src/domain/repositories/presensi/i-presensi-repository";
+import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
+import { IPresensiRepository } from "@/src/domain/repositories/i-presensi-repository";
 import { useGetJadwal } from "@/src/presentation/hooks/jadwal/use-get-jadwal";
 import useLiveLocation from "@/src/presentation/hooks/maps/use-live-location";
 import useWifi from "@/src/presentation/hooks/wifi/use-wifi";

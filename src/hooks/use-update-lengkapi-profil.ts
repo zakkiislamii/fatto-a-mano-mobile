@@ -11,9 +11,9 @@ import { expandHariKerja } from "../common/utils/expand-hari-kerja";
 import formatHariKerja from "../common/utils/format-hari-kerja";
 import { LengkapiProfilFormSchema } from "../common/validators/profil/update-lengkapi-profil-schema";
 import { ExcelServiceImpl } from "../data/data-sources/excel-service-impl";
-import { UserRepositoryImpl } from "../data/repositories/user/user-repository-impl";
+import { UserRepositoryImpl } from "../data/repositories/user-repository-impl";
 import { Sheets } from "../domain/models/sheets";
-import { IUserRepository } from "../domain/repositories/user/i-user-repository";
+import { IUserRepository } from "../domain/repositories/i-user-repository";
 
 const defaultValues: LengkapiProfil = {
   nama: "",

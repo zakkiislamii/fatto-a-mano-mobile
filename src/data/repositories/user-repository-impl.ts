@@ -5,7 +5,7 @@ import {
   LengkapiProfilData,
 } from "@/src/common/types/user-data";
 import { db } from "@/src/configs/firebase-config";
-import { IUserRepository } from "@/src/domain/repositories/user/i-user-repository";
+import { IUserRepository } from "@/src/domain/repositories/i-user-repository";
 import {
   DocumentData,
   Timestamp,

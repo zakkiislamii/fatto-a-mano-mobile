@@ -13,7 +13,7 @@ import {
 } from "@/src/common/types/tambah-pengajuan-data";
 import { db } from "@/src/configs/firebase-config";
 import { Pengajuan } from "@/src/domain/models/pengajuan";
-import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
+import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import {
   addDoc,
   collection,

@@ -1,6 +1,6 @@
 import { Karyawan } from "@/src/common/types/karyawan";
-import { KaryawanRepositoryImpl } from "@/src/data/repositories/karyawan/karyawan-repository-impl";
-import { IKaryawanRepository } from "@/src/domain/repositories/karyawan/i-karyawan-repository";
+import { KaryawanRepositoryImpl } from "@/src/data/repositories/karyawan-repository-impl";
+import { IKaryawanRepository } from "@/src/domain/repositories/i-karyawan-repository";
 import usePagination from "@/src/hooks/use-pagination";
 import { useEffect, useMemo, useState } from "react";
 

@@ -1,4 +1,4 @@
-import { RiwayatRepositoryImpl } from "@/src/data/repositories/riwayat/riwayat-repository-impl";
+import { RiwayatRepositoryImpl } from "@/src/data/repositories/riwayat-repository-impl";
 import { Presensi } from "@/src/domain/models/presensi";
 import { IRiwayatRepository } from "@/src/domain/repositories/riwayat/i-riwayat-repository";
 import { useEffect, useState } from "react";

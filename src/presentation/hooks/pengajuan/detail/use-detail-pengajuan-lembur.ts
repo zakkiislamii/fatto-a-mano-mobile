@@ -1,7 +1,7 @@
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
 import { PengajuanLembur } from "@/src/common/types/pengajuan-lembur";
-import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
-import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
+import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
+import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const useDetailPengajuanLembur = (uid?: string) => {

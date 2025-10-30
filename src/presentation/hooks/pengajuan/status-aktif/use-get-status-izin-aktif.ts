@@ -1,6 +1,6 @@
 import Today from "@/src/common/utils/get-today";
-import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
-import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
+import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
+import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import { useEffect, useState } from "react";
 
 const useGetStatusIzinAktif = (uid: string) => {

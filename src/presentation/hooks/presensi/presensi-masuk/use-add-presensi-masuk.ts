@@ -3,7 +3,7 @@ import { PresensiMasuk } from "@/src/common/types/presensi-masuk";
 import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
 import Today from "@/src/common/utils/get-today";
 import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
-import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi/presensi-repository-impl";
+import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
 import { useGetJadwal } from "@/src/presentation/hooks/jadwal/use-get-jadwal";
 import useLiveLocation from "@/src/presentation/hooks/maps/use-live-location";
 import useGetStatusIzinAktif from "@/src/presentation/hooks/pengajuan/status-aktif/use-get-status-izin-aktif";

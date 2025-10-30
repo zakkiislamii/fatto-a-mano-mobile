@@ -8,8 +8,8 @@ import {
   uploadToSupabase,
 } from "@/src/common/utils/upload-to-supabase";
 import { PengajuanSakitFormSchema } from "@/src/common/validators/pengajuan/pengajuan-sakit-form-schema";
-import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
-import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
+import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
+import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -47,7 +47,7 @@ const useEditPengajuanSakit = (uid: string | undefined) => {
       return;
     }
 
-    const repository:IPengajuanRepository = new PengajuanRepositoryImpl();
+    const repository: IPengajuanRepository = new PengajuanRepositoryImpl();
 
     const unsubscribe = repository.getDetail(uid, item.id, (data) => {
       if (data && data.tipe === TipePengajuan.sakit) {

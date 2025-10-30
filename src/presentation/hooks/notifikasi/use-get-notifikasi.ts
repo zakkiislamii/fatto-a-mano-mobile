@@ -1,6 +1,6 @@
-import { NotifikasiRepositoryImpl } from "@/src/data/repositories/notifikasi/notifikasi-repository-impl";
+import { NotifikasiRepositoryImpl } from "@/src/data/repositories/notifikasi-repository-impl";
 import { Notifikasi } from "@/src/domain/models/notifikasi";
-import { INotifikasiRepository } from "@/src/domain/repositories/notifikasi/i-notifikasi-repository";
+import { INotifikasiRepository } from "@/src/domain/repositories/i-notifikasi-repository";
 import { useEffect, useState } from "react";
 
 const useGetNotifikasi = (uid: string) => {

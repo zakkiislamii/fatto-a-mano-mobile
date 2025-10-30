@@ -1,6 +1,6 @@
 import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
 import { db } from "@/src/configs/firebase-config";
-import { IJadwalRepository } from "@/src/domain/repositories/jadwal/i-jadwal-repository";
+import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
 import { Unsubscribe } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
 

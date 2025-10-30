@@ -1,6 +1,6 @@
 import { mapFirebaseAuthError } from "@/src/common/utils/auth-error-mapper";
 import { LoginFormSchema } from "@/src/common/validators/auth/login-form-schema";
-import { AuthRepositoryImpl } from "@/src/data/repositories/auth/auth-repository-impl";
+import { AuthRepositoryImpl } from "@/src/data/repositories/auth-repository-impl";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";

@@ -1,7 +1,7 @@
 import { UserRole } from "@/src/common/enums/user-role";
 import { Karyawan } from "@/src/common/types/karyawan";
 import { db } from "@/src/configs/firebase-config";
-import { IKaryawanRepository } from "@/src/domain/repositories/karyawan/i-karyawan-repository";
+import { IKaryawanRepository } from "@/src/domain/repositories/i-karyawan-repository";
 import {
   Unsubscribe,
   collection,

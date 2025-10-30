@@ -1,4 +1,4 @@
-import { AuthRepositoryImpl } from "@/src/data/repositories/auth/auth-repository-impl";
+import { AuthRepositoryImpl } from "@/src/data/repositories/auth-repository-impl";
 import { useRef, useState } from "react";
 import Toast from "react-native-toast-message";
 

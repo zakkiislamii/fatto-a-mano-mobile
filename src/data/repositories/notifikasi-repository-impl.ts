@@ -1,6 +1,6 @@
 import { db } from "@/src/configs/firebase-config";
 import { Notifikasi } from "@/src/domain/models/notifikasi";
-import { INotifikasiRepository } from "@/src/domain/repositories/notifikasi/i-notifikasi-repository";
+import { INotifikasiRepository } from "@/src/domain/repositories/i-notifikasi-repository";
 import {
   collection,
   doc,

@@ -1,8 +1,8 @@
 import type { ProfilKaryawan } from "@/src/common/types/profil-karyawan";
 import type { Unsubscribe } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
-import { UserRepositoryImpl } from "../data/repositories/user/user-repository-impl";
-import { IUserRepository } from "../domain/repositories/user/i-user-repository";
+import { UserRepositoryImpl } from "../data/repositories/user-repository-impl";
+import { IUserRepository } from "../domain/repositories/i-user-repository";
 
 export function useProfilLengkap(uid?: string | null) {
   const [profile, setProfile] = useState<ProfilKaryawan | null>(null);

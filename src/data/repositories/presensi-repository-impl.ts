@@ -5,7 +5,7 @@ import { PresensiMasuk } from "@/src/common/types/presensi-masuk";
 import { PresensiMasukStatus } from "@/src/common/types/presensi-masuk-status";
 import Today from "@/src/common/utils/get-today";
 import { db } from "@/src/configs/firebase-config";
-import { IPresensiRepository } from "@/src/domain/repositories/presensi/i-presensi-repository";
+import { IPresensiRepository } from "@/src/domain/repositories/i-presensi-repository";
 import {
   doc,
   onSnapshot,

@@ -9,8 +9,8 @@ import {
   uploadToSupabase,
 } from "@/src/common/utils/upload-to-supabase";
 import { PengajuanIzinFormSchema } from "@/src/common/validators/pengajuan/pengajuan-izin-form-schema";
-import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
-import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
+import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
+import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";

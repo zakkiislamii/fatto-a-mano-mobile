@@ -1,6 +1,6 @@
 import { mapFirebaseAuthError } from "@/src/common/utils/auth-error-mapper";
 import { RegisterFormSchema } from "@/src/common/validators/auth/register-form-schema";
-import { AuthRepositoryImpl } from "@/src/data/repositories/auth/auth-repository-impl";
+import { AuthRepositoryImpl } from "@/src/data/repositories/auth-repository-impl";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
