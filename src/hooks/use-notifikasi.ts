@@ -1,11 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
-import { NotifikasiService } from "../data/data-sources/notifikasi-service";
+import { NotifikasiServiceImpl } from "../data/data-sources/notifikasi-service-impl";
+
+const notificationService = new NotifikasiServiceImpl();
 
 export const useRegisterToken = () => {
   return useMutation({
     mutationFn: (uid: string) => {
-      const notificationService = new NotifikasiService(uid);
-      return notificationService.RegisterToken();
+      return notificationService.RegisterToken(uid);
     },
   });
 };
@@ -13,8 +14,7 @@ export const useRegisterToken = () => {
 export const useDeleteToken = () => {
   return useMutation({
     mutationFn: (uid: string) => {
-      const notificationService = new NotifikasiService(uid);
-      return notificationService.DeleteToken();
+      return notificationService.DeleteToken(uid);
     },
   });
 };

@@ -47,7 +47,7 @@ export class NotifikasiRepositoryImpl implements INotifikasiRepository {
             "[NotifikasiRepository] Error getting notifications realtime:",
             error
           );
-          callback([]); // Kirim array kosong jika terjadi error
+          callback([]);
         }
       );
 
@@ -69,13 +69,11 @@ export class NotifikasiRepositoryImpl implements INotifikasiRepository {
       if (!uid) return null;
       const colRef = collection(db, `users/${uid}/notifications`);
 
-      // Optimasi: Hanya query dokumen yang belum dibaca
       const q = query(colRef, where("read", "==", false));
 
       const unsubscribe = onSnapshot(
         q,
         (querySnapshot) => {
-          // Cukup hitung jumlah dokumen yang dikembalikan
           callback(querySnapshot.size);
         },
         (error) => {
@@ -83,7 +81,7 @@ export class NotifikasiRepositoryImpl implements INotifikasiRepository {
             "[NotifikasiRepository] Error getting unread count:",
             error
           );
-          callback(0); // Kirim 0 jika terjadi error
+          callback(0);
         }
       );
 
@@ -117,11 +115,7 @@ export class NotifikasiRepositoryImpl implements INotifikasiRepository {
     try {
       if (!uid) return;
       const colRef = collection(db, `users/${uid}/notifications`);
-
-      // Optimasi: Query dokumen yang belum dibaca saja
       const q = query(colRef, where("read", "==", false));
-
-      // Optimasi: Gunakan getDocs (bukan onSnapshot) dan writeBatch
       const querySnapshot = await getDocs(q);
       const batch = writeBatch(db);
 

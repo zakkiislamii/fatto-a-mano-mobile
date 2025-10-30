@@ -1,17 +1,15 @@
+import { INotifikasiService } from "@/src/domain/services/i-notifikasi-service";
 import axios from "axios";
 import Constants, { ExecutionEnvironment } from "expo-constants";
 import * as Notifications from "expo-notifications";
 
-export class NotifikasiService {
-  private readonly uid: string;
-  private url: string = process.env.EXPO_PUBLIC_BE_URL || "";
+export class NotifikasiServiceImpl implements INotifikasiService {
+  private readonly url: string = process.env.EXPO_PUBLIC_BE_URL || "";
 
-  public constructor(uid: string) {
-    this.uid = uid;
-  }
-
-  public async RegisterToken(): Promise<boolean> {
+  public async RegisterToken(uid: string): Promise<boolean> {
     try {
+      if (!uid) throw new Error("UID diperlukan untuk mendaftarkan token.");
+
       const isExpoGo =
         Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
       if (isExpoGo) {
@@ -29,7 +27,7 @@ export class NotifikasiService {
       }
 
       await axios.post(`${this.url}/notifications/register-token`, {
-        uid: this.uid,
+        uid: uid,
         token,
       });
       return true;
@@ -39,8 +37,10 @@ export class NotifikasiService {
     }
   }
 
-  public async DeleteToken(): Promise<boolean> {
+  public async DeleteToken(uid: string): Promise<boolean> {
     try {
+      if (!uid) throw new Error("UID diperlukan untuk menghapus token.");
+
       const isExpoGo =
         Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
       if (isExpoGo) {
@@ -58,7 +58,7 @@ export class NotifikasiService {
       }
 
       await axios.post(`${this.url}/notifications/unregister-token`, {
-        uid: this.uid,
+        uid: uid,
         token,
       });
       return true;
