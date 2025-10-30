@@ -1,10 +1,12 @@
-import { UserRepository } from "@/src/domain/repositories/user/user-repository";
+import { EditProfilData } from "@/src/common/types/user-data";
+import { UpdateProfilFormSchema } from "@/src/common/validators/profil/update-profil-form-schema";
+import { UserRepositoryImpl } from "@/src/data/repositories/user/user-repository-impl";
+import { IUserRepository } from "@/src/domain/repositories/user/i-user-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import Toast from "react-native-toast-message";
-import { UpdateProfilFormSchema } from "../../validators/profil/update-profil-form-schema";
 
 interface ProfilKaryawan {
   nama?: string;
@@ -19,7 +21,7 @@ const useEditProfil = (
   const [loading, setLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const repo = useMemo(() => (uid ? new UserRepository(uid) : null), [uid]);
+  const repo: IUserRepository = useMemo(() => new UserRepositoryImpl(), []);
   const router = useRouter();
   const [showEditSheet, setShowEditSheet] = useState<boolean>(false);
 
@@ -56,7 +58,7 @@ const useEditProfil = (
   }, [profilKaryawan, reset]);
 
   const onSubmit = handleSubmit(async (values) => {
-    if (!uid || !repo) {
+    if (!uid) {
       Toast.show({
         type: "error",
         text1: "Terjadi kesalahan, silahkan coba lagi!",
@@ -65,7 +67,7 @@ const useEditProfil = (
       return;
     }
 
-    const payload: { nama?: string; nik?: string; nomor_hp?: string } = {};
+    const payload: EditProfilData = {};
 
     if (values?.nama && values.nama !== profilKaryawan?.nama) {
       payload.nama = String(values.nama).trim();
@@ -87,12 +89,7 @@ const useEditProfil = (
     setErrorMsg(null);
 
     try {
-      if (payload.nama !== undefined) repo.setNama(payload.nama);
-      if (payload.nik !== undefined) repo.setNik(payload.nik);
-      if (payload.nomor_hp !== undefined) repo.setNomorHp(payload.nomor_hp);
-
-      await repo.editProfil();
-
+      await repo.editProfil(uid, payload);
       setShowModal(false);
       setShowEditSheet(false);
       Toast.show({ type: "success", text1: "Profil diperbarui" });

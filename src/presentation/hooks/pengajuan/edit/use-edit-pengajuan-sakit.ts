@@ -1,14 +1,15 @@
 import { KeteranganFile } from "@/src/common/enums/keterangan-file";
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
 import { DaftarPengajuan } from "@/src/common/types/daftar-pengajuan";
+import { EditPengajuanSakitData } from "@/src/common/types/edit-pengajuan-data";
 import { pickImageFromLibrary } from "@/src/common/utils/image-picker";
 import {
   updateFileInSupabase,
   uploadToSupabase,
 } from "@/src/common/utils/upload-to-supabase";
-import { PengajuanLemburRepository } from "@/src/domain/repositories/pengajuan/pengajuan-lembur-repository";
-import { PengajuanSakitRepository } from "@/src/domain/repositories/pengajuan/pengajuan-sakit-repository";
-import { PengajuanSakitFormSchema } from "@/src/presentation/validators/pengajuan/pengajuan-sakit-form-schema";
+import { PengajuanSakitFormSchema } from "@/src/common/validators/pengajuan/pengajuan-sakit-form-schema";
+import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
+import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -46,10 +47,9 @@ const useEditPengajuanSakit = (uid: string | undefined) => {
       return;
     }
 
-    const repository = new PengajuanSakitRepository(uid);
-    repository.setId(item.id);
+    const repository:IPengajuanRepository = new PengajuanRepositoryImpl();
 
-    const unsubscribe = repository.getDetail((data) => {
+    const unsubscribe = repository.getDetail(uid, item.id, (data) => {
       if (data && data.tipe === TipePengajuan.sakit) {
         setValue("keterangan", data.detail.keterangan || "");
         setValue("bukti_pendukung", data.detail.bukti_pendukung || "");
@@ -65,7 +65,9 @@ const useEditPengajuanSakit = (uid: string | undefined) => {
       setShowEditSheet(true);
 
       try {
-        unsubscribe();
+        if (unsubscribe) {
+          unsubscribe();
+        }
       } catch (e) {
         console.error(e);
         throw e;
@@ -101,13 +103,12 @@ const useEditPengajuanSakit = (uid: string | undefined) => {
     setLoading(true);
 
     try {
-      const repository = new PengajuanLemburRepository(uid);
-      repository.setId(selectedId);
+      const repository: IPengajuanRepository = new PengajuanRepositoryImpl();
+      const dataToUpdate: EditPengajuanSakitData = {};
 
       const keterangan = watch("keterangan");
-
       if (keterangan !== undefined) {
-        repository.setKeterangan((keterangan || "").trim());
+        dataToUpdate.keterangan = (keterangan || "").trim();
       }
 
       if (buktiPendukung && buktiPendukung !== oldBuktiUrl) {
@@ -118,22 +119,22 @@ const useEditPengajuanSakit = (uid: string | undefined) => {
             uid,
             buktiPendukung,
             oldBuktiUrl,
-            KeteranganFile.bukti_lembur
+            KeteranganFile.bukti_sakit
           );
           uploadedUrl = result.url || "";
         } else {
           const result = await uploadToSupabase(
             uid,
             buktiPendukung,
-            KeteranganFile.bukti_lembur
+            KeteranganFile.bukti_sakit
           );
           uploadedUrl = result.url || "";
         }
 
-        repository.setBuktiPendukung(uploadedUrl);
+        dataToUpdate.bukti_pendukung = uploadedUrl;
       }
 
-      await repository.edit();
+      await repository.editSakit(uid, selectedId, dataToUpdate);
 
       Toast.show({
         type: "success",

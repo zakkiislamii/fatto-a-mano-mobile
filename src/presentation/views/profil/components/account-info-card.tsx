@@ -42,7 +42,6 @@ const AccountInfoCard = ({
     canSubmit,
     handleUpdateProfil,
     loading: loadingSubmit,
-    error: submitError,
     showModal,
     closeModal,
     onPress,

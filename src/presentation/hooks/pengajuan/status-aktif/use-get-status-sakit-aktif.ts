@@ -1,5 +1,6 @@
 import Today from "@/src/common/utils/get-today";
-import { PengajuanSakitRepository } from "@/src/domain/repositories/pengajuan/pengajuan-sakit-repository";
+import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
+import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
 import { useEffect, useState } from "react";
 
 const useGetStatusSakitAktif = (uid: string) => {
@@ -13,11 +14,12 @@ const useGetStatusSakitAktif = (uid: string) => {
     }
 
     const tanggalHariIni = Today();
-    const repo = new PengajuanSakitRepository(uid);
+    const repo: IPengajuanRepository = new PengajuanRepositoryImpl();
 
     setLoading(true);
 
-    const unsubscribe = repo.getStatusSakitAktifRealtime(
+    const unsubscribe = repo.getStatusSakitAktif(
+      uid,
       tanggalHariIni,
       (isAktif) => {
         setIsSakitAktif(isAktif);
@@ -26,7 +28,9 @@ const useGetStatusSakitAktif = (uid: string) => {
     );
 
     return () => {
-      unsubscribe();
+      if (unsubscribe) {
+        unsubscribe();
+      }
     };
   }, [uid]);
 

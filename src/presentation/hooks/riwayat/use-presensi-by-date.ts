@@ -1,6 +1,6 @@
-// use-presensi-by-date.ts
+import { RiwayatRepositoryImpl } from "@/src/data/repositories/riwayat/riwayat-repository-impl";
 import { Presensi } from "@/src/domain/models/presensi";
-import { RiwayatRepository } from "@/src/domain/repositories/riwayat/riwayat-repository";
+import { IRiwayatRepository } from "@/src/domain/repositories/riwayat/i-riwayat-repository";
 import { useEffect, useState } from "react";
 
 export const usePresensiByDate = (uid: string, tanggal: string) => {
@@ -17,15 +17,17 @@ export const usePresensiByDate = (uid: string, tanggal: string) => {
     setLoading(true);
     setError(null);
 
-    const repository = new RiwayatRepository(uid);
+    const repository: IRiwayatRepository = new RiwayatRepositoryImpl();
 
-    const unsubscribe = repository.getPresensiByDate(tanggal, (data) => {
+    const unsubscribe = repository.getPresensiByDate(uid, tanggal, (data) => {
       setPresensi(data);
       setLoading(false);
     });
 
     return () => {
-      unsubscribe();
+      if (unsubscribe) {
+        unsubscribe();
+      }
     };
   }, [uid, tanggal]);
 

@@ -1,7 +1,8 @@
 import { DaftarPengajuan } from "@/src/common/types/daftar-pengajuan";
-import { PengajuanSakitRepository } from "@/src/domain/repositories/pengajuan/pengajuan-sakit-repository";
+import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
+import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
-import { Unsubscribe } from "firebase/auth";
+import { Unsubscribe } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
 
@@ -20,16 +21,21 @@ const useDaftarPengajuan = () => {
     }
 
     setLoading(true);
-    const repo = new PengajuanSakitRepository(uid);
+    const repo: IPengajuanRepository = new PengajuanRepositoryImpl();
 
-    const unsubscribe: Unsubscribe = repo.getDaftar((list) => {
+    const unsubscribe: Unsubscribe | null = repo.getDaftar(uid, (list) => {
       const sortedList = list.sort(
         (a, b) => b.updated_at.toMillis() - a.updated_at.toMillis()
       );
       setPengajuanList(sortedList);
       setLoading(false);
     });
-    return () => unsubscribe();
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, [uid]);
 
   const handleDelete = useCallback(
@@ -53,9 +59,8 @@ const useDaftarPengajuan = () => {
 
       try {
         setDeleting(true);
-        const repo = new PengajuanSakitRepository(uid);
-        repo.setId(id);
-        await repo.hapus();
+        const repo: IPengajuanRepository = new PengajuanRepositoryImpl();
+        await repo.hapus(uid, id);
         Toast.show({ type: "success", text1: "Pengajuan Berhasil Dihapus" });
         if (selectedToDelete === id) {
           setSelectedToDelete(null);

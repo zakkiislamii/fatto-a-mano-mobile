@@ -1,5 +1,6 @@
 import { Karyawan } from "@/src/common/types/karyawan";
-import { KaryawanRepository } from "@/src/domain/repositories/karyawan/karyawan-repository";
+import { KaryawanRepositoryImpl } from "@/src/data/repositories/karyawan/karyawan-repository-impl";
+import { IKaryawanRepository } from "@/src/domain/repositories/karyawan/i-karyawan-repository";
 import usePagination from "@/src/hooks/use-pagination";
 import { useEffect, useMemo, useState } from "react";
 
@@ -10,7 +11,7 @@ export const useKaryawanRealTime = () => {
 
   // Real-time listener
   useEffect(() => {
-    const repo = new KaryawanRepository();
+    const repo: IKaryawanRepository = new KaryawanRepositoryImpl();
     const unsub = repo.getAllKaryawanRealTime((data) => {
       if (data) {
         setKaryawanList(data);
@@ -56,11 +57,19 @@ export const useKaryawanRealTime = () => {
     setSearchQuery("");
   };
 
+  const handleSearchChange = (text: string) => {
+    setSearchQuery(text);
+  };
+
+  const handleClearSearch = () => {
+    clearSearch();
+  };
+
   return {
     loading,
     searchQuery,
-    setSearchQuery,
-    clearSearch,
+    handleSearchChange,
+    handleClearSearch,
     isSearching: searchQuery.trim().length > 0,
     ...pagination,
   };

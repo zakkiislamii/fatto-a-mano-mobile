@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { NotifikasiService } from "../domain/services/notifikasi-service";
+import { NotifikasiService } from "../data/data-sources/notifikasi-service";
 
 export const useRegisterToken = () => {
   return useMutation({

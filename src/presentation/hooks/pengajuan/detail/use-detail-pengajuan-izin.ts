@@ -1,6 +1,7 @@
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
 import { PengajuanIzin } from "@/src/common/types/pengajuan_izin";
-import { PengajuanIzinRepository } from "@/src/domain/repositories/pengajuan/pengajuan-izin-repository";
+import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
+import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const useDetailPengajuanIzin = (uid?: string) => {
@@ -46,10 +47,9 @@ const useDetailPengajuanIzin = (uid?: string) => {
     }
 
     setLoading(true);
-    const repo = new PengajuanIzinRepository(uid);
-    repo.setId(selectedIdIzin);
+    const repo: IPengajuanRepository = new PengajuanRepositoryImpl();
 
-    const unsub = repo.getDetail((data) => {
+    const unsub = repo.getDetail(uid, selectedIdIzin, (data) => {
       if (!data) {
         setDetail(null);
         setLoading(false);

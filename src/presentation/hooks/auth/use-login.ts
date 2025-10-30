@@ -1,14 +1,14 @@
 import { mapFirebaseAuthError } from "@/src/common/utils/auth-error-mapper";
-import { AuthRepository } from "@/src/domain/repositories/auth/auth-repository";
+import { LoginFormSchema } from "@/src/common/validators/auth/login-form-schema";
+import { AuthRepositoryImpl } from "@/src/data/repositories/auth/auth-repository-impl";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import Toast from "react-native-toast-message";
-import { LoginFormSchema } from "../../validators/auth/login-form-schema";
 
 const useLogin = () => {
-  const vmRef = useRef(new AuthRepository());
+  const vmRef = useRef(new AuthRepositoryImpl());
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -33,9 +33,7 @@ const useLogin = () => {
     setLoading(true);
     setSubmitError(null);
     try {
-      vmRef.current.setEmail(email);
-      vmRef.current.setPassword(password);
-      await vmRef.current.login();
+      await vmRef.current.login(email, password);
       reset();
       Toast.show({ type: "success", text1: "Login Berhasil!" });
       router.replace("/login");

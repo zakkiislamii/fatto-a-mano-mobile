@@ -30,23 +30,15 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
     endIndex,
     totalItems,
     searchQuery,
-    setSearchQuery,
-    clearSearch,
     isSearching,
+    handleSearchChange,
+    handleClearSearch,
   } = useKaryawanRealTime();
 
   const inputBg = isDark ? "bg-gray-800" : "bg-gray-100";
   const inputText = isDark ? "text-white" : "text-gray-900";
   const placeholderColor = isDark ? "#9ca3af" : "#6b7280";
   const borderColor = isDark ? "border-gray-700" : "border-gray-300";
-
-  const handleSearchChange = (text: string) => {
-    setSearchQuery(text);
-  };
-
-  const handleClearSearch = () => {
-    clearSearch();
-  };
 
   return (
     <View className={`${screenBg} flex-1`}>
@@ -107,9 +99,7 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
                 isDark ? "text-gray-400" : "text-gray-600"
               }`}
             >
-              {isSearching
-                ? `Tidak ada karyawan dengan kata kunci "${searchQuery}"`
-                : "Belum ada data karyawan."}
+              Karyawan tidak ditemukan
             </Text>
           </View>
         ) : (

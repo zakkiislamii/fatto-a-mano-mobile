@@ -1,5 +1,6 @@
+import { NotifikasiRepositoryImpl } from "@/src/data/repositories/notifikasi/notifikasi-repository-impl";
 import { Notifikasi } from "@/src/domain/models/notifikasi";
-import { NotifikasiRepository } from "@/src/domain/repositories/notifikasi/notifikasi-repository";
+import { INotifikasiRepository } from "@/src/domain/repositories/notifikasi/i-notifikasi-repository";
 import { useEffect, useState } from "react";
 
 const useGetNotifikasi = (uid: string) => {
@@ -13,28 +14,32 @@ const useGetNotifikasi = (uid: string) => {
       return;
     }
 
-    const repo = new NotifikasiRepository(uid);
+    const repo: INotifikasiRepository = new NotifikasiRepositoryImpl();
     setLoading(true);
 
-    const unsubscribeNotif = repo.getAllRealtime((data) => {
+    const unsubscribeNotif = repo.getAllRealtime(uid, (data) => {
       setNotifikasi(data);
       setLoading(false);
     });
 
-    const unsubscribeCount = repo.getUnreadCountRealtime((count) => {
+    const unsubscribeCount = repo.getUnreadCountRealtime(uid, (count) => {
       setUnreadCount(count);
     });
 
     return () => {
-      unsubscribeNotif();
-      unsubscribeCount();
+      if (unsubscribeNotif) {
+        unsubscribeNotif();
+      }
+      if (unsubscribeCount) {
+        unsubscribeCount();
+      }
     };
   }, [uid]);
 
   const markAsRead = async (notificationId: string) => {
     try {
-      const repo = new NotifikasiRepository(uid);
-      await repo.markAsRead(notificationId);
+      const repo: INotifikasiRepository = new NotifikasiRepositoryImpl();
+      await repo.markAsRead(uid, notificationId);
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
@@ -42,8 +47,8 @@ const useGetNotifikasi = (uid: string) => {
 
   const markAllAsRead = async () => {
     try {
-      const repo = new NotifikasiRepository(uid);
-      await repo.markAllAsRead();
+      const repo: INotifikasiRepository = new NotifikasiRepositoryImpl();
+      await repo.markAllAsRead(uid);
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
     }

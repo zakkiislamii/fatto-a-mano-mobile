@@ -1,6 +1,7 @@
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
 import { PengajuanLembur } from "@/src/common/types/pengajuan-lembur";
-import { PengajuanLemburRepository } from "@/src/domain/repositories/pengajuan/pengajuan-lembur-repository";
+import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
+import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const useDetailPengajuanLembur = (uid?: string) => {
@@ -46,10 +47,9 @@ const useDetailPengajuanLembur = (uid?: string) => {
     }
 
     setLoading(true);
-    const repo = new PengajuanLemburRepository(uid);
-    repo.setId(selectedIdLembur);
+    const repo: IPengajuanRepository = new PengajuanRepositoryImpl();
 
-    const unsub = repo.getDetail((data) => {
+    const unsub = repo.getDetail(uid, selectedIdLembur, (data) => {
       if (!data) {
         setDetail(null);
         setLoading(false);

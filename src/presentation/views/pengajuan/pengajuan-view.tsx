@@ -14,6 +14,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import PaginationControls from "../../../components/ui/pagination-controls";
+import usePagination from "../../../hooks/use-pagination";
 import useDetailPengajuanIzin from "../../hooks/pengajuan/detail/use-detail-pengajuan-izin";
 import useDetailPengajuanLembur from "../../hooks/pengajuan/detail/use-detail-pengajuan-lembur";
 import useDetailPengajuanSakit from "../../hooks/pengajuan/detail/use-detail-pengajuan-sakit";
@@ -30,11 +32,9 @@ import FormEditIzin from "./components/edit/form-edit-izin";
 import FormEditLembur from "./components/edit/form-edit-lembur";
 import FormEditSakit from "./components/edit/form-edit-sakit";
 import FormDateTimePicker from "./components/form-date-time-picker";
-import PaginationControls from "../../../components/ui/pagination-controls";
 import PengajuanCard from "./components/pengajuan-card";
 import FormTambahIzin from "./components/tambah/form-tambah-izin";
 import FormTambahSakit from "./components/tambah/form-tambah-sakit";
-import usePagination from "../../../hooks/use-pagination";
 import usePengajuanView from "./hooks/use-pengajuan-view";
 
 const PengajuanView = () => {
@@ -240,7 +240,7 @@ const PengajuanView = () => {
         Belum ada pengajuan.
       </Text>
       <Text className={`${textSecondary} opacity-70`}>
-        Tekan "Tambah Pengajuan" untuk memulai.
+        Tekan &quot;+&quot; untuk memulai.
       </Text>
     </View>
   );
@@ -307,7 +307,7 @@ const PengajuanView = () => {
         onSecondaryButtonPress={handlePilihIzin}
       />
 
-      {/* Sakit */}
+      {/* Tambah Sakit */}
       <DynamicBottomSheet
         isVisible={showSakitSheet}
         title="Formulir Pengajuan Sakit"
@@ -327,7 +327,7 @@ const PengajuanView = () => {
         }
       />
 
-      {/* Izin */}
+      {/* Tambah Izin */}
       <DynamicBottomSheet
         isVisible={showIzinSheet}
         title="Formulir Pengajuan Izin"
@@ -413,6 +413,7 @@ const PengajuanView = () => {
         }
       />
 
+      {/* MODAL KONFIRMASI EDIT IZIN */}
       <DynamicModal
         isVisible={showModalEditIzin}
         title="Konfirmasi Perubahan"
@@ -551,6 +552,7 @@ const PengajuanView = () => {
         isDark={isDark}
       />
 
+      {/* MODAL KONFIRMASI EDIT SAKIT */}
       <DynamicModal
         isVisible={showModalEditSakit}
         title="Konfirmasi Perubahan"

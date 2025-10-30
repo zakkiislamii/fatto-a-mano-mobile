@@ -1,24 +1,26 @@
-import { AuthRepository } from "@/src/domain/repositories/auth/auth-repository";
+import { AuthRepositoryImpl } from "@/src/data/repositories/auth/auth-repository-impl";
 import { useRef, useState } from "react";
 import Toast from "react-native-toast-message";
 
 export const useLoginWithGoogle = () => {
-  const vmRef = useRef(new AuthRepository());
+  const vmRef = useRef(new AuthRepositoryImpl());
   const [loading, setLoading] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const handleLoginWithGoogle = async () => {
+  const handleLoginWithGoogle = async (): Promise<boolean> => {
     setLoading(true);
     setSubmitError(null);
     try {
       await vmRef.current.loginWithGoogle();
       Toast.show({
         type: "success",
-        text1: "Login dengan google Berhasil!",
+        text1: "Login dengan Google berhasil!",
       });
       return true;
     } catch (e: any) {
-      setSubmitError(e?.message ?? "Gagal login dengan Google.");
+      const message = e?.message ?? "Gagal login dengan Google.";
+      setSubmitError(message);
+      Toast.show({ type: "error", text1: message });
       return false;
     } finally {
       setLoading(false);

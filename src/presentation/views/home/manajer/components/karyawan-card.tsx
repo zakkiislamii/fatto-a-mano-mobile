@@ -16,7 +16,6 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
   const [isSheetVisible, setSheetVisible] = useState(false);
 
   if (!karyawan) {
-    console.warn("⚠️ KaryawanCard: karyawan data is undefined");
     return null;
   }
 
@@ -37,7 +36,7 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
         {/* Info Section */}
         <View style={styles.infoSection}>
           <Text style={[styles.nama, { color: textPrimary }]} numberOfLines={1}>
-            {karyawan.nama || "Tanpa Nama"}
+            {karyawan.nama || "-"}
           </Text>
 
           <View style={styles.infoRow}>
@@ -46,7 +45,7 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
               style={[styles.infoText, { color: textSecondary }]}
               numberOfLines={1}
             >
-              {karyawan.divisi || "Tidak ada divisi"}
+              {karyawan.divisi || "-"}
             </Text>
           </View>
 
@@ -60,17 +59,15 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
             </Text>
           </View>
 
-          {karyawan.nomor_hp && (
-            <View style={styles.infoRow}>
-              <Feather name="phone" size={14} color={iconColor} />
-              <Text
-                style={[styles.infoText, { color: textSecondary }]}
-                numberOfLines={1}
-              >
-                {karyawan.nomor_hp}
-              </Text>
-            </View>
-          )}
+          <View style={styles.infoRow}>
+            <Feather name="phone" size={14} color={iconColor} />
+            <Text
+              style={[styles.infoText, { color: textSecondary }]}
+              numberOfLines={1}
+            >
+              {karyawan.nomor_hp || "-"}
+            </Text>
+          </View>
         </View>
 
         {/* Action Buttons */}

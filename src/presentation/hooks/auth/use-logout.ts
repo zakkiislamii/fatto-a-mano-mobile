@@ -1,5 +1,5 @@
 import { UserRole } from "@/src/common/enums/user-role";
-import { AuthRepository } from "@/src/domain/repositories/auth/auth-repository";
+import { AuthRepositoryImpl } from "@/src/data/repositories/auth/auth-repository-impl";
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
 import { useDeleteToken } from "@/src/hooks/use-notifikasi";
 import { useRouter } from "expo-router";
@@ -11,7 +11,7 @@ const useLogout = () => {
   const { mutateAsync: deleteToken } = useDeleteToken();
   const [loading, setLoading] = useState<boolean>(false);
   const [logoutModalVisible, setLogoutModalVisible] = useState<boolean>(false);
-  const vmRef = useRef(new AuthRepository());
+  const vmRef = useRef(new AuthRepositoryImpl());
   const router = useRouter();
   const onLogoutPress = () => setLogoutModalVisible(true);
   const closeLogoutModal = () => setLogoutModalVisible(false);

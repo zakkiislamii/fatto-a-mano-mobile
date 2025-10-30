@@ -1,14 +1,19 @@
-import { UserRepository } from "@/src/domain/repositories/user/user-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { router } from "expo-router";
+import { Unsubscribe } from "firebase/firestore";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Platform } from "react-native";
 import Toast from "react-native-toast-message";
 import { LengkapiProfil } from "../common/types/lengkapi-profil";
+import { LengkapiProfilData } from "../common/types/user-data";
 import { expandHariKerja } from "../common/utils/expand-hari-kerja";
 import formatHariKerja from "../common/utils/format-hari-kerja";
-import { LengkapiProfilFormSchema } from "../presentation/validators/profil/update-lengkapi-profil-schema";
+import { LengkapiProfilFormSchema } from "../common/validators/profil/update-lengkapi-profil-schema";
+import { ExcelServiceImpl } from "../data/data-sources/excel-service-impl";
+import { UserRepositoryImpl } from "../data/repositories/user/user-repository-impl";
+import { Sheets } from "../domain/models/sheets";
+import { IUserRepository } from "../domain/repositories/user/i-user-repository";
 
 const defaultValues: LengkapiProfil = {
   nama: "",
@@ -33,6 +38,7 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
   const [selectedHari, setSelectedHari] = useState<number[]>([]);
   const [showDivisiDropdown, setShowDivisiDropdown] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [email, setEmail] = useState("");
 
   const {
     control,
@@ -54,40 +60,46 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
       return;
     }
 
-    const repo = new UserRepository(uid);
-    const unsubscribe = repo.getProfilRealTime((data) => {
-      if (data) {
-        setValue("nama", data.nama || "", { shouldValidate: false });
-        setValue("nik", data.nik || "", { shouldValidate: false });
-        setValue("nomor_hp", data.nomor_hp || "", { shouldValidate: false });
-        setValue("divisi", (data as any).divisi || "", {
-          shouldValidate: false,
-        });
-        const jadwal = (data as any).jadwal;
-        if (jadwal) {
-          setValue("jadwal.jam_masuk", jadwal.jam_masuk || "", {
+    const repo: IUserRepository = new UserRepositoryImpl();
+    const unsubscribe: Unsubscribe | null = repo.getProfilRealTime(
+      uid,
+      (data) => {
+        if (data) {
+          setEmail(data.email || "");
+          setValue("nama", data.nama || "", { shouldValidate: false });
+          setValue("nik", data.nik || "", { shouldValidate: false });
+          setValue("nomor_hp", data.nomor_hp || "", { shouldValidate: false });
+          setValue("divisi", data.divisi || "", {
             shouldValidate: false,
           });
-          setValue("jadwal.jam_keluar", jadwal.jam_keluar || "", {
-            shouldValidate: false,
-          });
-          setValue("jadwal.hari_kerja", jadwal.hari_kerja || "", {
-            shouldValidate: false,
-          });
-          setValue("jadwal.is_wfh", jadwal.is_wfh || false, {
-            shouldValidate: false,
-          });
-          if (jadwal.hari_kerja) {
-            const expandedDays = expandHariKerja(jadwal.hari_kerja);
-            setSelectedHari(expandedDays);
+
+          const jadwal = data.jadwal;
+          if (jadwal) {
+            setValue("jadwal.jam_masuk", jadwal.jam_masuk || "", {
+              shouldValidate: false,
+            });
+            setValue("jadwal.jam_keluar", jadwal.jam_keluar || "", {
+              shouldValidate: false,
+            });
+            setValue("jadwal.hari_kerja", jadwal.hari_kerja || "", {
+              shouldValidate: false,
+            });
+            setValue("jadwal.is_wfh", jadwal.is_wfh || false, {
+              shouldValidate: false,
+            });
+            if (jadwal.hari_kerja) {
+              const expandedDays = expandHariKerja(jadwal.hari_kerja);
+              setSelectedHari(expandedDays);
+            }
           }
         }
+        setFetchingData(false);
       }
-      setFetchingData(false);
-    });
+    );
 
+    // Cleanup yang aman
     return () => {
-      if (unsubscribe) unsubscribe();
+      unsubscribe && unsubscribe();
     };
   }, [uid, setValue]);
 
@@ -106,27 +118,54 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
     [isValid, loading, isSubmitting, isDirty]
   );
 
+  // --- handleSaveUpdateLengkapiProfil (Menyimpan Data) ---
   const handleSaveUpdateLengkapiProfil = rhfHandleSubmit(async (data) => {
     setError(null);
     setLoading(true);
     try {
-      if (!uid) throw new Error("UID tidak tersedia.");
+      if (!uid || !email) {
+        throw new Error("UID atau Email tidak tersedia.");
+      }
 
-      const repo = new UserRepository(uid);
+      // 1. Inisiasi Repo dan Service (keduanya stateless)
+      const userRepo = new UserRepositoryImpl();
+      const excelService = new ExcelServiceImpl();
 
-      repo.setNama(data.nama);
-      repo.setNik(data.nik);
-      repo.setNomorHp(data.nomor_hp);
-      repo.setDivisi(data.divisi);
-      repo.setJadwal({
-        jam_masuk: data.jadwal.jam_masuk,
-        jam_keluar: data.jadwal.jam_keluar,
-        hari_kerja: data.jadwal.hari_kerja,
-        is_wfh: !!data.jadwal.is_wfh,
-      });
+      // 2. Siapkan data untuk Firestore
+      const firestoreData: LengkapiProfilData = {
+        nama: data.nama,
+        nik: data.nik,
+        nomor_hp: data.nomor_hp,
+        divisi: data.divisi,
+        jadwal: {
+          jam_masuk: data.jadwal.jam_masuk,
+          jam_keluar: data.jadwal.jam_keluar,
+          hari_kerja: data.jadwal.hari_kerja,
+          is_wfh: !!data.jadwal.is_wfh,
+        },
+      };
 
-      await repo.updateLengkapiProfil();
+      // 3. Simpan ke Firestore
+      await userRepo.updateLengkapiProfil(uid, firestoreData);
 
+      // 4. Siapkan data untuk Excel (perhatikan casing: nomorHp, hariKerja)
+      const excelData: Sheets = {
+        uid: uid,
+        email: email, // Gunakan email yang disimpan di state
+        nama: data.nama,
+        nik: data.nik,
+        nomorHp: data.nomor_hp,
+        divisi: data.divisi,
+        hariKerja: data.jadwal.hari_kerja,
+        jamMasuk: data.jadwal.jam_masuk,
+        jamKeluar: data.jadwal.jam_keluar,
+        isWfh: !!data.jadwal.is_wfh,
+      };
+
+      // 5. Simpan ke Excel/Sheety
+      await excelService.addRow(excelData);
+
+      // 6. Selesai
       setShowConfirmModal(false);
       Toast.show({
         type: "success",
@@ -142,11 +181,13 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
         text1: "Gagal menyimpan",
         text2: "Terjadi kesalahan saat menyimpan profil",
       });
-      throw err;
+      throw err; // Lempar error agar RHF tahu
     } finally {
       setLoading(false);
     }
   });
+
+  // --- Sisa Logika UI (Tidak Perlu Diubah) ---
 
   const toggleHari = useCallback(
     (day: number) => {

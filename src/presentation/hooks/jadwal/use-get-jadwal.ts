@@ -1,5 +1,7 @@
 import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
-import { JadwalRepository } from "@/src/domain/repositories/jadwal/jadwal-repository";
+import { JadwalRepositoryImpl } from "@/src/data/repositories/jadwal/jadwal-repository-impl";
+import { IJadwalRepository } from "@/src/domain/repositories/jadwal/i-jadwal-repository";
+import { Unsubscribe } from "firebase/auth";
 import { useEffect, useState } from "react";
 
 export const useGetJadwal = (uid?: string | null) => {
@@ -19,9 +21,10 @@ export const useGetJadwal = (uid?: string | null) => {
     }
 
     setLoading(true);
-    const vm = new JadwalRepository(uid);
+    const vm: IJadwalRepository = new JadwalRepositoryImpl();
 
-    const unsub = vm.getJadwalKaryawanRealTime(
+    const unsub: Unsubscribe | null = vm.getJadwalKaryawanRealTime(
+      uid,
       (jadwalData: JadwalKaryawan | null) => {
         setJadwalKaryawan(jadwalData);
         setLoading(false);
@@ -33,7 +36,11 @@ export const useGetJadwal = (uid?: string | null) => {
       return;
     }
 
-    return () => unsub();
+    return () => {
+      if (unsub) {
+        unsub();
+      }
+    };
   }, [uid]);
 
   return { jadwalKaryawan, loading, error };

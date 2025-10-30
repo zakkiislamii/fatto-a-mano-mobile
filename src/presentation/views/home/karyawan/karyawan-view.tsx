@@ -1,4 +1,4 @@
-import PresensiView from "@/src/presentation/features/presensi/presensi-view";
+import PresensiView from "@/src/presentation/views/presensi/presensi-view";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";

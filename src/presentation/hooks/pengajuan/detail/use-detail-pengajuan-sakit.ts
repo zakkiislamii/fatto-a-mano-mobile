@@ -1,6 +1,7 @@
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
 import { PengajuanSakit } from "@/src/common/types/pengajuan_sakit";
-import { PengajuanSakitRepository } from "@/src/domain/repositories/pengajuan/pengajuan-sakit-repository";
+import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
+import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const useDetailPengajuanSakit = (uid?: string) => {
@@ -45,10 +46,9 @@ const useDetailPengajuanSakit = (uid?: string) => {
     }
 
     setLoading(true);
-    const repo = new PengajuanSakitRepository(uid);
-    repo.setId(selectedIdSakit);
+    const repo: IPengajuanRepository = new PengajuanRepositoryImpl();
 
-    const unsub = repo.getDetail((data) => {
+    const unsub = repo.getDetail(uid, selectedIdSakit, (data) => {
       if (!data) {
         setDetail(null);
         setLoading(false);

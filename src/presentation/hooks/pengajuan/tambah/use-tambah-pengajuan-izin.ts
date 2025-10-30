@@ -1,11 +1,12 @@
 import { KeteranganFile } from "@/src/common/enums/keterangan-file";
-import { StatusPengajuan } from "@/src/common/enums/status-pengajuan";
+import { TambahPengajuanIzinData } from "@/src/common/types/tambah-pengajuan-data";
 import formatDateToString from "@/src/common/utils/format-date-to-string";
 import Today from "@/src/common/utils/get-today";
 import { pickImageFromLibrary } from "@/src/common/utils/image-picker";
 import { uploadToSupabase } from "@/src/common/utils/upload-to-supabase";
-import { PengajuanIzinRepository } from "@/src/domain/repositories/pengajuan/pengajuan-izin-repository";
-import { PengajuanIzinFormSchema } from "@/src/presentation/validators/pengajuan/pengajuan-izin-form-schema";
+import { PengajuanIzinFormSchema } from "@/src/common/validators/pengajuan/pengajuan-izin-form-schema";
+import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
+import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -113,20 +114,16 @@ const useTambahPengajuanIzin = (uid: string | undefined) => {
 
       const tanggal = Today();
 
-      const pengajuanIzinRepo = new PengajuanIzinRepository(uid);
-      pengajuanIzinRepo.setTanggalPengajuan(tanggal);
-      pengajuanIzinRepo.setStatus(StatusPengajuan.menunggu);
-      pengajuanIzinRepo.setBuktiPendukung(uploadResult.url);
-      pengajuanIzinRepo.setKeterangan(data.keterangan);
+      const repository: IPengajuanRepository = new PengajuanRepositoryImpl();
 
-      if (data.tanggal_mulai) {
-        pengajuanIzinRepo.setTanggalMulai(data.tanggal_mulai);
-      }
-      if (data.tanggal_berakhir) {
-        pengajuanIzinRepo.setTanggalBerakhir(data.tanggal_berakhir);
-      }
-
-      await pengajuanIzinRepo.tambah();
+      const dataPengajuan: TambahPengajuanIzinData = {
+        tanggal_pengajuan: tanggal,
+        keterangan: data.keterangan.trim(),
+        bukti_pendukung: uploadResult.url,
+        tanggal_mulai: data.tanggal_mulai,
+        tanggal_berakhir: data.tanggal_berakhir,
+      };
+      await repository.tambahIzin(uid, dataPengajuan);
 
       Toast.show({
         type: "success",

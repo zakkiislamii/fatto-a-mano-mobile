@@ -1,5 +1,6 @@
+import { RiwayatRepositoryImpl } from "@/src/data/repositories/riwayat/riwayat-repository-impl";
 import { Presensi } from "@/src/domain/models/presensi";
-import { RiwayatRepository } from "@/src/domain/repositories/riwayat/riwayat-repository";
+import { IRiwayatRepository } from "@/src/domain/repositories/riwayat/i-riwayat-repository";
 import { useEffect, useState } from "react";
 
 export const useRiwayatByMonth = (uid: string, month: Date) => {
@@ -16,11 +17,12 @@ export const useRiwayatByMonth = (uid: string, month: Date) => {
     setLoading(true);
     setError(null);
 
-    const repository = new RiwayatRepository(uid);
+    const repository: IRiwayatRepository = new RiwayatRepositoryImpl();
     const year = month.getFullYear();
     const monthNum = month.getMonth();
 
     const unsubscribe = repository.getAllPresensiByMonth(
+      uid,
       year,
       monthNum,
       (data) => {
@@ -30,9 +32,11 @@ export const useRiwayatByMonth = (uid: string, month: Date) => {
     );
 
     return () => {
-      unsubscribe();
+      if (unsubscribe) {
+        unsubscribe();
+      }
     };
-  }, [uid, month.getFullYear(), month.getMonth()]);
+  }, [month, uid]);
 
   return { riwayat, loading, error };
 };

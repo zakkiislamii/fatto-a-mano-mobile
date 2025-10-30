@@ -1,10 +1,11 @@
 import { KeteranganFile } from "@/src/common/enums/keterangan-file";
-import { StatusPengajuan } from "@/src/common/enums/status-pengajuan";
+import { TambahPengajuanSakitData } from "@/src/common/types/tambah-pengajuan-data";
 import Today from "@/src/common/utils/get-today";
 import { pickImageFromLibrary } from "@/src/common/utils/image-picker";
 import { uploadToSupabase } from "@/src/common/utils/upload-to-supabase";
-import { PengajuanSakitRepository } from "@/src/domain/repositories/pengajuan/pengajuan-sakit-repository";
-import { PengajuanSakitFormSchema } from "@/src/presentation/validators/pengajuan/pengajuan-sakit-form-schema";
+import { PengajuanSakitFormSchema } from "@/src/common/validators/pengajuan/pengajuan-sakit-form-schema";
+import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
+import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -58,11 +59,15 @@ const useTambahPengajuanSakit = (uid: string | undefined) => {
 
       const tanggal = Today();
 
-      const pengajuanSakitRepo = new PengajuanSakitRepository(uid, tanggal);
-      pengajuanSakitRepo.setStatus(StatusPengajuan.menunggu);
-      pengajuanSakitRepo.setBuktiPendukung(uploadResult.url);
-      pengajuanSakitRepo.setKeterangan(data.keterangan);
-      await pengajuanSakitRepo.tambah();
+      const repository: IPengajuanRepository = new PengajuanRepositoryImpl();
+
+      const dataPengajuan: TambahPengajuanSakitData = {
+        tanggal_pengajuan: tanggal,
+        keterangan: data.keterangan.trim(),
+        bukti_pendukung: uploadResult.url,
+      };
+
+      await repository.tambahSakit(uid, dataPengajuan);
 
       Toast.show({
         type: "success",

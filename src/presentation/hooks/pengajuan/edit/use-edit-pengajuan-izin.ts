@@ -1,14 +1,16 @@
 import { KeteranganFile } from "@/src/common/enums/keterangan-file";
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
 import { DaftarPengajuan } from "@/src/common/types/daftar-pengajuan";
+import { EditPengajuanIzinData } from "@/src/common/types/edit-pengajuan-data";
 import formatDateToString from "@/src/common/utils/format-date-to-string";
 import { pickImageFromLibrary } from "@/src/common/utils/image-picker";
 import {
   updateFileInSupabase,
   uploadToSupabase,
 } from "@/src/common/utils/upload-to-supabase";
-import { PengajuanIzinRepository } from "@/src/domain/repositories/pengajuan/pengajuan-izin-repository";
-import { PengajuanIzinFormSchema } from "@/src/presentation/validators/pengajuan/pengajuan-izin-form-schema";
+import { PengajuanIzinFormSchema } from "@/src/common/validators/pengajuan/pengajuan-izin-form-schema";
+import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
+import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -99,10 +101,9 @@ const useEditPengajuanIzin = (uid: string | undefined) => {
       return;
     }
 
-    const repository = new PengajuanIzinRepository(uid);
-    repository.setId(item.id);
+    const repository: IPengajuanRepository = new PengajuanRepositoryImpl();
 
-    const unsubscribe = repository.getDetail((data) => {
+    const unsubscribe = repository.getDetail(uid, item.id, (data) => {
       if (data && data.tipe === TipePengajuan.izin) {
         const detail = data.detail || {};
         setValue("keterangan", detail.keterangan || "");
@@ -146,7 +147,9 @@ const useEditPengajuanIzin = (uid: string | undefined) => {
       setShowEditSheet(true);
 
       try {
-        unsubscribe();
+        if (unsubscribe) {
+          unsubscribe();
+        }
       } catch (e) {
         console.error(e);
       }
@@ -183,15 +186,13 @@ const useEditPengajuanIzin = (uid: string | undefined) => {
     setLoading(true);
 
     try {
-      const repository = new PengajuanIzinRepository(uid);
-      repository.setId(selectedId);
-
+      const repository: IPengajuanRepository = new PengajuanRepositoryImpl();
+      const dataToUpdate: EditPengajuanIzinData = {};
       const keterangan = watch("keterangan");
       if (keterangan !== undefined) {
-        repository.setKeterangan((keterangan || "").trim());
+        dataToUpdate.keterangan = (keterangan || "").trim();
       }
 
-      // upload / update bukti jika diganti
       if (buktiPendukung && buktiPendukung !== oldBuktiUrl) {
         let uploadedUrl = "";
 
@@ -200,30 +201,26 @@ const useEditPengajuanIzin = (uid: string | undefined) => {
             uid,
             buktiPendukung,
             oldBuktiUrl,
-            // pastikan enum ini ada: KeteranganFile.bukti_izin
-            KeteranganFile.bukti_izin ?? KeteranganFile.bukti_lembur
+            KeteranganFile.bukti_izin
           );
           uploadedUrl = result.url || "";
         } else {
           const result = await uploadToSupabase(
             uid,
             buktiPendukung,
-            // gunakan konstanta yang sesuai
-            KeteranganFile.bukti_izin ?? KeteranganFile.bukti_lembur
+            KeteranganFile.bukti_izin
           );
           uploadedUrl = result.url || "";
         }
 
-        repository.setBuktiPendukung(uploadedUrl);
+        dataToUpdate.bukti_pendukung = uploadedUrl;
       }
 
-      // set tanggal jika ada
       const tanggalMulai = watch("tanggal_mulai");
       const tanggalBerakhir = watch("tanggal_berakhir");
-      if (tanggalMulai) repository.setTanggalMulai(tanggalMulai);
-      if (tanggalBerakhir) repository.setTanggalBerakhir(tanggalBerakhir);
-
-      await repository.edit();
+      if (tanggalMulai) dataToUpdate.tanggal_mulai = tanggalMulai;
+      if (tanggalBerakhir) dataToUpdate.tanggal_berakhir = tanggalBerakhir;
+      await repository.editIzin(uid, selectedId, dataToUpdate);
 
       Toast.show({
         type: "success",

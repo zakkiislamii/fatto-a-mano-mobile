@@ -1,5 +1,6 @@
 import Today from "@/src/common/utils/get-today";
-import { PengajuanIzinRepository } from "@/src/domain/repositories/pengajuan/pengajuan-izin-repository";
+import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
+import { IPengajuanRepository } from "@/src/domain/repositories/pengajuan/i-pengajuan-repository";
 import { useEffect, useState } from "react";
 
 const useGetStatusIzinAktif = (uid: string) => {
@@ -13,11 +14,12 @@ const useGetStatusIzinAktif = (uid: string) => {
     }
 
     const tanggalHariIni = Today();
-    const repo = new PengajuanIzinRepository(uid);
+    const repo: IPengajuanRepository = new PengajuanRepositoryImpl();
 
     setLoading(true);
 
-    const unsubscribe = repo.getStatusIzinAktifRealtime(
+    const unsubscribe = repo.getStatusIzinAktif(
+      uid,
       tanggalHariIni,
       (isAktif) => {
         setIsIzinAktif(isAktif);
@@ -26,7 +28,9 @@ const useGetStatusIzinAktif = (uid: string) => {
     );
 
     return () => {
-      unsubscribe();
+      if (unsubscribe) {
+        unsubscribe();
+      }
     };
   }, [uid]);
 

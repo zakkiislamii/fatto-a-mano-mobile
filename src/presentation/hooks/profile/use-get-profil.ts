@@ -1,5 +1,7 @@
 import { ProfilKaryawan } from "@/src/common/types/profil-karyawan";
-import { UserRepository } from "@/src/domain/repositories/user/user-repository";
+import { UserRepositoryImpl } from "@/src/data/repositories/user/user-repository-impl";
+import { IUserRepository } from "@/src/domain/repositories/user/i-user-repository";
+import { Unsubscribe } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
 export const useGetProfile = (uid?: string | null) => {
@@ -19,28 +21,32 @@ export const useGetProfile = (uid?: string | null) => {
     }
 
     setLoading(true);
-    const repo = new UserRepository(uid);
+    const repo: IUserRepository = new UserRepositoryImpl();
 
-    const unsub = repo.getProfilRealTime((raw: ProfilKaryawan | null) => {
-      if (!raw) {
-        setProfilKaryawan(null);
+    const unsub: Unsubscribe | null = repo.getProfilRealTime(
+      uid,
+      (raw: ProfilKaryawan | null) => {
+        if (!raw) {
+          setProfilKaryawan(null);
+          setLoading(false);
+          return;
+        }
+
+        const cleanedNik = String(raw.nik ?? "")
+          .replace(/\D+/g, "")
+          .slice(0, 16);
+
+        setProfilKaryawan({
+          nama: typeof raw.nama === "string" ? raw.nama : "",
+          nik: cleanedNik,
+          nomor_hp: typeof raw.nomor_hp === "string" ? raw.nomor_hp : "",
+          email: typeof raw.email === "string" ? raw.email : "",
+          divisi: typeof raw.divisi === "string" ? raw.divisi : "",
+          updated_at: raw.updated_at,
+        });
         setLoading(false);
-        return;
       }
-
-      const cleanedNik = String(raw.nik ?? "")
-        .replace(/\D+/g, "")
-        .slice(0, 16);
-
-      setProfilKaryawan({
-        nama: typeof raw.nama === "string" ? raw.nama : "",
-        nik: cleanedNik,
-        nomor_hp: typeof raw.nomor_hp === "string" ? raw.nomor_hp : "",
-        email: typeof raw.email === "string" ? raw.email : "",
-        divisi: typeof raw.divisi === "string" ? raw.divisi : "",
-      });
-      setLoading(false);
-    });
+    );
 
     if (!unsub) {
       setLoading(false);
@@ -48,7 +54,11 @@ export const useGetProfile = (uid?: string | null) => {
       return;
     }
 
-    return () => unsub();
+    return () => {
+      if (unsub) {
+        unsub();
+      }
+    };
   }, [uid]);
 
   return { profilKaryawan, loading, error };

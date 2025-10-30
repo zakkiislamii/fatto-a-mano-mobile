@@ -1,13 +1,13 @@
 import { mapFirebaseAuthError } from "@/src/common/utils/auth-error-mapper";
-import { AuthRepository } from "@/src/domain/repositories/auth/auth-repository";
+import { RegisterFormSchema } from "@/src/common/validators/auth/register-form-schema";
+import { AuthRepositoryImpl } from "@/src/data/repositories/auth/auth-repository-impl";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import Toast from "react-native-toast-message";
-import { RegisterFormSchema } from "../../validators/auth/register-form-schema";
 
 const useRegister = () => {
-  const vmRef = useRef(new AuthRepository());
+  const vmRef = useRef(new AuthRepositoryImpl());
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -39,9 +39,7 @@ const useRegister = () => {
     setLoading(true);
     setSubmitError(null);
     try {
-      vmRef.current.setEmail(email);
-      vmRef.current.setPassword(password);
-      await vmRef.current.register();
+      await vmRef.current.register(email, password);
       reset();
       Toast.show({ type: "success", text1: "Registrasi berhasil!" });
       return true;
