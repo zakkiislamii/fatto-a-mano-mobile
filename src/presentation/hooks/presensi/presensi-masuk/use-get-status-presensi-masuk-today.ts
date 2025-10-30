@@ -1,5 +1,6 @@
 import { PresensiMasukStatus } from "@/src/common/types/presensi-masuk-status";
-import { PresensiMasukRepository } from "@/src/domain/repositories/presensi/presensi-masuk-repository";
+import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi/presensi-repository-impl";
+import { IPresensiRepository } from "@/src/domain/repositories/presensi/i-presensi-repository";
 import { useEffect, useState } from "react";
 
 const useGetStatusPresensiMasukToday = (uid: string) => {
@@ -13,13 +14,17 @@ const useGetStatusPresensiMasukToday = (uid: string) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const repo = new PresensiMasukRepository(uid, "");
-    const unsubscribe = repo.getPresensiMasukToday((status) => {
+    const repo: IPresensiRepository = new PresensiRepositoryImpl();
+    const unsubscribe = repo.getPresensiMasukToday(uid, (status) => {
       setPresensiMasukStatus(status);
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, [uid]);
 
   return {

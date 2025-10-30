@@ -9,6 +9,7 @@ import { uploadToSupabase } from "@/src/common/utils/upload-to-supabase";
 import { PengajuanLemburFormSchema } from "@/src/common/validators/pengajuan/pengajuan-lembur-form-schema";
 import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan/pengajuan-repository-impl";
 import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi/presensi-repository-impl";
+import { IPresensiRepository } from "@/src/domain/repositories/presensi/i-presensi-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -117,7 +118,7 @@ const useAddPresensiKeluarLembur = ({
         keluar_awal: false,
       };
 
-      const presensiRepo = new PresensiRepositoryImpl();
+      const presensiRepo: IPresensiRepository = new PresensiRepositoryImpl();
       await presensiRepo.addPresensiKeluar(uid, tanggal, presensiKeluarData);
 
       const pengajuanData: TambahPengajuanLemburData = {

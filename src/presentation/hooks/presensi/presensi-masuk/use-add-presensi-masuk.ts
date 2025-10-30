@@ -3,7 +3,7 @@ import { PresensiMasuk } from "@/src/common/types/presensi-masuk";
 import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
 import Today from "@/src/common/utils/get-today";
 import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
-import { PresensiMasukRepository } from "@/src/domain/repositories/presensi/presensi-masuk-repository";
+import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi/presensi-repository-impl";
 import { useGetJadwal } from "@/src/presentation/hooks/jadwal/use-get-jadwal";
 import useLiveLocation from "@/src/presentation/hooks/maps/use-live-location";
 import useGetStatusIzinAktif from "@/src/presentation/hooks/pengajuan/status-aktif/use-get-status-izin-aktif";
@@ -51,10 +51,13 @@ const useAddPresensiMasuk = (uid: string) => {
       };
 
       const tanggal = Today();
-      const presensiRepo = new PresensiMasukRepository(uid, tanggal);
-      presensiRepo.setStatus(StatusPresensi.alpa);
-      presensiRepo.setPresensiMasuk(presensiMasuk);
-      await presensiRepo.add();
+      const presensiRepo = new PresensiRepositoryImpl();
+      await presensiRepo.addPresensiMasuk(
+        uid,
+        tanggal,
+        StatusPresensi.alpa,
+        presensiMasuk
+      );
 
       hasCreatedAlpaRecordRef.current = true;
     } catch (err) {
@@ -73,10 +76,13 @@ const useAddPresensiMasuk = (uid: string) => {
       };
 
       const tanggal = Today();
-      const presensiRepo = new PresensiMasukRepository(uid, tanggal);
-      presensiRepo.setStatus(StatusPresensi.izin);
-      presensiRepo.setPresensiMasuk(presensiMasuk);
-      await presensiRepo.add();
+      const presensiRepo = new PresensiRepositoryImpl();
+      await presensiRepo.addPresensiMasuk(
+        uid,
+        tanggal,
+        StatusPresensi.izin,
+        presensiMasuk
+      );
 
       hasCreatedIzinRecordRef.current = true;
     } catch (err) {
@@ -95,10 +101,13 @@ const useAddPresensiMasuk = (uid: string) => {
       };
 
       const tanggal = Today();
-      const presensiRepo = new PresensiMasukRepository(uid, tanggal);
-      presensiRepo.setStatus(StatusPresensi.sakit);
-      presensiRepo.setPresensiMasuk(presensiMasuk);
-      await presensiRepo.add();
+      const presensiRepo = new PresensiRepositoryImpl();
+      await presensiRepo.addPresensiMasuk(
+        uid,
+        tanggal,
+        StatusPresensi.sakit,
+        presensiMasuk
+      );
 
       hasCreatedSakitRecordRef.current = true;
     } catch (err) {
@@ -209,7 +218,6 @@ const useAddPresensiMasuk = (uid: string) => {
 
     const now = new Date();
 
-    // Jika sekarang > jam_keluar dan belum presensi -> ALPA
     if (now > jamKeluarDate && !presensiMasukStatus.sudah_masuk) {
       setIsAlpa(true);
       if (!hasShownAlpaToastRef.current) {
@@ -247,7 +255,6 @@ const useAddPresensiMasuk = (uid: string) => {
       return false;
     }
 
-    // Cek apakah sedang izin
     if (isIzinAktif) {
       Toast.show({
         type: "info",
@@ -257,7 +264,6 @@ const useAddPresensiMasuk = (uid: string) => {
       return false;
     }
 
-    // Cek apakah sedang sakit
     if (isSakitAktif) {
       Toast.show({
         type: "info",
@@ -267,9 +273,7 @@ const useAddPresensiMasuk = (uid: string) => {
       return false;
     }
 
-    // Validasi konektivitas/ lokasi berdasarkan mode (WFH / WFO)
     if (isWfh) {
-      // WFH: butuh koneksi internet (bisa wifi atau seluler)
       if (!isOnline) {
         Toast.show({
           type: "error",
@@ -278,7 +282,6 @@ const useAddPresensiMasuk = (uid: string) => {
         return false;
       }
     } else {
-      // WFO: butuh lokasi valid, Wi-Fi terhubung, dan BSSID valid
       if (!canCheck) {
         Toast.show({
           type: "error",
@@ -297,7 +300,6 @@ const useAddPresensiMasuk = (uid: string) => {
       }
     }
 
-    // cek hari kerja
     const today = new Date();
     const todayIdx = today.getDay();
     const workingDays = expandHariKerja(jadwalKaryawan.hari_kerja);
@@ -309,23 +311,20 @@ const useAddPresensiMasuk = (uid: string) => {
       return false;
     }
 
-    // parse jam_masuk
     const jamMasukDate = parseJamToDateToday(jadwalKaryawan.jam_masuk, today);
     if (!jamMasukDate) {
       Toast.show({ type: "error", text1: "Format jam masuk tidak valid." });
       return false;
     }
 
-    // parse jam_keluar
     const jamKeluarDate = parseJamToDateToday(jadwalKaryawan.jam_keluar, today);
     if (!jamKeluarDate) {
       Toast.show({ type: "error", text1: "Format jam keluar tidak valid." });
       return false;
     }
 
-    // hitung batas waktu presensi
-    const batasAwal = new Date(jamMasukDate.getTime() - 15 * 60 * 1000); // -15 menit
-    const batasTerlambat = new Date(jamMasukDate.getTime() + 5 * 60 * 1000); // +5 menit
+    const batasAwal = new Date(jamMasukDate.getTime() - 15 * 60 * 1000);
+    const batasTerlambat = new Date(jamMasukDate.getTime() + 5 * 60 * 1000);
     const now = new Date();
 
     if (now < batasAwal) {
@@ -337,19 +336,16 @@ const useAddPresensiMasuk = (uid: string) => {
       return false;
     }
 
-    // tentukan status & atribut presensi
     let status = StatusPresensi.hadir;
     let waktu = now.toTimeString().slice(0, 5);
     let terlambat = false;
     let durasi_terlambat: string | undefined = undefined;
 
-    // cek alpa: jika sudah lewat jam keluar
     if (now > jamKeluarDate) {
       status = StatusPresensi.alpa;
       waktu = "";
       terlambat = true;
     } else if (now > batasTerlambat) {
-      // terlambat: sekarang > jam_masuk + 5 menit
       status = StatusPresensi.terlambat;
       terlambat = true;
       const diffMs = now.getTime() - jamMasukDate.getTime();
@@ -367,17 +363,14 @@ const useAddPresensiMasuk = (uid: string) => {
 
     setLoading(true);
     try {
-      const presensiRepo = new PresensiMasukRepository(uid, tanggal);
-      presensiRepo.setStatus(status);
-      presensiRepo.setPresensiMasuk(presensiMasuk);
-      await presensiRepo.add();
+      const presensiRepo = new PresensiRepositoryImpl();
+      await presensiRepo.addPresensiMasuk(uid, tanggal, status, presensiMasuk);
 
       Toast.show({
         type: "success",
         text1: "Presensi masuk berhasil",
       });
 
-      // Jika sukses, reset flag alpa
       hasShownAlpaToastRef.current = false;
       setIsAlpa(false);
 
@@ -398,8 +391,8 @@ const useAddPresensiMasuk = (uid: string) => {
     loading ||
       !jadwalReady ||
       isAlpa ||
-      isIzinAktif || // Disable jika sedang izin
-      isSakitAktif || // Disable jika sedang sakit
+      isIzinAktif ||
+      isSakitAktif ||
       (isWfh
         ? networkLoading || !isOnline
         : wifiLoading || !isWifiConnected || !isBssid || !canCheck)
