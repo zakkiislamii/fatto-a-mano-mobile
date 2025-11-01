@@ -49,19 +49,23 @@ const useSinkronJadwalKerja = () => {
       await sinkronRepo.sinkronJadwal(sinkronData);
 
       // Kirim notifikasi ke semua karyawan
+      let notifStatus = "";
       try {
         await sendNotifToAll();
+        notifStatus = " & notifikasi terkirim";
+        console.log("[useSinkronJadwalKerja] Notifikasi berhasil dikirim");
       } catch (notifError) {
         console.error(
           "[useSinkronJadwalKerja] Gagal kirim notifikasi:",
           notifError
         );
+        notifStatus = " (notifikasi gagal)";
       }
 
       Toast.show({
         type: "success",
         text1: "Sinkronisasi Berhasil",
-        text2: `${sinkronData.length} jadwal telah disinkronkan ke sistem`,
+        text2: `${sinkronData.length} jadwal telah disinkronkan${notifStatus}`,
       });
 
       console.log("[useSinkronJadwalKerja] Sinkronisasi selesai");
