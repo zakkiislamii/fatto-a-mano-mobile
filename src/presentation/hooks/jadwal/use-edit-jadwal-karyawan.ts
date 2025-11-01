@@ -2,9 +2,14 @@ import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
 import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
 import formatHariKerja from "@/src/common/utils/format-hari-kerja";
 import { EditJadwalKaryawanFormSchema } from "@/src/common/validators/jadwal/edit-jadwal-karyawan-form-schema";
+import { ExcelServiceImpl } from "@/src/data/data-sources/excel-service-impl";
 import { JadwalRepositoryImpl } from "@/src/data/repositories/jadwal-repository-impl";
+import { UserRepositoryImpl } from "@/src/data/repositories/user-repository-impl";
+import { Sheets } from "@/src/domain/models/sheets";
 import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
-import { useSendToKaryawan } from "@/src/hooks/use-notifikasi"; // 👈 Import hook notifikasi
+import { IUserRepository } from "@/src/domain/repositories/i-user-repository";
+import { IExcelService } from "@/src/domain/services/i-excel-service";
+import { useSendToKaryawan } from "@/src/hooks/use-notifikasi";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Unsubscribe } from "firebase/firestore";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -28,6 +33,7 @@ const useEditJadwalKaryawan = (uid: string | null) => {
   const [showJamKeluarPicker, setShowJamKeluarPicker] = useState(false);
   const [selectedHari, setSelectedHari] = useState<number[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [excelId, setExcelId] = useState<number | null>(null); // 👈 State untuk simpan excel_id
   const { mutateAsync: sendNotification } = useSendToKaryawan();
 
   const {
@@ -50,27 +56,34 @@ const useEditJadwalKaryawan = (uid: string | null) => {
       return;
     }
 
-    const repo: IJadwalRepository = new JadwalRepositoryImpl();
-    const unsubscribe: Unsubscribe | null = repo.getJadwalKaryawanRealTime(
+    const userRepo: IUserRepository = new UserRepositoryImpl();
+    const unsubscribe: Unsubscribe | null = userRepo.getProfilRealTime(
       uid,
-      (jadwal) => {
-        if (jadwal) {
-          setValue("jam_masuk", jadwal.jam_masuk || "", {
-            shouldValidate: false,
-          });
-          setValue("jam_keluar", jadwal.jam_keluar || "", {
-            shouldValidate: false,
-          });
-          setValue("hari_kerja", jadwal.hari_kerja || "", {
-            shouldValidate: false,
-          });
-          setValue("is_wfa", jadwal.is_wfa || false, {
-            shouldValidate: false,
-          });
+      (profil) => {
+        if (profil) {
+          if (profil.excel_id) {
+            setExcelId(profil.excel_id);
+          }
+          // Set jadwal data
+          const jadwal = profil.jadwal;
+          if (jadwal) {
+            setValue("jam_masuk", jadwal.jam_masuk || "", {
+              shouldValidate: false,
+            });
+            setValue("jam_keluar", jadwal.jam_keluar || "", {
+              shouldValidate: false,
+            });
+            setValue("hari_kerja", jadwal.hari_kerja || "", {
+              shouldValidate: false,
+            });
+            setValue("is_wfa", jadwal.is_wfa || false, {
+              shouldValidate: false,
+            });
 
-          if (jadwal.hari_kerja) {
-            const expandedDays = expandHariKerja(jadwal.hari_kerja);
-            setSelectedHari(expandedDays);
+            if (jadwal.hari_kerja) {
+              const expandedDays = expandHariKerja(jadwal.hari_kerja);
+              setSelectedHari(expandedDays);
+            }
           }
         }
         setFetchingData(false);
@@ -78,7 +91,9 @@ const useEditJadwalKaryawan = (uid: string | null) => {
     );
 
     return () => {
-      unsubscribe && unsubscribe();
+      if (unsubscribe) {
+        unsubscribe();
+      }
     };
   }, [uid, setValue]);
 
@@ -89,8 +104,12 @@ const useEditJadwalKaryawan = (uid: string | null) => {
   const closeModal = useCallback(() => {
     setShowModal(false);
     setError(null);
-    reset(undefined, { keepValues: true });
-  }, [reset]);
+    const currentValues = watch();
+    reset(currentValues, {
+      keepValues: true,
+      keepDefaultValues: false,
+    });
+  }, [reset, watch]);
 
   const canSubmit = useMemo(
     () => isValid && !loading && !isSubmitting && isDirty,
@@ -105,7 +124,8 @@ const useEditJadwalKaryawan = (uid: string | null) => {
         throw new Error("UID tidak tersedia.");
       }
 
-      const repo: IJadwalRepository = new JadwalRepositoryImpl();
+      const jadwalRepo: IJadwalRepository = new JadwalRepositoryImpl();
+      const excelService: IExcelService = new ExcelServiceImpl();
 
       const jadwalData: Partial<JadwalKaryawan> = {
         jam_masuk: data.jam_masuk,
@@ -114,15 +134,37 @@ const useEditJadwalKaryawan = (uid: string | null) => {
         is_wfa: !!data.is_wfa,
       };
 
-      // Update jadwal
-      await repo.editJadwalKaryawan(uid, jadwalData);
+      // Update Firestore
+      await jadwalRepo.editJadwalKaryawan(uid, jadwalData);
+
+      // Update Excel
+      if (excelId) {
+        try {
+          const excelData: Partial<Sheets> = {
+            hariKerja: data.hari_kerja,
+            jamMasuk: data.jam_masuk,
+            jamKeluar: data.jam_keluar,
+            isWfa: !!data.is_wfa,
+          };
+
+          await excelService.editRow(excelId, excelData);
+        } catch (excelError) {
+          console.error(
+            "[useEditJadwalKaryawan] Gagal update Excel:",
+            excelError
+          );
+        }
+      } else {
+        console.warn(
+          "[useEditJadwalKaryawan] Excel ID tidak ditemukan, skip update Excel"
+        );
+      }
 
       // Kirim notifikasi
       let notifStatus = "";
       try {
         await sendNotification(uid);
         notifStatus = " & notifikasi terkirim";
-        console.log("[useEditJadwalKaryawan] Notifikasi berhasil dikirim");
       } catch (notifError) {
         console.error(
           "[useEditJadwalKaryawan] Gagal kirim notifikasi:",
@@ -130,6 +172,13 @@ const useEditJadwalKaryawan = (uid: string | null) => {
         );
         notifStatus = " (notifikasi gagal)";
       }
+
+      reset({
+        jam_masuk: data.jam_masuk,
+        jam_keluar: data.jam_keluar,
+        hari_kerja: data.hari_kerja,
+        is_wfa: data.is_wfa,
+      });
 
       setShowConfirmModal(false);
       closeModal();
@@ -153,7 +202,6 @@ const useEditJadwalKaryawan = (uid: string | null) => {
     }
   });
 
-  // --- Logika UI ---
   const toggleHari = useCallback(
     (day: number) => {
       setSelectedHari((prev) => {

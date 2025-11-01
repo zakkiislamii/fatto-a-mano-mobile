@@ -16,7 +16,8 @@ import useGetStatusPresensiMasukToday from "./presensi-masuk/use-get-status-pres
 const useAutoPresensiChecker = (uid: string) => {
   const [isAlpa, setIsAlpa] = useState<boolean>(false);
   const { jadwalKaryawan } = useGetJadwal(uid);
-  const { presensiMasukStatus, loading: presensiMasukStatusLoading } = useGetStatusPresensiMasukToday(uid);
+  const { presensiMasukStatus, loading: presensiMasukStatusLoading } =
+    useGetStatusPresensiMasukToday(uid);
   const { isIzinAktif, loading: izinLoading } = useGetStatusIzinAktif(uid);
   const { isSakitAktif, loading: sakitLoading } = useGetStatusSakitAktif(uid);
   const hasShownAlpaToastRef = useRef<boolean>(false);
@@ -45,7 +46,6 @@ const useAutoPresensiChecker = (uid: string) => {
       );
 
       hasCreatedAlpaRecordRef.current = true;
-      console.log("[AutoPresensi] Created ALPA record for user:", uid);
     } catch (err) {
       console.error("[AutoPresensi] createAutoAlpa error:", err);
     }
@@ -70,7 +70,6 @@ const useAutoPresensiChecker = (uid: string) => {
       );
 
       hasCreatedIzinRecordRef.current = true;
-      console.log("[AutoPresensi] Created IZIN record for user:", uid);
     } catch (err) {
       console.error("[AutoPresensi] createAutoIzin error:", err);
     }
@@ -95,13 +94,11 @@ const useAutoPresensiChecker = (uid: string) => {
       );
 
       hasCreatedSakitRecordRef.current = true;
-      console.log("[AutoPresensi] Created SAKIT record for user:", uid);
     } catch (err) {
       console.error("[AutoPresensi] createAutoSakit error:", err);
     }
   }, [uid]);
 
- 
   useEffect(() => {
     if (izinLoading || presensiMasukStatusLoading) return;
     if (isIzinAktif && !presensiMasukStatus.sudah_masuk) {

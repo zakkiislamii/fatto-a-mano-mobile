@@ -41,9 +41,6 @@ export class ExcelServiceImpl implements IExcelService {
         throw new Error("ID tidak tersedia untuk edit row.");
       }
 
-      console.log("[ExcelService] Updating:", `${this.url}/sheety/${id}`);
-      console.log("[ExcelService] Data:", data);
-
       const response = await axios.put<ExcelPartialResponse>(
         `${this.url}/sheety/${id}`,
         data

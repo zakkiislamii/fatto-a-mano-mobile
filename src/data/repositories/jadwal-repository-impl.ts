@@ -83,11 +83,6 @@ export class JadwalRepositoryImpl implements IJadwalRepository {
 
       const userRef = doc(db, "users", uid);
       await updateDoc(userRef, updateData);
-
-      console.log(
-        "[JadwalRepository] Jadwal berhasil diupdate untuk uid:",
-        uid
-      );
     } catch (error: unknown) {
       console.error("[JadwalRepository] Update Jadwal error:", error);
       throw error;

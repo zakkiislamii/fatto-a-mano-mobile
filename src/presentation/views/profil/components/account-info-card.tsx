@@ -38,7 +38,6 @@ const AccountInfoCard = ({
   const { profilKaryawan: profil, loading: loadingProfil } = useGetProfile(
     uid ?? null
   );
-  console.log(role);
   const {
     control,
     errors,

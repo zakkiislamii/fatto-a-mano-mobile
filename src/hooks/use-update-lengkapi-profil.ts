@@ -167,7 +167,6 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
         await userRepo.updateLengkapiProfil(uid, {
           excel_id: excelId,
         });
-        console.log("[useUpdateLengkapiProfil] Excel ID saved:", excelId);
       }
 
       setShowConfirmModal(false);
