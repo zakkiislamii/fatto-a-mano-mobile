@@ -2,7 +2,7 @@ import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
 import { db } from "@/src/configs/firebase-config";
 import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
 import { Unsubscribe } from "firebase/auth";
-import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, writeBatch } from "firebase/firestore";
 
 export class JadwalRepositoryImpl implements IJadwalRepository {
   public getJadwalKaryawanRealTime(
@@ -85,6 +85,34 @@ export class JadwalRepositoryImpl implements IJadwalRepository {
       await updateDoc(userRef, updateData);
     } catch (error: unknown) {
       console.error("[JadwalRepository] Update Jadwal error:", error);
+      throw error;
+    }
+  }
+
+  public async sinkronJadwal(
+    data: Array<{ uid: string; jadwal: JadwalKaryawan; excelId: number }>
+  ): Promise<void> {
+    try {
+      const batch = writeBatch(db);
+
+      data.forEach(({ uid, jadwal, excelId }) => {
+        const userRef = doc(db, "users", uid);
+        batch.update(userRef, {
+          "jadwal.jam_masuk": jadwal.jam_masuk,
+          "jadwal.jam_keluar": jadwal.jam_keluar,
+          "jadwal.hari_kerja": jadwal.hari_kerja,
+          "jadwal.is_wfa": jadwal.is_wfa,
+          excel_id: excelId,
+          updated_at: new Date(),
+        });
+      });
+
+      await batch.commit();
+      console.log(
+        `[SinkronRepository] Bulk sinkron berhasil untuk ${data.length} user`
+      );
+    } catch (error) {
+      console.error("[SinkronRepository] Bulk sinkron error:", error);
       throw error;
     }
   }

@@ -89,4 +89,24 @@ export class NotifikasiServiceImpl implements INotifikasiService {
       return false;
     }
   }
+
+  public async SendToAll(): Promise<boolean> {
+    try {
+      const isExpoGo =
+        Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+      if (isExpoGo) {
+        console.warn("[Notif] Skipped send notification (Expo Go).");
+        return false;
+      }
+
+      await axios.post(`${this.url}/notifications/send-to-all`, {
+        title: "Perubahan Jadwal Kerja",
+        body: "Jadwal kerja telah diperbarui. Silakan periksa aplikasi untuk detail lebih lanjut.",
+      });
+      return true;
+    } catch (error) {
+      console.error("[Notif] Send notification failed:", error);
+      return false;
+    }
+  }
 }

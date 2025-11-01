@@ -11,4 +11,8 @@ export interface IJadwalRepository {
     uid: string,
     jadwal: Partial<JadwalKaryawan>
   ): Promise<void>;
+
+  sinkronJadwal(
+    data: Array<{ uid: string; jadwal: JadwalKaryawan; excelId: number }>
+  ): Promise<void>;
 }

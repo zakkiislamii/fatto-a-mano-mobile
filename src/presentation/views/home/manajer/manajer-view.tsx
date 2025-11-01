@@ -2,6 +2,7 @@ import { Karyawan } from "@/src/common/types/karyawan";
 import Button from "@/src/components/ui/button";
 import PaginationControls from "@/src/components/ui/pagination-controls";
 import { useKaryawanRealTime } from "@/src/presentation/hooks/karyawan/use-karyawan-realtime";
+import useSinkronJadwalKerja from "@/src/presentation/hooks/sinkron-jadwal-kerja/use-sinkron-jadwal-kerja";
 import React from "react";
 import {
   ActivityIndicator,
@@ -36,6 +37,8 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
     handleClearSearch,
   } = useKaryawanRealTime();
 
+  const { handleSinkronJadwal, loading: sinkronLoading } =
+    useSinkronJadwalKerja();
   const inputBg = isDark ? "bg-gray-800" : "bg-gray-100";
   const inputText = isDark ? "text-white" : "text-gray-900";
   const placeholderColor = isDark ? "#9ca3af" : "#6b7280";
@@ -47,8 +50,8 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
     console.log("[Aksi] Ekspor Rekap Presensi");
   };
 
-  const handleSyncSchedule = () => {
-    console.log("[Aksi] Sinkron Jadwal Kerja");
+  const handleSyncSchedule = async () => {
+    await handleSinkronJadwal();
   };
 
   return (
@@ -137,6 +140,8 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
           <Button
             title="Sinkron Jadwal Kerja"
             onPress={handleSyncSchedule}
+            loading={sinkronLoading}
+            disabled={sinkronLoading}
             className={`${syncButtonBg} rounded-lg py-3 flex-1`}
             textClassName="text-white font-bold text-sm"
           />

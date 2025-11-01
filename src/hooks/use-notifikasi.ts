@@ -27,3 +27,11 @@ export const useSendToKaryawan = () => {
     },
   });
 };
+
+export const useSendToAll = () => {
+  return useMutation({
+    mutationFn: () => {
+      return notificationService.SendToAll();
+    },
+  });
+};
