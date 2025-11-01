@@ -2,13 +2,11 @@ import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
 import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
 import formatHariKerja from "@/src/common/utils/format-hari-kerja";
 import { EditJadwalKaryawanFormSchema } from "@/src/common/validators/jadwal/edit-jadwal-karyawan-form-schema";
-import { ExcelServiceImpl } from "@/src/data/data-sources/excel-service-impl";
 import { JadwalRepositoryImpl } from "@/src/data/repositories/jadwal-repository-impl";
 import { UserRepositoryImpl } from "@/src/data/repositories/user-repository-impl";
 import { Sheets } from "@/src/domain/models/sheets";
 import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
 import { IUserRepository } from "@/src/domain/repositories/i-user-repository";
-import { IExcelService } from "@/src/domain/services/i-excel-service";
 import { useSendToKaryawan } from "@/src/hooks/use-notifikasi";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Unsubscribe } from "firebase/firestore";
@@ -16,6 +14,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Platform } from "react-native";
 import Toast from "react-native-toast-message";
+import { useEditRow } from "../sheety/use-sheety";
 
 const defaultValues: JadwalKaryawan = {
   jam_masuk: "",
@@ -33,8 +32,9 @@ const useEditJadwalKaryawan = (uid: string | null) => {
   const [showJamKeluarPicker, setShowJamKeluarPicker] = useState(false);
   const [selectedHari, setSelectedHari] = useState<number[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [excelId, setExcelId] = useState<number | null>(null); // 👈 State untuk simpan excel_id
+  const [excelId, setExcelId] = useState<number | null>(null);
   const { mutateAsync: sendNotification } = useSendToKaryawan();
+  const { mutateAsync: editExcelRow } = useEditRow();
 
   const {
     control,
@@ -64,20 +64,14 @@ const useEditJadwalKaryawan = (uid: string | null) => {
           if (profil.excel_id) {
             setExcelId(profil.excel_id);
           }
-          // Set jadwal data
+
           const jadwal = profil.jadwal;
           if (jadwal) {
-            setValue("jam_masuk", jadwal.jam_masuk || "", {
-              shouldValidate: false,
-            });
-            setValue("jam_keluar", jadwal.jam_keluar || "", {
-              shouldValidate: false,
-            });
-            setValue("hari_kerja", jadwal.hari_kerja || "", {
-              shouldValidate: false,
-            });
-            setValue("is_wfa", jadwal.is_wfa || false, {
-              shouldValidate: false,
+            reset({
+              jam_masuk: jadwal.jam_masuk || "",
+              jam_keluar: jadwal.jam_keluar || "",
+              hari_kerja: jadwal.hari_kerja || "",
+              is_wfa: jadwal.is_wfa || false,
             });
 
             if (jadwal.hari_kerja) {
@@ -95,7 +89,7 @@ const useEditJadwalKaryawan = (uid: string | null) => {
         unsubscribe();
       }
     };
-  }, [uid, setValue]);
+  }, [uid, reset]);
 
   const openModal = useCallback(() => {
     setShowModal(true);
@@ -125,7 +119,6 @@ const useEditJadwalKaryawan = (uid: string | null) => {
       }
 
       const jadwalRepo: IJadwalRepository = new JadwalRepositoryImpl();
-      const excelService: IExcelService = new ExcelServiceImpl();
 
       const jadwalData: Partial<JadwalKaryawan> = {
         jam_masuk: data.jam_masuk,
@@ -137,7 +130,7 @@ const useEditJadwalKaryawan = (uid: string | null) => {
       // Update Firestore
       await jadwalRepo.editJadwalKaryawan(uid, jadwalData);
 
-      // Update Excel
+      // Update Google Sheets
       if (excelId) {
         try {
           const excelData: Partial<Sheets> = {
@@ -147,7 +140,7 @@ const useEditJadwalKaryawan = (uid: string | null) => {
             isWfa: !!data.is_wfa,
           };
 
-          await excelService.editRow(excelId, excelData);
+          await editExcelRow({ id: excelId, data: excelData });
         } catch (excelError) {
           console.error(
             "[useEditJadwalKaryawan] Gagal update Excel:",

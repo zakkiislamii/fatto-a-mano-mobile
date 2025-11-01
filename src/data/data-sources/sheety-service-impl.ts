@@ -1,12 +1,12 @@
 import {
-  ExcelPartialResponse,
-  ExcelResponse,
+  SheetyPartialResponse,
+  SheetyResponse,
 } from "@/src/common/types/excel-response";
 import { Sheets } from "@/src/domain/models/sheets";
-import { IExcelService } from "@/src/domain/services/i-excel-service";
+import { ISheetyService } from "@/src/domain/services/i-sheety-service";
 import axios from "axios";
 
-export class ExcelServiceImpl implements IExcelService {
+export class SheetyServiceImpl implements ISheetyService {
   private readonly url: string = process.env.EXPO_PUBLIC_BE_URL || "";
 
   public async getRows(): Promise<Sheets[]> {
@@ -19,9 +19,9 @@ export class ExcelServiceImpl implements IExcelService {
     }
   }
 
-  public async addRow(data: Sheets): Promise<ExcelResponse> {
+  public async addRow(data: Sheets): Promise<SheetyResponse> {
     try {
-      const response = await axios.post<ExcelResponse>(
+      const response = await axios.post<SheetyResponse>(
         `${this.url}/sheety`,
         data
       );
@@ -35,13 +35,13 @@ export class ExcelServiceImpl implements IExcelService {
   public async editRow(
     id: number,
     data: Partial<Sheets>
-  ): Promise<ExcelPartialResponse> {
+  ): Promise<SheetyPartialResponse> {
     try {
       if (!id) {
         throw new Error("ID tidak tersedia untuk edit row.");
       }
 
-      const response = await axios.put<ExcelPartialResponse>(
+      const response = await axios.put<SheetyPartialResponse>(
         `${this.url}/sheety/${id}`,
         data
       );

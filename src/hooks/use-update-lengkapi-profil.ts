@@ -5,17 +5,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Platform } from "react-native";
 import Toast from "react-native-toast-message";
-import { ExcelResponse } from "../common/types/excel-response";
+import { SheetyResponse } from "../common/types/excel-response";
 import { LengkapiProfil } from "../common/types/lengkapi-profil";
 import { LengkapiProfilData } from "../common/types/user-data";
 import { expandHariKerja } from "../common/utils/expand-hari-kerja";
 import formatHariKerja from "../common/utils/format-hari-kerja";
 import { LengkapiProfilFormSchema } from "../common/validators/profil/update-lengkapi-profil-schema";
-import { ExcelServiceImpl } from "../data/data-sources/excel-service-impl";
+import { SheetyServiceImpl } from "../data/data-sources/sheety-service-impl";
 import { UserRepositoryImpl } from "../data/repositories/user-repository-impl";
 import { Sheets } from "../domain/models/sheets";
 import { IUserRepository } from "../domain/repositories/i-user-repository";
-import { IExcelService } from "../domain/services/i-excel-service";
+import { ISheetyService } from "../domain/services/i-sheety-service";
 
 const defaultValues: LengkapiProfil = {
   nama: "",
@@ -129,7 +129,7 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
       }
 
       const userRepo: IUserRepository = new UserRepositoryImpl();
-      const excelService: IExcelService = new ExcelServiceImpl();
+      const excelService: ISheetyService = new SheetyServiceImpl();
 
       // untuk Firestore
       const firestoreData: LengkapiProfilData = {
@@ -159,10 +159,11 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
         isWfa: !!data.jadwal.is_wfa,
       };
 
-      const excelResponse: ExcelResponse = await excelService.addRow(excelData);
+      const SheetyResponse: SheetyResponse =
+        await excelService.addRow(excelData);
 
       // SIMPAN ID ke Firestore
-      const excelId = excelResponse.sheet1.id;
+      const excelId = SheetyResponse.sheet1.id;
       if (excelId) {
         await userRepo.updateLengkapiProfil(uid, {
           excel_id: excelId,

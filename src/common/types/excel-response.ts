@@ -1,4 +1,4 @@
-export interface ExcelResponse {
+export interface SheetyResponse {
   sheet1: {
     uid: string;
     email: string;
@@ -13,7 +13,7 @@ export interface ExcelResponse {
   };
 }
 
-export interface ExcelPartialResponse {
+export interface SheetyPartialResponse {
   sheet1: Partial<{
     uid: string;
     email: string;
