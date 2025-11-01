@@ -26,10 +26,6 @@ const useSinkronJadwalKerja = () => {
         return;
       }
 
-      console.log(
-        `[useSinkronJadwalKerja] Memulai sinkronisasi ${freshData.length} jadwal...`
-      );
-
       const sinkronRepo: IJadwalRepository = new JadwalRepositoryImpl();
 
       const sinkronData = freshData
@@ -53,7 +49,6 @@ const useSinkronJadwalKerja = () => {
       try {
         await sendNotifToAll();
         notifStatus = " & notifikasi terkirim";
-        console.log("[useSinkronJadwalKerja] Notifikasi berhasil dikirim");
       } catch (notifError) {
         console.error(
           "[useSinkronJadwalKerja] Gagal kirim notifikasi:",
@@ -67,8 +62,6 @@ const useSinkronJadwalKerja = () => {
         text1: "Sinkronisasi Berhasil",
         text2: `${sinkronData.length} jadwal telah disinkronkan${notifStatus}`,
       });
-
-      console.log("[useSinkronJadwalKerja] Sinkronisasi selesai");
     } catch (error) {
       console.error("[useSinkronJadwalKerja] Sinkronisasi gagal:", error);
       Toast.show({

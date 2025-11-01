@@ -108,9 +108,6 @@ export class JadwalRepositoryImpl implements IJadwalRepository {
       });
 
       await batch.commit();
-      console.log(
-        `[SinkronRepository] Bulk sinkron berhasil untuk ${data.length} user`
-      );
     } catch (error) {
       console.error("[SinkronRepository] Bulk sinkron error:", error);
       throw error;
