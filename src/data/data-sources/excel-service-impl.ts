@@ -1,3 +1,7 @@
+import {
+  ExcelPartialResponse,
+  ExcelResponse,
+} from "@/src/common/types/excel-response";
 import { Sheets } from "@/src/domain/models/sheets";
 import { IExcelService } from "@/src/domain/services/i-excel-service";
 import axios from "axios";
@@ -15,9 +19,12 @@ export class ExcelServiceImpl implements IExcelService {
     }
   }
 
-  public async addRow(data: Sheets): Promise<any> {
+  public async addRow(data: Sheets): Promise<ExcelResponse> {
     try {
-      const response = await axios.post(`${this.url}/sheety`, data);
+      const response = await axios.post<ExcelResponse>(
+        `${this.url}/sheety`,
+        data
+      );
       return response.data;
     } catch (error) {
       console.error("[ExcelService] Error adding row:", error);
@@ -25,12 +32,23 @@ export class ExcelServiceImpl implements IExcelService {
     }
   }
 
-  public async editRow(id: number, data: Sheets): Promise<any> {
+  public async editRow(
+    id: number,
+    data: Partial<Sheets>
+  ): Promise<ExcelPartialResponse> {
     try {
       if (!id) {
         throw new Error("ID tidak tersedia untuk edit row.");
       }
-      const response = await axios.put(`${this.url}/sheety/${id}`, data);
+
+      console.log("[ExcelService] Updating:", `${this.url}/sheety/${id}`);
+      console.log("[ExcelService] Data:", data);
+
+      const response = await axios.put<ExcelPartialResponse>(
+        `${this.url}/sheety/${id}`,
+        data
+      );
+
       return response.data;
     } catch (error) {
       console.error("[ExcelService] Error editing row:", error);

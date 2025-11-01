@@ -10,4 +10,5 @@ export type LengkapiProfilData = {
   nomor_hp?: string;
   divisi?: string;
   jadwal?: JadwalKaryawan;
+  excel_id?: number;
 };

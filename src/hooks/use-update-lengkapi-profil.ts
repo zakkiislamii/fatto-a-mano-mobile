@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Platform } from "react-native";
 import Toast from "react-native-toast-message";
+import { ExcelResponse } from "../common/types/excel-response";
 import { LengkapiProfil } from "../common/types/lengkapi-profil";
 import { LengkapiProfilData } from "../common/types/user-data";
 import { expandHariKerja } from "../common/utils/expand-hari-kerja";
@@ -119,7 +120,6 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
     [isValid, loading, isSubmitting, isDirty]
   );
 
-  // --- handleSaveUpdateLengkapiProfil (Menyimpan Data) ---
   const handleSaveUpdateLengkapiProfil = rhfHandleSubmit(async (data) => {
     setError(null);
     setLoading(true);
@@ -128,11 +128,10 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
         throw new Error("UID atau Email tidak tersedia.");
       }
 
-      // 1. Inisiasi Repo dan Service
       const userRepo: IUserRepository = new UserRepositoryImpl();
       const excelService: IExcelService = new ExcelServiceImpl();
 
-      // 2. Siapkan data untuk Firestore
+      // untuk Firestore
       const firestoreData: LengkapiProfilData = {
         nama: data.nama,
         nomor_hp: data.nomor_hp,
@@ -145,10 +144,9 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
         },
       };
 
-      // 3. Simpan ke Firestore
       await userRepo.updateLengkapiProfil(uid, firestoreData);
 
-      // 4. Siapkan data untuk Excel (perhatikan casing: nomorHp, hariKerja)
+      // data untuk Excel
       const excelData: Sheets = {
         uid: uid,
         email: email,
@@ -161,10 +159,17 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
         isWfa: !!data.jadwal.is_wfa,
       };
 
-      // 5. Simpan ke Excel/Sheety
-      await excelService.addRow(excelData);
+      const excelResponse: ExcelResponse = await excelService.addRow(excelData);
 
-      // 6. Selesai
+      // SIMPAN ID ke Firestore
+      const excelId = excelResponse.sheet1.id;
+      if (excelId) {
+        await userRepo.updateLengkapiProfil(uid, {
+          excel_id: excelId,
+        });
+        console.log("[useUpdateLengkapiProfil] Excel ID saved:", excelId);
+      }
+
       setShowConfirmModal(false);
       Toast.show({
         type: "success",
@@ -180,7 +185,7 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
         text1: "Gagal menyimpan",
         text2: "Terjadi kesalahan saat menyimpan profil",
       });
-      throw err; // Lempar error agar RHF tahu
+      throw err;
     } finally {
       setLoading(false);
     }
