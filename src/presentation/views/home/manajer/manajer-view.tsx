@@ -54,7 +54,7 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
           </Text>
           <TextInput
             className={`flex-1 py-3 px-3 ${inputText}`}
-            placeholder="Cari nama, email, atau NIK..."
+            placeholder="Cari nama atau email"
             placeholderTextColor={placeholderColor}
             value={searchQuery}
             onChangeText={handleSearchChange}

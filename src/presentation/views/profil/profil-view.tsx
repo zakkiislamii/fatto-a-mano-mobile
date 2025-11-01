@@ -16,7 +16,7 @@ import AccountSettingsCard from "./components/account-settings-card";
 
 const ProfilView = () => {
   const colorScheme = useColorScheme();
-  const { uid } = useFirebaseAuth();
+  const { uid, role } = useFirebaseAuth();
   const {
     loading: loggingOut,
     onConfirmLogout,
@@ -58,6 +58,7 @@ const ProfilView = () => {
             loading={loading}
             error={error}
             secondaryTextColor={secondaryTextColor}
+            role={role}
           />
           <AccountSettingsCard
             loggingOut={loggingOut}

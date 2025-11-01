@@ -78,7 +78,12 @@ export default function RootLayout() {
                       headerTitleStyle: { fontWeight: "bold" },
                     }}
                   />
-
+                  <Stack.Screen
+                    name="riwayat-detail"
+                    options={{
+                      headerShown: true,
+                    }}
+                  />
                   <Stack.Screen
                     name="lengkapi-profil"
                     options={{

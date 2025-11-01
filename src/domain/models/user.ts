@@ -6,7 +6,6 @@ export interface User {
   uid: string;
   email: string;
   nomor_hp?: string;
-  nik?: string;
   nama?: string;
   role: UserRole;
   divisi?: string;

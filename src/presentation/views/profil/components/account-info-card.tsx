@@ -1,3 +1,4 @@
+import { UserRole } from "@/src/common/enums/user-role";
 import { ProfilKaryawan } from "@/src/common/types/profil-karyawan";
 import Button from "@/src/components/ui/button";
 import { DynamicBottomSheet } from "@/src/components/ui/dynamic-bottom-sheet";
@@ -20,6 +21,7 @@ interface Props {
   loading: boolean;
   error: string | null;
   secondaryTextColor: string;
+  role: string | null;
 }
 
 const AccountInfoCard = ({
@@ -30,12 +32,13 @@ const AccountInfoCard = ({
   loading,
   error,
   secondaryTextColor,
+  role,
 }: Props) => {
   const { uid } = useFirebaseAuth();
   const { profilKaryawan: profil, loading: loadingProfil } = useGetProfile(
     uid ?? null
   );
-
+  console.log(role);
   const {
     control,
     errors,
@@ -101,23 +104,19 @@ const AccountInfoCard = ({
           isDark={isDark}
         />
         <InfoRow
-          icon="hash"
-          label="NIK"
-          value={profilKaryawan.nik || "-"}
-          isDark={isDark}
-        />
-        <InfoRow
           icon="phone"
           label="Nomor HP"
           value={profilKaryawan.nomor_hp || "-"}
           isDark={isDark}
         />
-        <InfoRow
-          icon="briefcase"
-          label="Divisi"
-          value={profilKaryawan.divisi || "-"}
-          isDark={isDark}
-        />
+        {role === UserRole.karyawan && (
+          <InfoRow
+            icon="briefcase"
+            label="Divisi"
+            value={profilKaryawan.divisi || "-"}
+            isDark={isDark}
+          />
+        )}
         <Button
           title="Edit Profil"
           onPress={openEditSheet}

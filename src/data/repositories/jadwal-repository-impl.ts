@@ -35,7 +35,7 @@ export class JadwalRepositoryImpl implements IJadwalRepository {
             jam_masuk: j.jam_masuk ?? "",
             jam_keluar: j.jam_keluar ?? "",
             hari_kerja: j.hari_kerja ?? "",
-            is_wfh: !!j.is_wfh,
+            is_wfa: !!j.is_wfa,
           };
 
           cb(jadwalKaryawan);

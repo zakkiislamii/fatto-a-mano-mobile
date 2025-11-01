@@ -20,7 +20,7 @@ const useAddPresensiKeluar = (uid: string) => {
   const { presensiKeluarStatus, loading: presensiKeluarStatusLoading } = useGetStatusPresensiKeluarToday(uid);
   const { jadwalKaryawan } = useGetJadwal(uid);
   const jadwalReady = !!jadwalKaryawan;
-  const isWfh = !!jadwalKaryawan?.is_wfh;
+  const isWfa = !!jadwalKaryawan?.is_wfa;
 
   const keluarAwal = useAddPresensiKeluarLebihAwal({
     uid,
@@ -43,7 +43,7 @@ const useAddPresensiKeluar = (uid: string) => {
       return false;
     }
 
-    if (!isWfh) {
+    if (!isWfa) {
       // Office: butuh lokasi + WiFi
       if (!isLocationValid) {
         Toast.show({

@@ -5,12 +5,6 @@ const phoneTransform = (value: unknown) => {
   return s === "" ? undefined : s;
 };
 
-const nikTransform = (value: unknown) => {
-  const s = String(value);
-  const digits = s.replace(/\D+/g, "");
-  return digits === "" ? undefined : digits;
-};
-
 export const LengkapiProfilFormSchema = yup.object({
   nama: yup
     .string()
@@ -21,13 +15,6 @@ export const LengkapiProfilFormSchema = yup.object({
     .string()
     .max(100, "Maksimal 100 karakter")
     .required("Divisi wajib diisi"),
-
-  nik: yup
-    .string()
-    .transform(nikTransform)
-    .matches(/^\d*$/, "NIK hanya boleh berisi angka")
-    .test("nik-16-digit", "NIK harus 16 digit", (v) => !v || v.length === 16)
-    .required("NIK wajib diisi"),
 
   nomor_hp: yup
     .string()
@@ -58,7 +45,7 @@ export const LengkapiProfilFormSchema = yup.object({
         .string()
         .max(100, "Maksimal 100 karakter")
         .required("Hari kerja wajib diisi"),
-      is_wfh: yup.boolean().required("Status WFH wajib diisi"),
+      is_wfa: yup.boolean().required("Status WFA wajib diisi"),
     })
     .required("Jadwal wajib diisi"),
 });

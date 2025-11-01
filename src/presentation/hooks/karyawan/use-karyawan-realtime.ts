@@ -37,10 +37,8 @@ export const useKaryawanRealTime = () => {
     const filtered = karyawanList.filter((karyawan) => {
       const nama = karyawan.nama?.toLowerCase() || "";
       const email = karyawan.email?.toLowerCase() || "";
-      const nik = karyawan.nik?.toLowerCase() || "";
 
-      const match =
-        nama.includes(query) || email.includes(query) || nik.includes(query);
+      const match = nama.includes(query) || email.includes(query);
 
       return match;
     });

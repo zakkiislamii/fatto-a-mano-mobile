@@ -1,6 +1,7 @@
 import { Karyawan } from "@/src/common/types/karyawan";
 import { DynamicBottomSheet } from "@/src/components/ui/dynamic-bottom-sheet";
 import { Feather } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import JadwalDetailContent from "./jadwal-detail-content";
@@ -24,6 +25,16 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
   const textSecondary = isDark ? "#9ca3af" : "#6b7280";
   const iconColor = isDark ? "#d1d5db" : "#64748b";
   const borderColor = isDark ? "#374151" : "#e5e7eb";
+
+  const toRiwayat = () => {
+    router.push({
+      pathname: "/riwayat-detail",
+      params: {
+        uid: karyawan.uid,
+        nama: karyawan.nama,
+      },
+    });
+  };
 
   return (
     <>
@@ -75,11 +86,7 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
           isDark={isDark}
           borderColor={borderColor}
           onLihatJadwal={() => setSheetVisible(true)}
-          onLihatRiwayat={() =>
-            console.log(
-              `[Aksi] Lihat Riwayat for: ${karyawan.nama}, ${karyawan.uid}`
-            )
-          }
+          onLihatRiwayat={toRiwayat}
           onLihatDetail={() =>
             console.log(`[Aksi] Lihat Detail for: ${karyawan.nama}`)
           }

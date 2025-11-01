@@ -16,7 +16,7 @@ const useAddPresensiMasuk = (uid: string) => {
   const { isWifiValid } = useWifi();
   const [loading, setLoading] = useState<boolean>(false);
   const { jadwalKaryawan } = useGetJadwal(uid);
-  const isWfh = !!jadwalKaryawan?.is_wfh;
+  const isWfa = !!jadwalKaryawan?.is_wfa;
 
   const handlePresensiMasuk = async (): Promise<boolean> => {
     // VALIDASI 1: Jadwal harus tersedia
@@ -29,7 +29,7 @@ const useAddPresensiMasuk = (uid: string) => {
     }
 
     // VALIDASI 2: Koneksi (WFH vs Office)
-    if (!isWfh) {
+    if (!isWfa) {
       // Office: butuh lokasi + WiFi
       if (!isLocationValid) {
         Toast.show({

@@ -14,11 +14,8 @@ export const useKaryawanSearch = (karyawanList: Karyawan[]) => {
     const filtered = karyawanList.filter((karyawan) => {
       const nama = karyawan.nama?.toLowerCase() || "";
       const email = karyawan.email?.toLowerCase() || "";
-      const nik = karyawan.nik?.toLowerCase() || "";
 
-      return (
-        nama.includes(query) || email.includes(query) || nik.includes(query)
-      );
+      return nama.includes(query) || email.includes(query);
     });
 
     return filtered;

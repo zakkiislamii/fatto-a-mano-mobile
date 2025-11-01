@@ -16,15 +16,15 @@ const JadwalDetailContent = ({
     : "text-textSecondaryLight";
   const iconColor = isDark ? "#d1d5db" : "#64748b";
 
-  const isWFH = jadwal.is_wfh;
-  const statusBg = isWFH
+  const isWFA = jadwal.is_wfa;
+  const statusBg = isWFA
     ? isDark
       ? "bg-info-dark-bg"
       : "bg-info-light-bg"
     : isDark
     ? "bg-neutral-dark-bg"
     : "bg-neutral-light-bg";
-  const statusText = isWFH
+  const statusText = isWFA
     ? isDark
       ? "text-info-dark"
       : "text-info-light"
@@ -37,7 +37,7 @@ const JadwalDetailContent = ({
       {/* Badge Status */}
       <View className={`self-start px-3 py-1 rounded-full ${statusBg}`}>
         <Text className={`font-semibold text-sm ${statusText}`}>
-          {isWFH ? "Work From Home" : "Work From Office"}
+          {isWFA ? "Work From Anywhere" : "Work From Office"}
         </Text>
       </View>
 

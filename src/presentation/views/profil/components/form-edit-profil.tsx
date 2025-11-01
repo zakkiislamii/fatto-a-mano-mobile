@@ -76,54 +76,6 @@ const FormEditProfil = ({
           )}
         </View>
 
-        {/* NIK */}
-        <View className="mb-2">
-          <Text
-            className={`mb-2 font-medium ${
-              isDark ? "text-textSecondaryDark" : "text-textSecondaryLight"
-            }`}
-          >
-            NIK
-          </Text>
-          <View
-            className={`flex-row items-center rounded-lg border ${inputBg} ${
-              isDark ? "border-gray-600" : "border-gray-300"
-            }`}
-          >
-            <Feather
-              name="hash"
-              size={20}
-              color={placeholderColor}
-              style={{ marginLeft: 12 }}
-            />
-            <Controller
-              control={control}
-              name="nik"
-              render={({ field: { value, onChange, onBlur } }) => (
-                <TextInput
-                  className={`flex-1 p-4 ml-2 text-base ${primaryText}`}
-                  placeholder="Masukkan 16 digit NIK"
-                  placeholderTextColor={placeholderColor}
-                  keyboardType="number-pad"
-                  value={value ?? ""}
-                  onChangeText={(text) => {
-                    const cleaned = text.replace(/\D+/g, "");
-                    onChange(cleaned);
-                  }}
-                  onBlur={onBlur}
-                  editable={!loading}
-                  maxLength={16}
-                />
-              )}
-            />
-          </View>
-          {errors?.nik?.message && (
-            <Text className="mt-1 text-danger-light dark:text-danger-dark">
-              ❌ {String(errors.nik.message)}
-            </Text>
-          )}
-        </View>
-
         {/* Nomor HP */}
         <View className="mb-2">
           <Text

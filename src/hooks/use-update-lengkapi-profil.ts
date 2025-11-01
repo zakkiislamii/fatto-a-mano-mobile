@@ -17,14 +17,13 @@ import { IUserRepository } from "../domain/repositories/i-user-repository";
 
 const defaultValues: LengkapiProfil = {
   nama: "",
-  nik: "",
   divisi: "",
   nomor_hp: "",
   jadwal: {
     jam_masuk: "",
     jam_keluar: "",
     hari_kerja: "",
-    is_wfh: false,
+    is_wfa: false,
   },
 };
 
@@ -67,7 +66,6 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
         if (data) {
           setEmail(data.email || "");
           setValue("nama", data.nama || "", { shouldValidate: false });
-          setValue("nik", data.nik || "", { shouldValidate: false });
           setValue("nomor_hp", data.nomor_hp || "", { shouldValidate: false });
           setValue("divisi", data.divisi || "", {
             shouldValidate: false,
@@ -84,7 +82,7 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
             setValue("jadwal.hari_kerja", jadwal.hari_kerja || "", {
               shouldValidate: false,
             });
-            setValue("jadwal.is_wfh", jadwal.is_wfh || false, {
+            setValue("jadwal.is_wfa", jadwal.is_wfa || false, {
               shouldValidate: false,
             });
             if (jadwal.hari_kerja) {
@@ -134,14 +132,13 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
       // 2. Siapkan data untuk Firestore
       const firestoreData: LengkapiProfilData = {
         nama: data.nama,
-        nik: data.nik,
         nomor_hp: data.nomor_hp,
         divisi: data.divisi,
         jadwal: {
           jam_masuk: data.jadwal.jam_masuk,
           jam_keluar: data.jadwal.jam_keluar,
           hari_kerja: data.jadwal.hari_kerja,
-          is_wfh: !!data.jadwal.is_wfh,
+          is_wfa: !!data.jadwal.is_wfa,
         },
       };
 
@@ -151,15 +148,14 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
       // 4. Siapkan data untuk Excel (perhatikan casing: nomorHp, hariKerja)
       const excelData: Sheets = {
         uid: uid,
-        email: email, // Gunakan email yang disimpan di state
+        email: email,
         nama: data.nama,
-        nik: data.nik,
         nomorHp: data.nomor_hp,
         divisi: data.divisi,
         hariKerja: data.jadwal.hari_kerja,
         jamMasuk: data.jadwal.jam_masuk,
         jamKeluar: data.jadwal.jam_keluar,
-        isWfh: !!data.jadwal.is_wfh,
+        isWfa: !!data.jadwal.is_wfa,
       };
 
       // 5. Simpan ke Excel/Sheety

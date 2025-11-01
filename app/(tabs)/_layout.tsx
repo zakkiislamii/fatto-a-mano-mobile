@@ -60,7 +60,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(riwayat)"
+        name="riwayat"
         options={{
           title: "Riwayat",
           href: !isManagement ? undefined : null,

@@ -105,33 +105,6 @@ const LengkapiProfilView = () => {
             )}
           </View>
 
-          {/* NIK */}
-          <View className="mb-4">
-            <Text className={`text-sm font-semibold mb-2 ${textPrimary}`}>
-              NIK
-            </Text>
-            <Controller
-              control={control}
-              name="nik"
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  className={`${inputBg} ${inputBorder} border rounded-lg px-4 py-3 ${textPrimary}`}
-                  placeholder="Masukkan NIK"
-                  placeholderTextColor={isDark ? "#9ca3af" : "#6b7280"}
-                  value={value}
-                  onChangeText={onChange}
-                  keyboardType="numeric"
-                  maxLength={16}
-                />
-              )}
-            />
-            {errors.nik && (
-              <Text className="text-danger-light text-xs mt-1">
-                {errors.nik.message}
-              </Text>
-            )}
-          </View>
-
           {/* Nomor HP */}
           <View className="mb-4">
             <Text className={`text-sm font-semibold mb-2 ${textPrimary}`}>
@@ -339,7 +312,7 @@ const LengkapiProfilView = () => {
           <View className="mb-6">
             <Controller
               control={control}
-              name="jadwal.is_wfh"
+              name="jadwal.is_wfa"
               render={({ field: { onChange, value } }) => (
                 <TouchableOpacity
                   className="flex-row items-center"

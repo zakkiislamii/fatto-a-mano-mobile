@@ -32,13 +32,8 @@ export const useGetProfile = (uid?: string | null) => {
           return;
         }
 
-        const cleanedNik = String(raw.nik ?? "")
-          .replace(/\D+/g, "")
-          .slice(0, 16);
-
         setProfilKaryawan({
           nama: typeof raw.nama === "string" ? raw.nama : "",
-          nik: cleanedNik,
           nomor_hp: typeof raw.nomor_hp === "string" ? raw.nomor_hp : "",
           email: typeof raw.email === "string" ? raw.email : "",
           divisi: typeof raw.divisi === "string" ? raw.divisi : "",

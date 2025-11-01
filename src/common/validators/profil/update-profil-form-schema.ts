@@ -6,13 +6,6 @@ const phoneTransform = (value: unknown) => {
   return s === "" ? undefined : s;
 };
 
-const nikTransform = (value: unknown) => {
-  if (value === null || value === undefined) return undefined;
-  const s = String(value);
-  const digits = s.replace(/\D+/g, "");
-  return digits === "" ? undefined : digits;
-};
-
 export const UpdateProfilFormSchema = yup.object({
   nama: yup
     .string()
@@ -21,13 +14,6 @@ export const UpdateProfilFormSchema = yup.object({
       return typeof v === "string" ? v.trim() : String(v).trim();
     })
     .max(100, "Maksimal 100 karakter")
-    .notRequired(),
-
-  nik: yup
-    .string()
-    .transform(nikTransform)
-    .matches(/^\d*$/, "NIK hanya boleh berisi angka")
-    .test("nik-16-digit", "NIK harus 16 digit", (v) => !v || v.length === 16)
     .notRequired(),
 
   nomor_hp: yup

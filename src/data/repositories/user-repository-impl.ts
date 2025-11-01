@@ -112,7 +112,7 @@ export class UserRepositoryImpl implements IUserRepository {
         if (!isNonEmptyString(j.jam_masuk)) return false;
         if (!isNonEmptyString(j.jam_keluar)) return false;
         if (!isNonEmptyString(j.hari_kerja)) return false;
-        if (typeof j.is_wfh !== "boolean") return false;
+        if (typeof j.is_wfa !== "boolean") return false;
         return true;
       };
 
@@ -126,12 +126,11 @@ export class UserRepositoryImpl implements IUserRepository {
           const data = snap.data() as Partial<LengkapiProfilData>;
 
           const namaOk = isNonEmptyString(data.nama);
-          const nikOk = isNonEmptyString(data.nik);
           const nomorOk = isNonEmptyString(data.nomor_hp);
           const divisiOk = isNonEmptyString(data.divisi);
           const jadwalOk = isJadwalValid(data.jadwal);
 
-          const isComplete = namaOk && nikOk && nomorOk && divisiOk && jadwalOk;
+          const isComplete = namaOk && nomorOk && divisiOk && jadwalOk;
           cb(isComplete);
         },
         (error: unknown) => {
