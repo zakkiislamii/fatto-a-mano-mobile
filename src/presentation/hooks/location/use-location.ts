@@ -7,7 +7,7 @@ import distanceMeters from "@/src/common/utils/geo";
 import * as Location from "expo-location";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-const useLiveLocation = () => {
+const useLocation = () => {
   const [location, setLocation] = useState<Coordinate>({ lat: 0, lon: 0 });
   const [address, setAddress] = useState("");
   const [isInsideOffice, setIsInsideOffice] = useState<boolean | null>(null);
@@ -41,7 +41,7 @@ const useLiveLocation = () => {
           .filter(Boolean)
           .join(", ");
       } catch (error) {
-        console.error("[useLiveLocation] Reverse geocode error:", error);
+        console.error("[useLocation] Reverse geocode error:", error);
         return "";
       }
     },
@@ -163,7 +163,7 @@ const useLiveLocation = () => {
     })();
   }, [location.lat, location.lon, address, location, reverseGeocode]);
 
-  const canCheck = useMemo(
+  const isLocationValid = useMemo(
     () =>
       isInsideOffice === true &&
       Number.isFinite(location.lat) &&
@@ -175,9 +175,9 @@ const useLiveLocation = () => {
     location,
     isInsideOffice,
     address,
-    canCheck,
+    isLocationValid,
     refresh: updateLocation,
   };
 };
 
-export default useLiveLocation;
+export default useLocation;

@@ -17,14 +17,14 @@ import MapView, {
   PROVIDER_GOOGLE,
   Region,
 } from "react-native-maps";
-import useLiveLocation from "../../hooks/maps/use-live-location";
+import useLocation from "../../hooks/location/use-location";
 
 interface MapsViewProps {
   isDark: boolean;
 }
 
 const MapsView = ({ isDark }: MapsViewProps) => {
-  const { location, isInsideOffice, address, refresh } = useLiveLocation();
+  const { location, isInsideOffice, address, refresh } = useLocation();
   const { width } = Dimensions.get("window");
   const mapRef = useRef<MapView>(null);
   const [mapRegion, setMapRegion] = useState<Region | undefined>(undefined);

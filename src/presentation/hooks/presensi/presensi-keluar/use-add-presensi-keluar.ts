@@ -4,7 +4,7 @@ import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today"
 import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
 import { IPresensiRepository } from "@/src/domain/repositories/i-presensi-repository";
 import { useGetJadwal } from "@/src/presentation/hooks/jadwal/use-get-jadwal";
-import useLiveLocation from "@/src/presentation/hooks/maps/use-live-location";
+import useLocation from "@/src/presentation/hooks/location/use-location";
 import useWifi from "@/src/presentation/hooks/wifi/use-wifi";
 import { useCallback, useState } from "react";
 import Toast from "react-native-toast-message";
@@ -13,19 +13,11 @@ import useAddPresensiKeluarLembur from "./use-add-presensi-keluar-lembur";
 import useGetStatusPresensiKeluarToday from "./use-get-status-presensi-keluar-today";
 
 const useAddPresensiKeluar = (uid: string) => {
-  const { canCheck = false } = useLiveLocation();
-  const {
-    isWifiConnected = false,
-    isBssid = false,
-    isOnline = false,
-    wifiLoading = true,
-    networkLoading = true,
-  } = useWifi();
-
+  const { isLocationValid } = useLocation();
+  const { isWifiValid } = useWifi();
   const [loading, setLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const { presensiKeluarStatus, loading: presensiKeluarStatusLoading } =
-    useGetStatusPresensiKeluarToday(uid);
+  const { presensiKeluarStatus, loading: presensiKeluarStatusLoading } = useGetStatusPresensiKeluarToday(uid);
   const { jadwalKaryawan } = useGetJadwal(uid);
   const jadwalReady = !!jadwalKaryawan;
   const isWfh = !!jadwalKaryawan?.is_wfh;
@@ -51,16 +43,9 @@ const useAddPresensiKeluar = (uid: string) => {
       return false;
     }
 
-    if (isWfh) {
-      if (!isOnline) {
-        Toast.show({
-          type: "error",
-          text1: "Tidak dapat presensi: tidak ada koneksi internet.",
-        });
-        return false;
-      }
-    } else {
-      if (!canCheck) {
+    if (!isWfh) {
+      // Office: butuh lokasi + WiFi
+      if (!isLocationValid) {
         Toast.show({
           type: "error",
           text1: "Tidak dapat presensi",
@@ -68,19 +53,11 @@ const useAddPresensiKeluar = (uid: string) => {
         });
         return false;
       }
-      if (!isWifiConnected) {
+      if (!isWifiValid) {
         Toast.show({
           type: "error",
           text1: "Tidak dapat presensi",
-          text2: "Tidak terhubung ke jaringan Wi-Fi",
-        });
-        return false;
-      }
-      if (!isBssid) {
-        Toast.show({
-          type: "error",
-          text1: "Wi-Fi tidak terdaftar",
-          text2: "Silakan sambungkan ke jaringan kantor",
+          text2: "Silakan sambungkan ke jaringan Wi-Fi kantor",
         });
         return false;
       }
@@ -185,10 +162,7 @@ const useAddPresensiKeluar = (uid: string) => {
       lembur.loading ||
       !jadwalReady ||
       presensiKeluarStatusLoading ||
-      presensiKeluarStatus.sudah_keluar ||
-      (isWfh
-        ? networkLoading || !isOnline
-        : wifiLoading || !isWifiConnected || !isBssid || !canCheck)
+      presensiKeluarStatus.sudah_keluar
   );
 
   return {

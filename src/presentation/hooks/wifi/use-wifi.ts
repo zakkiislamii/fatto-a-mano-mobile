@@ -1,6 +1,6 @@
 import { ALLOWED_BSSIDS } from "@/src/common/constants/constants";
 import NetInfo from "@react-native-community/netinfo";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const useWifi = () => {
   const [isWifiConnected, setIsWifiConnected] = useState<boolean>(false);
@@ -90,9 +90,15 @@ const useWifi = () => {
     };
   }, []);
 
+  const isWifiValid = useMemo(
+    () => isWifiConnected && isBssid,
+    [isWifiConnected, isBssid]
+  );
+
   return {
     isWifiConnected,
     isBssid,
+    isWifiValid,
     wifiLoading,
     isOnline,
     networkLoading,

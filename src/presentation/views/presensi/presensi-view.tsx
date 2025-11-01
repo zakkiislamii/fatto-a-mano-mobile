@@ -5,19 +5,18 @@ import { DynamicModal } from "@/src/components/ui/dynamic-modal";
 import { router } from "expo-router";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import useLiveLocation from "../../hooks/maps/use-live-location";
-import useGetStatusIzinAktif from "../../hooks/pengajuan/status-aktif/use-get-status-izin-aktif";
-import useGetStatusSakitAktif from "../../hooks/pengajuan/status-aktif/use-get-status-sakit-aktif";
+import useLocation from "../../hooks/location/use-location";
+import useAddPresensiKeluar from "../../hooks/presensi/presensi-keluar/use-add-presensi-keluar";
+import useAddPresensiMasuk from "../../hooks/presensi/presensi-masuk/use-add-presensi-masuk";
+import useGetStatusPresensiMasukToday from "../../hooks/presensi/presensi-masuk/use-get-status-presensi-masuk-today";
+import useAutoPresensiChecker from "../../hooks/presensi/use-auto-presensi-checker";
+import useWifi from "../../hooks/wifi/use-wifi";
+import MapsView from "../maps/maps-view";
 import FormKeluarAwal from "./components/form-keluar-awal";
 import FormLembur from "./components/form-lembur";
 import LocationStatus from "./components/location-status";
 import MapInfo from "./components/map-info";
 import WifiStatus from "./components/wifi-status";
-import useAddPresensiKeluar from "../../hooks/presensi/presensi-keluar/use-add-presensi-keluar";
-import useAddPresensiMasuk from "../../hooks/presensi/presensi-masuk/use-add-presensi-masuk";
-import useGetStatusPresensiMasukToday from "../../hooks/presensi/presensi-masuk/use-get-status-presensi-masuk-today";
-import useWifi from "../../hooks/wifi/use-wifi";
-import MapsView from "../maps/maps-view";
 
 interface PresensiViewProps {
   isDark: boolean;
@@ -26,12 +25,10 @@ interface PresensiViewProps {
 
 const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
   const { isWifiConnected, isBssid, wifiLoading, refreshWifi } = useWifi();
-  const { canCheck } = useLiveLocation();
-  const {
-    handlePresensiMasuk,
-    loading: presensiMasukLoading,
-    isButtonDisabled: presensiMasukButtonDisabled,
-  } = useAddPresensiMasuk(uid);
+  const { isLocationValid } = useLocation();
+  const { isAlpa, isIzinAktif, isSakitAktif } = useAutoPresensiChecker(uid);
+  const { handlePresensiMasuk, loading: presensiMasukLoading } =
+    useAddPresensiMasuk(uid);
   const { presensiMasukStatus, loading: presensiMasukStatusLoading } =
     useGetStatusPresensiMasukToday(uid);
   const {
@@ -47,8 +44,6 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
     presensiKeluarStatus,
     presensiKeluarStatusLoading,
   } = useAddPresensiKeluar(uid);
-  const { isIzinAktif } = useGetStatusIzinAktif(uid);
-  const { isSakitAktif } = useGetStatusSakitAktif(uid);
 
   const bgColor = isDark ? "bg-cardDark" : "bg-cardLight";
   const buttonBg = isDark ? "bg-button-dark" : "bg-button-light";
@@ -72,7 +67,6 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
 
   const statusDisplay = getStatusDisplay();
 
-  const isAlpa = presensiMasukStatus.status === StatusPresensi.alpa;
   const isSakit = presensiMasukStatus.status === StatusPresensi.sakit;
   const isIzin = presensiMasukStatus.status === StatusPresensi.izin;
   const hasSpecialStatus = isAlpa || isSakit || isIzin;
@@ -98,6 +92,10 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
   };
 
   const title = getTitle();
+
+  const presensiMasukButtonDisabled = Boolean(
+    presensiMasukLoading || isAlpa || isIzinAktif || isSakitAktif
+  );
 
   const finalButtonDisabled = presensiMasukStatus.sudah_masuk
     ? presensiKeluarButtonDisabled || isAlpa || isIzinAktif || isSakitAktif
@@ -170,7 +168,7 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
           isDark={isDark}
           onRefresh={refreshWifi}
         />
-        <LocationStatus canCheck={canCheck} isDark={isDark} />
+        <LocationStatus isLocationValid={isLocationValid} isDark={isDark} />
       </View>
 
       <Button

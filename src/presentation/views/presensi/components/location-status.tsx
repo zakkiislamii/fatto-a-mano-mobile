@@ -3,18 +3,18 @@ import React from "react";
 import { Text, View } from "react-native";
 
 interface LocationStatusProps {
-  canCheck: boolean;
+  isLocationValid: boolean;
   isDark: boolean;
 }
 
-const LocationStatus = ({ canCheck, isDark }: LocationStatusProps) => {
+const LocationStatus = ({ isLocationValid, isDark }: LocationStatusProps) => {
   const warningBg = isDark ? "bg-yellow-900/40" : "bg-yellow-200";
   const warningIconColor = isDark ? "#facc15" : "#f59e0b";
   const warningText = isDark ? "text-yellow-300" : "text-yellow-700";
   const successBg = isDark ? "bg-green-900/40" : "bg-green-200";
   const successIconColor = isDark ? "#4ade80" : "#16a34a";
   const successText = isDark ? "text-green-300" : "text-green-700";
-  if (canCheck) {
+  if (isLocationValid) {
     return (
       <View
         className={`flex-row items-center p-3 rounded-lg ${successBg} w-full`}

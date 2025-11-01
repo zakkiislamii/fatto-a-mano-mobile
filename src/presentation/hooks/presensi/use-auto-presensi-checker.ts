@@ -1,0 +1,242 @@
+// src/presentation/hooks/presensi/presensi-masuk/use-auto-presensi-checker.ts
+
+import { StatusPresensi } from "@/src/common/enums/status-presensi";
+import { PresensiMasuk } from "@/src/common/types/presensi-masuk";
+import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
+import Today from "@/src/common/utils/get-today";
+import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
+import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
+import { useGetJadwal } from "@/src/presentation/hooks/jadwal/use-get-jadwal";
+import useGetStatusIzinAktif from "@/src/presentation/hooks/pengajuan/status-aktif/use-get-status-izin-aktif";
+import useGetStatusSakitAktif from "@/src/presentation/hooks/pengajuan/status-aktif/use-get-status-sakit-aktif";
+import { useCallback, useEffect, useRef, useState } from "react";
+import Toast from "react-native-toast-message";
+import useGetStatusPresensiMasukToday from "./presensi-masuk/use-get-status-presensi-masuk-today";
+
+const useAutoPresensiChecker = (uid: string) => {
+  const [isAlpa, setIsAlpa] = useState<boolean>(false);
+  const { jadwalKaryawan } = useGetJadwal(uid);
+  const { presensiMasukStatus, loading: presensiMasukStatusLoading } = useGetStatusPresensiMasukToday(uid);
+  const { isIzinAktif, loading: izinLoading } = useGetStatusIzinAktif(uid);
+  const { isSakitAktif, loading: sakitLoading } = useGetStatusSakitAktif(uid);
+  const hasShownAlpaToastRef = useRef<boolean>(false);
+  const hasCreatedAlpaRecordRef = useRef<boolean>(false);
+  const hasShownIzinToastRef = useRef<boolean>(false);
+  const hasCreatedIzinRecordRef = useRef<boolean>(false);
+  const hasShownSakitToastRef = useRef<boolean>(false);
+  const hasCreatedSakitRecordRef = useRef<boolean>(false);
+
+  const createAutoAlpa = useCallback(async () => {
+    if (hasCreatedAlpaRecordRef.current) return;
+
+    try {
+      const presensiMasuk: PresensiMasuk = {
+        waktu: "",
+        terlambat: true,
+      };
+
+      const tanggal = Today();
+      const presensiRepo = new PresensiRepositoryImpl();
+      await presensiRepo.addPresensiMasuk(
+        uid,
+        tanggal,
+        StatusPresensi.alpa,
+        presensiMasuk
+      );
+
+      hasCreatedAlpaRecordRef.current = true;
+      console.log("[AutoPresensi] Created ALPA record for user:", uid);
+    } catch (err) {
+      console.error("[AutoPresensi] createAutoAlpa error:", err);
+    }
+  }, [uid]);
+
+  const createAutoIzin = useCallback(async () => {
+    if (hasCreatedIzinRecordRef.current) return;
+
+    try {
+      const presensiMasuk: PresensiMasuk = {
+        waktu: "",
+        terlambat: false,
+      };
+
+      const tanggal = Today();
+      const presensiRepo = new PresensiRepositoryImpl();
+      await presensiRepo.addPresensiMasuk(
+        uid,
+        tanggal,
+        StatusPresensi.izin,
+        presensiMasuk
+      );
+
+      hasCreatedIzinRecordRef.current = true;
+      console.log("[AutoPresensi] Created IZIN record for user:", uid);
+    } catch (err) {
+      console.error("[AutoPresensi] createAutoIzin error:", err);
+    }
+  }, [uid]);
+
+  const createAutoSakit = useCallback(async () => {
+    if (hasCreatedSakitRecordRef.current) return;
+
+    try {
+      const presensiMasuk: PresensiMasuk = {
+        waktu: "",
+        terlambat: false,
+      };
+
+      const tanggal = Today();
+      const presensiRepo = new PresensiRepositoryImpl();
+      await presensiRepo.addPresensiMasuk(
+        uid,
+        tanggal,
+        StatusPresensi.sakit,
+        presensiMasuk
+      );
+
+      hasCreatedSakitRecordRef.current = true;
+      console.log("[AutoPresensi] Created SAKIT record for user:", uid);
+    } catch (err) {
+      console.error("[AutoPresensi] createAutoSakit error:", err);
+    }
+  }, [uid]);
+
+ 
+  useEffect(() => {
+    if (izinLoading || presensiMasukStatusLoading) return;
+    if (isIzinAktif && !presensiMasukStatus.sudah_masuk) {
+      if (!hasShownIzinToastRef.current) {
+        createAutoIzin();
+        Toast.show({
+          type: "info",
+          text1: "Status: IZIN",
+          text2: "Anda sedang dalam periode izin yang disetujui.",
+        });
+        hasShownIzinToastRef.current = true;
+      }
+      return;
+    }
+
+    // Reset flag jika tidak sedang izin
+    if (!isIzinAktif) {
+      hasShownIzinToastRef.current = false;
+      hasCreatedIzinRecordRef.current = false;
+    }
+  }, [
+    isIzinAktif,
+    presensiMasukStatus.sudah_masuk,
+    izinLoading,
+    presensiMasukStatusLoading,
+    createAutoIzin,
+  ]);
+
+  useEffect(() => {
+    if (sakitLoading || presensiMasukStatusLoading) return;
+
+    // Jika user sedang sakit dan belum ada record presensi
+    if (isSakitAktif && !presensiMasukStatus.sudah_masuk) {
+      if (!hasShownSakitToastRef.current) {
+        createAutoSakit();
+        Toast.show({
+          type: "info",
+          text1: "Status: SAKIT",
+          text2: "Anda sedang dalam kondisi sakit yang disetujui.",
+        });
+        hasShownSakitToastRef.current = true;
+      }
+      return;
+    }
+
+    // Reset flag jika tidak sedang sakit
+    if (!isSakitAktif) {
+      hasShownSakitToastRef.current = false;
+      hasCreatedSakitRecordRef.current = false;
+    }
+  }, [
+    isSakitAktif,
+    presensiMasukStatus.sudah_masuk,
+    sakitLoading,
+    presensiMasukStatusLoading,
+    createAutoSakit,
+  ]);
+
+  // EFFECT: Handle AUTO ALPA
+  useEffect(() => {
+    if (
+      !jadwalKaryawan ||
+      presensiMasukStatusLoading ||
+      izinLoading ||
+      sakitLoading
+    ) {
+      hasShownAlpaToastRef.current = false;
+      setIsAlpa(false);
+      return;
+    }
+
+    // Jika sedang izin atau sakit, tidak perlu cek ALPA
+    if (isIzinAktif || isSakitAktif) {
+      hasShownAlpaToastRef.current = false;
+      setIsAlpa(false);
+      return;
+    }
+
+    const today = new Date();
+    const workingDays = expandHariKerja(jadwalKaryawan.hari_kerja);
+    const todayIdx = today.getDay();
+
+    // jika hari ini bukan hari kerja -> bukan alpa
+    if (!workingDays.includes(todayIdx)) {
+      hasShownAlpaToastRef.current = false;
+      setIsAlpa(false);
+      return;
+    }
+
+    const jamKeluarDate = parseJamToDateToday(jadwalKaryawan.jam_keluar, today);
+
+    if (!jamKeluarDate) {
+      hasShownAlpaToastRef.current = false;
+      setIsAlpa(false);
+      return;
+    }
+
+    const now = new Date();
+
+    if (now > jamKeluarDate && !presensiMasukStatus.sudah_masuk) {
+      setIsAlpa(true);
+      if (!hasShownAlpaToastRef.current) {
+        createAutoAlpa();
+        Toast.show({
+          type: "error",
+          text1: "Status: ALPA",
+          text2:
+            "Waktu presensi masuk telah terlewat. Hubungi HRD untuk pengurusan lebih lanjut.",
+        });
+        hasShownAlpaToastRef.current = true;
+      }
+      return;
+    }
+
+    hasShownAlpaToastRef.current = false;
+    setIsAlpa(false);
+  }, [
+    jadwalKaryawan,
+    presensiMasukStatus,
+    presensiMasukStatusLoading,
+    isIzinAktif,
+    isSakitAktif,
+    izinLoading,
+    sakitLoading,
+    uid,
+    createAutoAlpa,
+  ]);
+
+  return {
+    isAlpa,
+    isIzinAktif,
+    isSakitAktif,
+    izinLoading,
+    sakitLoading,
+  };
+};
+
+export default useAutoPresensiChecker;
