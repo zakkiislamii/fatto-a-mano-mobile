@@ -1,4 +1,5 @@
 import { Karyawan } from "@/src/common/types/karyawan";
+import Button from "@/src/components/ui/button";
 import PaginationControls from "@/src/components/ui/pagination-controls";
 import { useKaryawanRealTime } from "@/src/presentation/hooks/karyawan/use-karyawan-realtime";
 import React from "react";
@@ -39,6 +40,16 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
   const inputText = isDark ? "text-white" : "text-gray-900";
   const placeholderColor = isDark ? "#9ca3af" : "#6b7280";
   const borderColor = isDark ? "border-gray-700" : "border-gray-300";
+  const exportButtonBg = isDark ? "bg-success-dark-bg" : "bg-success-light";
+  const syncButtonBg = isDark ? "bg-info-dark-bg" : "bg-info-light";
+
+  const handleExportRecap = () => {
+    console.log("[Aksi] Ekspor Rekap Presensi");
+  };
+
+  const handleSyncSchedule = () => {
+    console.log("[Aksi] Sinkron Jadwal Kerja");
+  };
 
   return (
     <View className={`${screenBg} flex-1`}>
@@ -54,7 +65,7 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
           </Text>
           <TextInput
             className={`flex-1 py-3 px-3 ${inputText}`}
-            placeholder="Cari nama atau email"
+            placeholder="Cari nama atau email karyawan"
             placeholderTextColor={placeholderColor}
             value={searchQuery}
             onChangeText={handleSearchChange}
@@ -114,6 +125,25 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
         )}
       </ScrollView>
 
+      {/* Action Buttons */}
+      {!loading && totalItems > 0 && (
+        <View className="px-3 pt-2 pb-1 flex-row gap-x-2">
+          <Button
+            title="Ekspor Rekap Presensi"
+            onPress={handleExportRecap}
+            className={`${exportButtonBg} rounded-lg py-3 flex-1`}
+            textClassName="text-white font-bold text-sm"
+          />
+          <Button
+            title="Sinkron Jadwal Kerja"
+            onPress={handleSyncSchedule}
+            className={`${syncButtonBg} rounded-lg py-3 flex-1`}
+            textClassName="text-white font-bold text-sm"
+          />
+        </View>
+      )}
+
+      {/* Pagination Controls */}
       {!loading && totalItems > 0 && (
         <PaginationControls
           currentPage={currentPage}

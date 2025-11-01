@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import JadwalDetailContent from "./jadwal-detail-content";
 import KaryawanActionButtons from "./karyawan-action-buttons";
+import ProfilDetailContent from "./profi-detail-content";
 
 interface KaryawanCardProps {
   karyawan: Karyawan;
@@ -15,6 +16,7 @@ interface KaryawanCardProps {
 
 const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
   const [isSheetVisible, setSheetVisible] = useState(false);
+  const [isProfilSheetVisible, setProfilSheetVisible] = useState(false);
 
   if (!karyawan) {
     return null;
@@ -87,17 +89,16 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
           borderColor={borderColor}
           onLihatJadwal={() => setSheetVisible(true)}
           onLihatRiwayat={toRiwayat}
-          onLihatDetail={() =>
-            console.log(`[Aksi] Lihat Detail for: ${karyawan.nama}`)
-          }
+          onLihatDetail={() => setProfilSheetVisible(true)}
         />
       </View>
 
+      {/* Bottom Sheet Jadwal */}
       {karyawan.jadwal && (
         <DynamicBottomSheet
           isVisible={isSheetVisible}
           onClose={() => setSheetVisible(false)}
-          title={`Detail Jadwal \n ${karyawan.nama}`}
+          title={`Detail Jadwal\n${karyawan.nama}`}
           isDark={isDark}
           customContent={
             <JadwalDetailContent jadwal={karyawan.jadwal} isDark={isDark} />
@@ -112,6 +113,19 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
           onSecondaryButtonPress={() => setSheetVisible(false)}
         />
       )}
+
+      {/* Bottom Sheet Profil Detail */}
+      <DynamicBottomSheet
+        isVisible={isProfilSheetVisible}
+        onClose={() => setProfilSheetVisible(false)}
+        title={`Detail Profil\n${karyawan.nama}`}
+        isDark={isDark}
+        customContent={
+          <ProfilDetailContent karyawan={karyawan} isDark={isDark} />
+        }
+        primaryButtonText="Tutup"
+        onPrimaryButtonPress={() => setProfilSheetVisible(false)}
+      />
     </>
   );
 };

@@ -6,4 +6,9 @@ export interface IJadwalRepository {
     uid: string,
     cb: (jadwal: JadwalKaryawan | null) => void
   ): Unsubscribe | null;
+
+  editJadwalKaryawan(
+    uid: string,
+    jadwal: Partial<JadwalKaryawan>
+  ): Promise<void>;
 }

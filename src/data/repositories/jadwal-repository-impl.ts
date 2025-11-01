@@ -2,7 +2,7 @@ import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
 import { db } from "@/src/configs/firebase-config";
 import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
 import { Unsubscribe } from "firebase/auth";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 
 export class JadwalRepositoryImpl implements IJadwalRepository {
   public getJadwalKaryawanRealTime(
@@ -47,6 +47,49 @@ export class JadwalRepositoryImpl implements IJadwalRepository {
       );
     } catch (error: unknown) {
       console.error("[JadwalRepository] Get Jadwal RealTime error:", error);
+      throw error;
+    }
+  }
+
+  public async editJadwalKaryawan(
+    uid: string,
+    jadwal: Partial<JadwalKaryawan>
+  ): Promise<void> {
+    try {
+      if (!uid) {
+        throw new Error("UID tidak diberikan.");
+      }
+
+      const updateData: Record<string, any> = {};
+
+      if (jadwal.jam_masuk !== undefined) {
+        updateData["jadwal.jam_masuk"] = jadwal.jam_masuk;
+      }
+      if (jadwal.jam_keluar !== undefined) {
+        updateData["jadwal.jam_keluar"] = jadwal.jam_keluar;
+      }
+      if (jadwal.hari_kerja !== undefined) {
+        updateData["jadwal.hari_kerja"] = jadwal.hari_kerja;
+      }
+      if (jadwal.is_wfa !== undefined) {
+        updateData["jadwal.is_wfa"] = jadwal.is_wfa;
+      }
+
+      updateData["updated_at"] = new Date();
+
+      if (Object.keys(updateData).length === 1) {
+        throw new Error("Tidak ada perubahan data jadwal.");
+      }
+
+      const userRef = doc(db, "users", uid);
+      await updateDoc(userRef, updateData);
+
+      console.log(
+        "[JadwalRepository] Jadwal berhasil diupdate untuk uid:",
+        uid
+      );
+    } catch (error: unknown) {
+      console.error("[JadwalRepository] Update Jadwal error:", error);
       throw error;
     }
   }
