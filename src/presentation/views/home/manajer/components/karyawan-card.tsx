@@ -1,9 +1,12 @@
 import { Karyawan } from "@/src/common/types/karyawan";
 import { DynamicBottomSheet } from "@/src/components/ui/dynamic-bottom-sheet";
+import { DynamicModal } from "@/src/components/ui/dynamic-modal";
+import useEditJadwalKaryawan from "@/src/presentation/hooks/jadwal/use-edit-jadwal-karyawan";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import FormEditJadwal from "./form-edit-jadwal";
 import JadwalDetailContent from "./jadwal-detail-content";
 import KaryawanActionButtons from "./karyawan-action-buttons";
 import ProfilDetailContent from "./profi-detail-content";
@@ -17,6 +20,28 @@ interface KaryawanCardProps {
 const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
   const [isSheetVisible, setSheetVisible] = useState(false);
   const [isProfilSheetVisible, setProfilSheetVisible] = useState(false);
+
+  const {
+    control,
+    errors,
+    watch,
+    canSubmit,
+    loading,
+    showModal,
+    openModal,
+    closeModal,
+    showConfirmModal,
+    closeConfirmModal,
+    showJamMasukPicker,
+    showJamKeluarPicker,
+    openJamMasukPicker,
+    openJamKeluarPicker,
+    selectedHari,
+    toggleHari,
+    handleTimeChange,
+    handleSubmit,
+    confirmSubmit,
+  } = useEditJadwalKaryawan(karyawan.uid);
 
   if (!karyawan) {
     return null;
@@ -93,7 +118,7 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
         />
       </View>
 
-      {/* Bottom Sheet Jadwal */}
+      {/* Bottom Sheet Jadwal Detail */}
       {karyawan.jadwal && (
         <DynamicBottomSheet
           isVisible={isSheetVisible}
@@ -105,14 +130,50 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
           }
           primaryButtonText="Edit Jadwal"
           onPrimaryButtonPress={() => {
-            console.log(
-              `[Aksi] edit jadwal kerja for: ${karyawan.nama}, ${karyawan.uid}`
-            );
+            setSheetVisible(false);
+            openModal();
           }}
-          secondaryButtonText="Tutup"
-          onSecondaryButtonPress={() => setSheetVisible(false)}
         />
       )}
+
+      {/* Bottom Sheet Edit Jadwal */}
+      <DynamicBottomSheet
+        isVisible={showModal}
+        onClose={closeModal}
+        title={`Edit Jadwal\n${karyawan.nama}`}
+        isDark={isDark}
+        customContent={
+          <FormEditJadwal
+            control={control}
+            errors={errors}
+            onSubmit={handleSubmit}
+            canSubmit={canSubmit}
+            loading={loading}
+            isDark={isDark}
+            watch={watch}
+            showJamMasukPicker={showJamMasukPicker}
+            showJamKeluarPicker={showJamKeluarPicker}
+            openJamMasukPicker={openJamMasukPicker}
+            openJamKeluarPicker={openJamKeluarPicker}
+            selectedHari={selectedHari}
+            toggleHari={toggleHari}
+            handleTimeChange={handleTimeChange}
+          />
+        }
+      />
+
+      {/* Modal Konfirmasi */}
+      <DynamicModal
+        isVisible={showConfirmModal}
+        title="Konfirmasi Perubahan"
+        message="Apakah Anda yakin ingin menyimpan perubahan jadwal kerja?"
+        onClose={closeConfirmModal}
+        primaryButtonText="Ya, Simpan"
+        onPrimaryButtonPress={confirmSubmit}
+        secondaryButtonText="Batal"
+        onSecondaryButtonPress={closeConfirmModal}
+        isDark={isDark}
+      />
 
       {/* Bottom Sheet Profil Detail */}
       <DynamicBottomSheet
@@ -123,8 +184,6 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
         customContent={
           <ProfilDetailContent karyawan={karyawan} isDark={isDark} />
         }
-        primaryButtonText="Tutup"
-        onPrimaryButtonPress={() => setProfilSheetVisible(false)}
       />
     </>
   );

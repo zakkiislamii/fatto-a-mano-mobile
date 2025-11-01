@@ -87,8 +87,8 @@ const useEditJadwalKaryawan = (uid: string | null) => {
 
   const closeModal = useCallback(() => {
     setShowModal(false);
-    reset(defaultValues);
     setError(null);
+    reset(undefined, { keepValues: true });
   }, [reset]);
 
   const canSubmit = useMemo(

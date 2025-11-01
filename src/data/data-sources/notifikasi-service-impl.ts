@@ -67,4 +67,28 @@ export class NotifikasiServiceImpl implements INotifikasiService {
       return false;
     }
   }
+  public async SendToKaryawan(uid: string): Promise<boolean> {
+    try {
+      if (!uid) throw new Error("UID diperlukan untuk mengirim notif.");
+
+      const isExpoGo =
+        Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+      if (isExpoGo) {
+        console.warn(
+          "[Notif] Skipped token delete (Expo Go). No token to delete."
+        );
+        return false;
+      }
+
+      await axios.post(`${this.url}/notifications/send-to-user`, {
+        uid: uid,
+        title: "Perubahan Jadwal",
+        body: "",
+      });
+      return true;
+    } catch (error) {
+      console.error("Notif failed:", error);
+      return false;
+    }
+  }
 }

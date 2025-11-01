@@ -269,7 +269,7 @@ const LengkapiProfilView = () => {
               mode="time"
               is24Hour={true}
               display={Platform.OS === "ios" ? "spinner" : "default"}
-              onChange={(e, date) => handleTimeChange(date, "jam_keluar")}
+              onChange={(_, date) => handleTimeChange(date, "jam_keluar")}
             />
           )}
 
