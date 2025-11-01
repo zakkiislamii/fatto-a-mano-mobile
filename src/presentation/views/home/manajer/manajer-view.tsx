@@ -137,14 +137,30 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
             className={`${exportButtonBg} rounded-lg py-3 flex-1`}
             textClassName="text-white font-bold text-sm"
           />
-          <Button
-            title="Sinkron Jadwal Kerja"
+          <TouchableOpacity
             onPress={handleSyncSchedule}
-            loading={sinkronLoading}
             disabled={sinkronLoading}
-            className={`${syncButtonBg} rounded-lg py-3 flex-1`}
-            textClassName="text-white font-bold text-sm"
-          />
+            className={`${syncButtonBg} rounded-lg py-3 flex-1 flex-row justify-center items-center ${
+              sinkronLoading ? "opacity-75" : ""
+            }`}
+          >
+            {sinkronLoading ? (
+              <>
+                <ActivityIndicator
+                  color="#FFFFFF"
+                  size="small"
+                  className="mr-3"
+                />
+                <Text className="text-white font-bold text-sm">
+                  Menyinkronkan...
+                </Text>
+              </>
+            ) : (
+              <Text className="text-white font-bold text-sm">
+                Sinkron Jadwal Kerja
+              </Text>
+            )}
+          </TouchableOpacity>
         </View>
       )}
 

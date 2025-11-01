@@ -1,4 +1,5 @@
 import { Colors } from "@/src/common/constants/theme";
+import { UserRole } from "@/src/common/enums/user-role";
 import { HapticTab } from "@/src/components/haptic-tab";
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
 import { useColorScheme } from "@/src/hooks/use-color-scheme";
@@ -9,7 +10,7 @@ import React from "react";
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { role } = useFirebaseAuth();
-  const isManagement = role === "manajer";
+  const isManagement = role === UserRole.manajer;
   return (
     <Tabs
       screenOptions={{
@@ -66,6 +67,20 @@ export default function TabLayout() {
           href: !isManagement ? undefined : null,
           tabBarIcon: ({ color }) => (
             <FontAwesome5 name="history" size={28} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="verifikasi"
+        options={{
+          title: "Verifikasi",
+          href: isManagement ? undefined : null,
+          tabBarIcon: ({ color, focused }) => (
+            <MaterialIcons
+              name={focused ? "verified" : "verified-user"}
+              size={28}
+              color={color}
+            />
           ),
         }}
       />
