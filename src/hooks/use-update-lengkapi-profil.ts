@@ -14,6 +14,7 @@ import { ExcelServiceImpl } from "../data/data-sources/excel-service-impl";
 import { UserRepositoryImpl } from "../data/repositories/user-repository-impl";
 import { Sheets } from "../domain/models/sheets";
 import { IUserRepository } from "../domain/repositories/i-user-repository";
+import { IExcelService } from "../domain/services/i-excel-service";
 
 const defaultValues: LengkapiProfil = {
   nama: "",
@@ -97,7 +98,9 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
 
     // Cleanup yang aman
     return () => {
-      unsubscribe && unsubscribe();
+      if (unsubscribe) {
+        unsubscribe();
+      }
     };
   }, [uid, setValue]);
 
@@ -125,9 +128,9 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
         throw new Error("UID atau Email tidak tersedia.");
       }
 
-      // 1. Inisiasi Repo dan Service (keduanya stateless)
-      const userRepo = new UserRepositoryImpl();
-      const excelService = new ExcelServiceImpl();
+      // 1. Inisiasi Repo dan Service
+      const userRepo: IUserRepository = new UserRepositoryImpl();
+      const excelService: IExcelService = new ExcelServiceImpl();
 
       // 2. Siapkan data untuk Firestore
       const firestoreData: LengkapiProfilData = {
@@ -182,8 +185,6 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
       setLoading(false);
     }
   });
-
-  // --- Sisa Logika UI (Tidak Perlu Diubah) ---
 
   const toggleHari = useCallback(
     (day: number) => {
