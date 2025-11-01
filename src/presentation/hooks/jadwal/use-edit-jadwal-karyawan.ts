@@ -4,6 +4,7 @@ import formatHariKerja from "@/src/common/utils/format-hari-kerja";
 import { EditJadwalKaryawanFormSchema } from "@/src/common/validators/jadwal/edit-jadwal-karyawan-form-schema";
 import { JadwalRepositoryImpl } from "@/src/data/repositories/jadwal-repository-impl";
 import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
+import { useSendToKaryawan } from "@/src/hooks/use-notifikasi"; // 👈 Import hook notifikasi
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Unsubscribe } from "firebase/firestore";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -27,6 +28,7 @@ const useEditJadwalKaryawan = (uid: string | null) => {
   const [showJamKeluarPicker, setShowJamKeluarPicker] = useState(false);
   const [selectedHari, setSelectedHari] = useState<number[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const { mutateAsync: sendNotification } = useSendToKaryawan();
 
   const {
     control,
@@ -75,7 +77,6 @@ const useEditJadwalKaryawan = (uid: string | null) => {
       }
     );
 
-    // Cleanup
     return () => {
       unsubscribe && unsubscribe();
     };
@@ -96,7 +97,6 @@ const useEditJadwalKaryawan = (uid: string | null) => {
     [isValid, loading, isSubmitting, isDirty]
   );
 
-  // --- handleSaveEditJadwal (Menyimpan Data) ---
   const handleSaveEditJadwal = rhfHandleSubmit(async (data) => {
     setError(null);
     setLoading(true);
@@ -107,7 +107,6 @@ const useEditJadwalKaryawan = (uid: string | null) => {
 
       const repo: IJadwalRepository = new JadwalRepositoryImpl();
 
-      // Siapkan data jadwal untuk update
       const jadwalData: Partial<JadwalKaryawan> = {
         jam_masuk: data.jam_masuk,
         jam_keluar: data.jam_keluar,
@@ -115,16 +114,30 @@ const useEditJadwalKaryawan = (uid: string | null) => {
         is_wfa: !!data.is_wfa,
       };
 
-      // Update ke Firestore
+      // Update jadwal
       await repo.editJadwalKaryawan(uid, jadwalData);
 
-      // Selesai
+      // Kirim notifikasi
+      let notifStatus = "";
+      try {
+        await sendNotification(uid);
+        notifStatus = " & notifikasi terkirim";
+        console.log("[useEditJadwalKaryawan] Notifikasi berhasil dikirim");
+      } catch (notifError) {
+        console.error(
+          "[useEditJadwalKaryawan] Gagal kirim notifikasi:",
+          notifError
+        );
+        notifStatus = " (notifikasi gagal)";
+      }
+
       setShowConfirmModal(false);
       closeModal();
+
       Toast.show({
         type: "success",
-        text1: "Berhasil",
-        text2: "Jadwal kerja berhasil diperbarui",
+        text1: "Jadwal Berhasil Diperbarui",
+        text2: `Perubahan tersimpan${notifStatus}`,
       });
     } catch (err) {
       console.error("[useEditJadwalKaryawan] save error:", err);

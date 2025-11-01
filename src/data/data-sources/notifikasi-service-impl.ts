@@ -74,20 +74,18 @@ export class NotifikasiServiceImpl implements INotifikasiService {
       const isExpoGo =
         Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
       if (isExpoGo) {
-        console.warn(
-          "[Notif] Skipped token delete (Expo Go). No token to delete."
-        );
+        console.warn("[Notif] Skipped send notification (Expo Go).");
         return false;
       }
 
       await axios.post(`${this.url}/notifications/send-to-user`, {
         uid: uid,
-        title: "Perubahan Jadwal",
-        body: "",
+        title: "Perubahan Jadwal Kerja",
+        body: "Jadwal kerja Anda telah diperbarui. Silakan periksa aplikasi untuk detail lebih lanjut.",
       });
       return true;
     } catch (error) {
-      console.error("Notif failed:", error);
+      console.error("[Notif] Send notification failed:", error);
       return false;
     }
   }
