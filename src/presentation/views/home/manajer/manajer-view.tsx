@@ -1,7 +1,8 @@
-import Button from "@/src/components/ui/button";
+import { DynamicBottomSheet } from "@/src/components/ui/dynamic-bottom-sheet";
 import PaginationControls from "@/src/components/ui/pagination-controls";
 import { Karyawan } from "@/src/domain/models/karyawan";
 import { useKaryawanRealTime } from "@/src/presentation/hooks/karyawan/use-karyawan-realtime";
+import useRekap from "@/src/presentation/hooks/rekap/use-rekap";
 import useSinkronJadwalKerja from "@/src/presentation/hooks/sinkron-jadwal-kerja/use-sinkron-jadwal-kerja";
 import React from "react";
 import {
@@ -13,6 +14,7 @@ import {
   View,
 } from "react-native";
 import KaryawanCard from "./components/karyawan-card";
+import RekapDatePicker from "./components/rekap-date-picker";
 
 interface ManajerViewProps {
   screenBg: string;
@@ -39,6 +41,19 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
 
   const { handleSinkronJadwal, loading: sinkronLoading } =
     useSinkronJadwalKerja();
+
+  const {
+    loading: rekapLoading,
+    showBottomSheet,
+    openBottomSheet,
+    closeBottomSheet,
+    tanggalMulai,
+    tanggalAkhir,
+    setTanggalMulai,
+    setTanggalAkhir,
+    handleFetchAndExport,
+  } = useRekap();
+
   const inputBg = isDark ? "bg-gray-800" : "bg-gray-100";
   const inputText = isDark ? "text-white" : "text-gray-900";
   const placeholderColor = isDark ? "#9ca3af" : "#6b7280";
@@ -47,11 +62,15 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
   const syncButtonBg = isDark ? "bg-info-dark-bg" : "bg-info-light";
 
   const handleExportRecap = () => {
-    console.log("[Aksi] Ekspor Rekap Presensi");
+    openBottomSheet();
   };
 
   const handleSyncSchedule = async () => {
     await handleSinkronJadwal();
+  };
+
+  const handleConfirmFetch = async () => {
+    await handleFetchAndExport();
   };
 
   return (
@@ -131,12 +150,31 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
       {/* Action Buttons */}
       {!loading && totalItems > 0 && (
         <View className="px-3 pt-2 pb-1 flex-row gap-x-2">
-          <Button
-            title="Ekspor Rekap Presensi"
+          <TouchableOpacity
             onPress={handleExportRecap}
-            className={`${exportButtonBg} rounded-lg py-3 flex-1`}
-            textClassName="text-white font-bold text-sm"
-          />
+            disabled={rekapLoading}
+            className={`${exportButtonBg} rounded-lg py-3 flex-1 flex-row justify-center items-center ${
+              rekapLoading ? "opacity-75" : ""
+            }`}
+          >
+            {rekapLoading ? (
+              <>
+                <ActivityIndicator
+                  color="#FFFFFF"
+                  size="small"
+                  className="mr-3"
+                />
+                <Text className="text-white font-bold text-sm">
+                  Memproses...
+                </Text>
+              </>
+            ) : (
+              <Text className="text-white font-bold text-sm">
+                Ekspor Rekap Presensi
+              </Text>
+            )}
+          </TouchableOpacity>
+
           <TouchableOpacity
             onPress={handleSyncSchedule}
             disabled={sinkronLoading}
@@ -178,6 +216,27 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
           isDark={isDark}
         />
       )}
+
+      {/* Bottom Sheet Rekap */}
+      <DynamicBottomSheet
+        isVisible={showBottomSheet}
+        onClose={closeBottomSheet}
+        title="Ekspor Rekap Presensi"
+        isDark={isDark}
+        customContent={
+          <RekapDatePicker
+            tanggalMulai={tanggalMulai}
+            tanggalAkhir={tanggalAkhir}
+            onTanggalMulaiChange={setTanggalMulai}
+            onTanggalAkhirChange={setTanggalAkhir}
+            isDark={isDark}
+          />
+        }
+        primaryButtonText="Ekspor"
+        onPrimaryButtonPress={handleConfirmFetch}
+        secondaryButtonText="Batal"
+        onSecondaryButtonPress={closeBottomSheet}
+      />
     </View>
   );
 };

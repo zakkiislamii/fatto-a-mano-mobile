@@ -1,8 +1,7 @@
 import { StatusPengajuan } from "@/src/common/enums/status-pengajuan";
 import { DynamicBottomSheet } from "@/src/components/ui/dynamic-bottom-sheet";
 import { DynamicModal } from "@/src/components/ui/dynamic-modal";
-import { DaftarVerifikasi } from "@/src/domain/models/daftar-verifikasi";
-import React, { useState } from "react";
+import React from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -12,7 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useGetAllVerifikasi from "../../hooks/verifikasi/use-get-all-verifikasi";
-import useDetailVerifikasi from "../../hooks/verifikasi/use-get-detail-verifikasi";
+import useGetDetailVerifikasi from "../../hooks/verifikasi/use-get-detail-verifikasi";
 import useVerifikasiPengajuan from "../../hooks/verifikasi/use-verifikasi-pengajuan";
 import DetailBottomSheetContent from "./components/detail-bottom-sheet-content";
 import VerifikasiCard from "./components/verifikasi-card";
@@ -31,74 +30,26 @@ const VerifikasiView = () => {
     loading: listLoading,
     error: listError,
   } = useGetAllVerifikasi();
+
   const {
     detail,
     loading: detailLoading,
     error: detailError,
-    fetchDetail,
-    clearDetail,
-  } = useDetailVerifikasi();
+    isDetailSheetVisible,
+    handleDetailClick,
+    handleCloseDetailSheet,
+  } = useGetDetailVerifikasi();
+
   const {
-    setujuiPengajuan,
-    tolakPengajuan,
     loading: verifikasiLoading,
+    isKonfirmasiModalVisible,
+    selectedVerifikasi,
+    konfirmasiAksi,
+    handleTolakClick,
+    handleSetujuiClick,
+    handleCloseKonfirmasiModal,
+    handleKonfirmasiAksi,
   } = useVerifikasiPengajuan();
-
-  const [isDetailSheetVisible, setDetailSheetVisible] = useState(false);
-  const [isKonfirmasiModalVisible, setKonfirmasiModalVisible] = useState(false);
-  const [selectedVerifikasi, setSelectedVerifikasi] =
-    useState<DaftarVerifikasi | null>(null);
-  const [konfirmasiAksi, setKonfirmasiAksi] = useState<
-    "setujui" | "tolak" | null
-  >(null);
-
-  const handleDetailClick = (item: DaftarVerifikasi) => {
-    setSelectedVerifikasi(item);
-    fetchDetail(item.uid, item.id);
-    setDetailSheetVisible(true);
-  };
-
-  const handleTolakClick = (item: DaftarVerifikasi) => {
-    setSelectedVerifikasi(item);
-    setKonfirmasiAksi("tolak");
-    setKonfirmasiModalVisible(true);
-  };
-
-  const handleSetujuiClick = (item: DaftarVerifikasi) => {
-    setSelectedVerifikasi(item);
-    setKonfirmasiAksi("setujui");
-    setKonfirmasiModalVisible(true);
-  };
-
-  const handleCloseDetailSheet = () => {
-    setDetailSheetVisible(false);
-    clearDetail();
-    setSelectedVerifikasi(null);
-  };
-
-  const handleCloseKonfirmasiModal = () => {
-    setKonfirmasiModalVisible(false);
-  };
-
-  const handleKonfirmasiAksi = async () => {
-    if (!selectedVerifikasi || !konfirmasiAksi) return;
-
-    const { uid, id } = selectedVerifikasi;
-
-    try {
-      if (konfirmasiAksi === "setujui") {
-        await setujuiPengajuan(uid, id);
-      } else if (konfirmasiAksi === "tolak") {
-        await tolakPengajuan(uid, id);
-      }
-    } catch (error) {
-      console.error("Gagal mengeksekusi aksi verifikasi:", error);
-    } finally {
-      setKonfirmasiModalVisible(false);
-      setSelectedVerifikasi(null);
-      setKonfirmasiAksi(null);
-    }
-  };
 
   const renderContent = () => {
     if (listLoading) {

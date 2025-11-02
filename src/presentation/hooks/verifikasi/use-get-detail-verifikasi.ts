@@ -1,15 +1,18 @@
 import { VerifikasiRepositoryImpl } from "@/src/data/repositories/verifikasi-repository-impl";
+import { DaftarVerifikasi } from "@/src/domain/models/daftar-verifikasi";
 import { DetailVerifikasi } from "@/src/domain/models/detail-verifikasi";
 import { IVerifikasiRepository } from "@/src/domain/repositories/i-verifikasi-repository";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const useDetailVerifikasi = () => {
+const useGetDetailVerifikasi = () => {
   const [detail, setDetail] = useState<DetailVerifikasi | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDetailSheetVisible, setDetailSheetVisible] = useState(false);
+  const [selectedVerifikasi, setSelectedVerifikasi] =
+    useState<DaftarVerifikasi | null>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (unsubscribeRef.current) {
@@ -18,7 +21,6 @@ const useDetailVerifikasi = () => {
     };
   }, []);
 
-  // Function to fetch detail by uid and pengajuanId
   const fetchDetail = useCallback((uid: string, pengajuanId: string) => {
     if (!uid || !pengajuanId) {
       setLoading(false);
@@ -26,7 +28,6 @@ const useDetailVerifikasi = () => {
       return;
     }
 
-    // Cleanup previous listener
     if (unsubscribeRef.current) {
       unsubscribeRef.current();
     }
@@ -56,7 +57,6 @@ const useDetailVerifikasi = () => {
     }
   }, []);
 
-  // Function to clear data
   const clearDetail = useCallback(() => {
     if (unsubscribeRef.current) {
       unsubscribeRef.current();
@@ -67,13 +67,32 @@ const useDetailVerifikasi = () => {
     setLoading(false);
   }, []);
 
+  const handleDetailClick = useCallback(
+    (item: DaftarVerifikasi) => {
+      setSelectedVerifikasi(item);
+      fetchDetail(item.uid, item.id);
+      setDetailSheetVisible(true);
+    },
+    [fetchDetail]
+  );
+
+  const handleCloseDetailSheet = useCallback(() => {
+    setDetailSheetVisible(false);
+    clearDetail();
+    setSelectedVerifikasi(null);
+  }, [clearDetail]);
+
   return {
     detail,
     loading,
     error,
+    isDetailSheetVisible,
+    selectedVerifikasi,
     fetchDetail,
     clearDetail,
+    handleDetailClick,
+    handleCloseDetailSheet,
   };
 };
 
-export default useDetailVerifikasi;
+export default useGetDetailVerifikasi;

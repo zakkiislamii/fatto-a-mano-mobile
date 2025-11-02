@@ -1,62 +1,123 @@
 import { StatusPengajuan } from "@/src/common/enums/status-pengajuan";
 import { VerifikasiRepositoryImpl } from "@/src/data/repositories/verifikasi-repository-impl";
+import { DaftarVerifikasi } from "@/src/domain/models/daftar-verifikasi";
 import { IVerifikasiRepository } from "@/src/domain/repositories/i-verifikasi-repository";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Toast from "react-native-toast-message";
 
 const useVerifikasiPengajuan = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [isKonfirmasiModalVisible, setKonfirmasiModalVisible] = useState(false);
+  const [selectedVerifikasi, setSelectedVerifikasi] =
+    useState<DaftarVerifikasi | null>(null);
+  const [konfirmasiAksi, setKonfirmasiAksi] = useState<
+    "setujui" | "tolak" | null
+  >(null);
 
-  const handleVerifikasi = async (
-    uid: string,
-    pengajuanId: string,
-    status: StatusPengajuan.disetujui | StatusPengajuan.ditolak
-  ) => {
-    setLoading(true);
-    try {
-      if (!uid || !pengajuanId) {
-        throw new Error("UID atau Pengajuan ID tidak valid");
+  const handleVerifikasi = useCallback(
+    async (
+      uid: string,
+      pengajuanId: string,
+      status: StatusPengajuan.disetujui | StatusPengajuan.ditolak
+    ) => {
+      setLoading(true);
+      try {
+        if (!uid || !pengajuanId) {
+          throw new Error("UID atau Pengajuan ID tidak valid");
+        }
+
+        const repo: IVerifikasiRepository = new VerifikasiRepositoryImpl();
+        await repo.verifikasiPengajuan(uid, pengajuanId, status);
+
+        const statusText =
+          status === StatusPengajuan.disetujui ? "disetujui" : "ditolak";
+
+        Toast.show({
+          type: "success",
+          text1: "Verifikasi Berhasil",
+          text2: `Pengajuan telah ${statusText}`,
+        });
+
+        console.log(
+          `[useVerifikasiPengajuan] Pengajuan berhasil ${statusText}`
+        );
+      } catch (error) {
+        console.error("[useVerifikasiPengajuan] Error:", error);
+        Toast.show({
+          type: "error",
+          text1: "Verifikasi Gagal",
+          text2: "Terjadi kesalahan saat memverifikasi pengajuan",
+        });
+        throw error;
+      } finally {
+        setLoading(false);
       }
+    },
+    []
+  );
 
-      const repo: IVerifikasiRepository = new VerifikasiRepositoryImpl();
-      await repo.verifikasiPengajuan(uid, pengajuanId, status);
+  const setujuiPengajuan = useCallback(
+    async (uid: string, pengajuanId: string) => {
+      await handleVerifikasi(uid, pengajuanId, StatusPengajuan.disetujui);
+    },
+    [handleVerifikasi]
+  );
 
-      const statusText =
-        status === StatusPengajuan.disetujui ? "disetujui" : "ditolak";
+  const tolakPengajuan = useCallback(
+    async (uid: string, pengajuanId: string) => {
+      await handleVerifikasi(uid, pengajuanId, StatusPengajuan.ditolak);
+    },
+    [handleVerifikasi]
+  );
 
-      Toast.show({
-        type: "success",
-        text1: "Verifikasi Berhasil",
-        text2: `Pengajuan telah ${statusText}`,
-      });
+  const handleTolakClick = useCallback((item: DaftarVerifikasi) => {
+    setSelectedVerifikasi(item);
+    setKonfirmasiAksi("tolak");
+    setKonfirmasiModalVisible(true);
+  }, []);
 
-      console.log(`[useVerifikasiPengajuan] Pengajuan berhasil ${statusText}`);
+  const handleSetujuiClick = useCallback((item: DaftarVerifikasi) => {
+    setSelectedVerifikasi(item);
+    setKonfirmasiAksi("setujui");
+    setKonfirmasiModalVisible(true);
+  }, []);
+
+  const handleCloseKonfirmasiModal = useCallback(() => {
+    setKonfirmasiModalVisible(false);
+  }, []);
+
+  const handleKonfirmasiAksi = useCallback(async () => {
+    if (!selectedVerifikasi || !konfirmasiAksi) return;
+
+    const { uid, id } = selectedVerifikasi;
+
+    try {
+      if (konfirmasiAksi === "setujui") {
+        await setujuiPengajuan(uid, id);
+      } else if (konfirmasiAksi === "tolak") {
+        await tolakPengajuan(uid, id);
+      }
     } catch (error) {
-      console.error("[useVerifikasiPengajuan] Error:", error);
-      Toast.show({
-        type: "error",
-        text1: "Verifikasi Gagal",
-        text2: "Terjadi kesalahan saat memverifikasi pengajuan",
-      });
-      throw error;
+      console.error("Gagal mengeksekusi aksi verifikasi:", error);
     } finally {
-      setLoading(false);
+      setKonfirmasiModalVisible(false);
+      setSelectedVerifikasi(null);
+      setKonfirmasiAksi(null);
     }
-  };
-
-  const setujuiPengajuan = async (uid: string, pengajuanId: string) => {
-    await handleVerifikasi(uid, pengajuanId, StatusPengajuan.disetujui);
-  };
-
-  const tolakPengajuan = async (uid: string, pengajuanId: string) => {
-    await handleVerifikasi(uid, pengajuanId, StatusPengajuan.ditolak);
-  };
+  }, [selectedVerifikasi, konfirmasiAksi, setujuiPengajuan, tolakPengajuan]);
 
   return {
+    loading,
+    isKonfirmasiModalVisible,
+    selectedVerifikasi,
+    konfirmasiAksi,
     handleVerifikasi,
     setujuiPengajuan,
     tolakPengajuan,
-    loading,
+    handleTolakClick,
+    handleSetujuiClick,
+    handleCloseKonfirmasiModal,
+    handleKonfirmasiAksi,
   };
 };
 
