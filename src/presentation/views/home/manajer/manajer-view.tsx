@@ -13,8 +13,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import FormRekapPresensi from "./components/form-rekap-presensi";
 import KaryawanCard from "./components/karyawan-card";
-import RekapDatePicker from "./components/rekap-date-picker";
 
 interface ManajerViewProps {
   screenBg: string;
@@ -51,6 +51,8 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
     tanggalAkhir,
     setTanggalMulai,
     setTanggalAkhir,
+    exportFormat,
+    setExportFormat,
     handleFetchAndExport,
   } = useRekap();
 
@@ -71,6 +73,7 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
 
   const handleConfirmFetch = async () => {
     await handleFetchAndExport();
+    closeBottomSheet();
   };
 
   return (
@@ -224,18 +227,22 @@ const ManajerView = ({ screenBg, isDark }: ManajerViewProps) => {
         title="Ekspor Rekap Presensi"
         isDark={isDark}
         customContent={
-          <RekapDatePicker
+          <FormRekapPresensi
             tanggalMulai={tanggalMulai}
             tanggalAkhir={tanggalAkhir}
             onTanggalMulaiChange={setTanggalMulai}
             onTanggalAkhirChange={setTanggalAkhir}
+            exportFormat={exportFormat}
+            onExportFormatChange={setExportFormat}
             isDark={isDark}
           />
         }
-        primaryButtonText="Ekspor"
+        primaryButtonText={rekapLoading ? "Memproses..." : "Ekspor"}
         onPrimaryButtonPress={handleConfirmFetch}
+        primaryButtonDisabled={rekapLoading}
         secondaryButtonText="Batal"
         onSecondaryButtonPress={closeBottomSheet}
+        secondaryButtonDisabled={rekapLoading}
       />
     </View>
   );

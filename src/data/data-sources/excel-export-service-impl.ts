@@ -1,8 +1,9 @@
-import { RekapKaryawan, RekapRow } from "@/src/domain/models/rekap";
+import { RekapKaryawan } from "@/src/domain/models/rekap";
 import { IExcelExportService } from "@/src/domain/services/i-excel-export-service";
 import * as Sharing from "expo-sharing";
 import { Alert, Platform } from "react-native";
 import RNFS from "react-native-fs";
+import * as XLSX from "xlsx";
 
 export class ExcelExportServiceImpl implements IExcelExportService {
   public async exportToCSV(
@@ -10,30 +11,10 @@ export class ExcelExportServiceImpl implements IExcelExportService {
     fileName: string = "rekap-presensi.csv"
   ): Promise<void> {
     try {
-      // Transform data to CSV rows
-      const rows: RekapRow[] = [];
+      const startTime = performance.now();
 
-      for (const karyawan of rekapData) {
-        for (const presensi of karyawan.presensi_list) {
-          rows.push({
-            nama: karyawan.nama,
-            divisi: karyawan.divisi,
-            tanggal: presensi.tanggal || "-",
-            status: presensi.status || "-",
-            jam_masuk: presensi.presensi_masuk?.waktu || "-",
-            terlambat: presensi.presensi_masuk?.terlambat ? "Ya" : "Tidak",
-            durasi_terlambat: presensi.presensi_masuk?.durasi_terlambat || "-",
-            jam_keluar: presensi.presensi_keluar?.waktu || "-",
-            lembur: presensi.presensi_keluar?.lembur ? "Ya" : "Tidak",
-            durasi_lembur: presensi.presensi_keluar?.durasi_lembur || "-",
-            keluar_awal: presensi.presensi_keluar?.keluar_awal ? "Ya" : "Tidak",
-            alasan_keluar_awal:
-              presensi.presensi_keluar?.alasan_keluar_awal || "-",
-          });
-        }
-      }
+      const csvLines: string[] = [];
 
-      // Create CSV content
       const headers = [
         "Nama",
         "Divisi",
@@ -47,37 +28,51 @@ export class ExcelExportServiceImpl implements IExcelExportService {
         "Durasi Lembur",
         "Keluar Awal",
         "Alasan Keluar Awal",
+        "Bukti Keluar Awal",
       ];
 
-      let csvContent = headers.join(",") + "\n";
+      csvLines.push(headers.join(","));
 
-      rows.forEach((row) => {
-        csvContent +=
-          [
-            this.escapeCSV(row.nama),
-            this.escapeCSV(row.divisi),
-            this.escapeCSV(row.tanggal),
-            this.escapeCSV(row.status),
-            this.escapeCSV(row.jam_masuk),
-            this.escapeCSV(row.terlambat),
-            this.escapeCSV(row.durasi_terlambat),
-            this.escapeCSV(row.jam_keluar),
-            this.escapeCSV(row.lembur),
-            this.escapeCSV(row.durasi_lembur),
-            this.escapeCSV(row.keluar_awal),
-            this.escapeCSV(row.alasan_keluar_awal),
-          ].join(",") + "\n";
-      });
+      for (const karyawan of rekapData) {
+        for (const presensi of karyawan.presensi_list) {
+          const row = [
+            this.escapeCSV(karyawan.nama),
+            this.escapeCSV(karyawan.divisi),
+            this.escapeCSV(presensi.tanggal || "-"),
+            this.escapeCSV(presensi.status || "-"),
+            this.escapeCSV(presensi.presensi_masuk?.waktu || "-"),
+            this.escapeCSV(presensi.presensi_masuk?.terlambat ? "Ya" : "Tidak"),
+            this.escapeCSV(presensi.presensi_masuk?.durasi_terlambat || "-"),
+            this.escapeCSV(presensi.presensi_keluar?.waktu || "-"),
+            this.escapeCSV(presensi.presensi_keluar?.lembur ? "Ya" : "Tidak"),
+            this.escapeCSV(presensi.presensi_keluar?.durasi_lembur || "-"),
+            this.escapeCSV(
+              presensi.presensi_keluar?.keluar_awal ? "Ya" : "Tidak"
+            ),
+            this.escapeCSV(presensi.presensi_keluar?.alasan_keluar_awal || "-"),
+            this.escapeCSV(presensi.presensi_keluar?.bukti_keluar_awal || "-"),
+          ];
 
-      // 👇 SIMPLE: No permission needed for DownloadDirectoryPath on Android 10+
+          csvLines.push(row.join(","));
+        }
+      }
+
+      const csvContent = csvLines.join("\n");
+
+      const processingTime = performance.now() - startTime;
+      console.log(
+        `[ExcelExport] CSV processing took ${processingTime.toFixed(2)}ms`
+      );
+
       const filePath = `${RNFS.DownloadDirectoryPath}/${fileName}`;
 
-      // Write file
+      const writeStartTime = performance.now();
       await RNFS.writeFile(filePath, csvContent, "utf8");
+      const writeTime = performance.now() - writeStartTime;
 
-      console.log(`[ExcelExportService] File saved to: ${filePath}`);
+      console.log(`[ExcelExport] File write took ${writeTime.toFixed(2)}ms`);
+      console.log(`[ExcelExport] File saved to: ${filePath}`);
 
-      // Show success notification
       if (Platform.OS === "android") {
         Alert.alert(
           "Export Berhasil",
@@ -85,7 +80,6 @@ export class ExcelExportServiceImpl implements IExcelExportService {
           [{ text: "OK" }]
         );
       } else {
-        // iOS: Share file
         const canShare = await Sharing.isAvailableAsync();
         if (canShare) {
           await Sharing.shareAsync(`file://${filePath}`, {
@@ -100,10 +94,143 @@ export class ExcelExportServiceImpl implements IExcelExportService {
     }
   }
 
-  private escapeCSV(value: string): string {
-    if (value.includes(",") || value.includes('"') || value.includes("\n")) {
-      return `"${value.replace(/"/g, '""')}"`;
+  public async exportToXLSX(
+    rekapData: RekapKaryawan[],
+    fileName: string = "rekap-presensi.xlsx"
+  ): Promise<void> {
+    try {
+      const startTime = performance.now();
+      const rows: any[] = [];
+
+      for (const karyawan of rekapData) {
+        for (const presensi of karyawan.presensi_list) {
+          rows.push({
+            Nama: karyawan.nama,
+            Divisi: karyawan.divisi,
+            Tanggal: presensi.tanggal || "-",
+            Status: presensi.status || "-",
+            "Jam Masuk": presensi.presensi_masuk?.waktu || "-",
+            Terlambat: presensi.presensi_masuk?.terlambat ? "Ya" : "Tidak",
+            "Durasi Terlambat":
+              presensi.presensi_masuk?.durasi_terlambat || "-",
+            "Jam Keluar": presensi.presensi_keluar?.waktu || "-",
+            Lembur: presensi.presensi_keluar?.lembur ? "Ya" : "Tidak",
+            "Durasi Lembur": presensi.presensi_keluar?.durasi_lembur || "-",
+            "Keluar Awal": presensi.presensi_keluar?.keluar_awal
+              ? "Ya"
+              : "Tidak",
+            "Alasan Keluar Awal":
+              presensi.presensi_keluar?.alasan_keluar_awal || "-",
+            "Bukti Keluar Awal":
+              presensi.presensi_keluar?.bukti_keluar_awal || "-",
+          });
+        }
+      }
+
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+
+      const columnWidths = [
+        { wch: 30 }, // Nama
+        { wch: 13 }, // Divisi
+        { wch: 12 }, // Tanggal
+        { wch: 10 }, // Status
+        { wch: 12 }, // Jam Masuk
+        { wch: 10 }, // Terlambat
+        { wch: 15 }, // Durasi Terlambat
+        { wch: 12 }, // Jam Keluar
+        { wch: 10 }, // Lembur
+        { wch: 15 }, // Durasi Lembur
+        { wch: 12 }, // Keluar Awal
+        { wch: 25 }, // Alasan Keluar Awal
+        { wch: 30 }, // Bukti Keluar Awal
+      ];
+      worksheet["!cols"] = columnWidths;
+
+      // ✅ Buat workbook
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap Presensi");
+
+      // ✅ Generate binary string
+      const xlsxBinary = XLSX.write(workbook, {
+        type: "binary",
+        bookType: "xlsx",
+      });
+
+      // ✅ Convert binary string to base64
+      const base64 = this.binaryToBase64(xlsxBinary);
+
+      const processingTime = performance.now() - startTime;
+      console.log(
+        `[ExcelExport] XLSX processing took ${processingTime.toFixed(2)}ms`
+      );
+
+      // Save file
+      const filePath = `${RNFS.DownloadDirectoryPath}/${fileName}`;
+
+      const writeStartTime = performance.now();
+      await RNFS.writeFile(filePath, base64, "base64");
+      const writeTime = performance.now() - writeStartTime;
+
+      console.log(`[ExcelExport] File write took ${writeTime.toFixed(2)}ms`);
+      console.log(`[ExcelExport] File saved to: ${filePath}`);
+
+      // Show success notification
+      if (Platform.OS === "android") {
+        Alert.alert(
+          "Export Berhasil",
+          `File Excel tersimpan di:\nDownload/${fileName}`,
+          [{ text: "OK" }]
+        );
+      } else {
+        const canShare = await Sharing.isAvailableAsync();
+        if (canShare) {
+          await Sharing.shareAsync(`file://${filePath}`, {
+            mimeType:
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            dialogTitle: "Simpan Rekap Presensi",
+          });
+        }
+      }
+    } catch (error) {
+      console.error("[ExcelExportService] Error exporting XLSX:", error);
+      throw error;
     }
-    return value;
+  }
+
+  // convert binary to base64
+  private binaryToBase64(binary: string): string {
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+
+    // Convert to base64
+    let base64 = "";
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+    for (let i = 0; i < bytes.length; i += 3) {
+      const byte1 = bytes[i];
+      const byte2 = i + 1 < bytes.length ? bytes[i + 1] : 0;
+      const byte3 = i + 2 < bytes.length ? bytes[i + 2] : 0;
+
+      const encoded1 = byte1 >> 2;
+      const encoded2 = ((byte1 & 3) << 4) | (byte2 >> 4);
+      const encoded3 = ((byte2 & 15) << 2) | (byte3 >> 6);
+      const encoded4 = byte3 & 63;
+
+      base64 += chars[encoded1] + chars[encoded2];
+      base64 += i + 1 < bytes.length ? chars[encoded3] : "=";
+      base64 += i + 2 < bytes.length ? chars[encoded4] : "=";
+    }
+
+    return base64;
+  }
+
+  private escapeCSV(value: string): string {
+    if (!value.includes(",") && !value.includes('"') && !value.includes("\n")) {
+      return value;
+    }
+    return `"${value.replace(/"/g, '""')}"`;
   }
 }

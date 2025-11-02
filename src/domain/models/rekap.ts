@@ -24,4 +24,5 @@ export interface RekapRow {
   durasi_lembur: string;
   keluar_awal: string;
   alasan_keluar_awal: string;
+  bukti_keluar_awal: string;
 }

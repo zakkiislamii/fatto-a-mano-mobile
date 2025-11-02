@@ -1,5 +1,11 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Modal from "react-native-modal";
 
 type BaseBottomSheetProps = {
@@ -13,6 +19,8 @@ type BaseBottomSheetProps = {
   isDark: boolean;
   message?: string;
   customContent?: React.ReactNode;
+  primaryButtonDisabled?: boolean;
+  secondaryButtonDisabled?: boolean;
 };
 
 export type DynamicBottomSheetProps = BaseBottomSheetProps;
@@ -28,6 +36,8 @@ export function DynamicBottomSheet({
   onSecondaryButtonPress,
   isDark,
   customContent,
+  primaryButtonDisabled = false,
+  secondaryButtonDisabled = false,
 }: DynamicBottomSheetProps) {
   const bgColor = isDark ? "bg-cardDark" : "bg-cardLight";
   const titleColor = isDark ? "text-textPrimaryDark" : "text-textPrimaryLight";
@@ -42,9 +52,9 @@ export function DynamicBottomSheet({
   return (
     <Modal
       isVisible={isVisible}
-      onBackdropPress={onClose}
-      onSwipeComplete={onClose}
-      swipeDirection={["down"]}
+      onBackdropPress={primaryButtonDisabled ? undefined : onClose}
+      onSwipeComplete={primaryButtonDisabled ? undefined : onClose}
+      swipeDirection={primaryButtonDisabled ? undefined : ["down"]}
       style={styles.modal}
       backdropOpacity={0.4}
       animationIn="slideInUp"
@@ -61,8 +71,13 @@ export function DynamicBottomSheet({
         <TouchableOpacity
           className="absolute top-3 right-8 z-10 p-1"
           onPress={onClose}
+          disabled={primaryButtonDisabled}
         >
-          <Text className={`text-4xl ${bodyColor}`}>×</Text>
+          <Text
+            className={`text-4xl ${bodyColor} ${primaryButtonDisabled ? "opacity-50" : ""}`}
+          >
+            ×
+          </Text>
         </TouchableOpacity>
 
         <Text className={`text-xl font-bold text-center mb-4 ${titleColor}`}>
@@ -80,18 +95,33 @@ export function DynamicBottomSheet({
         <View className="flex-col gap-3 mt-2">
           {primaryButtonText && onPrimaryButtonPress && (
             <TouchableOpacity
-              className={`w-full py-3 rounded-lg items-center justify-center ${buttonBg}`}
+              className={`w-full py-3 rounded-lg items-center justify-center ${buttonBg} ${
+                primaryButtonDisabled ? "opacity-50" : ""
+              }`}
               onPress={onPrimaryButtonPress}
+              disabled={primaryButtonDisabled}
             >
-              <Text className="font-semibold text-white">
-                {primaryButtonText}
-              </Text>
+              <View className="flex-row items-center justify-center">
+                {primaryButtonDisabled && (
+                  <ActivityIndicator
+                    color="#FFFFFF"
+                    size="small"
+                    style={{ marginRight: 8 }}
+                  />
+                )}
+                <Text className="font-semibold text-white">
+                  {primaryButtonText}
+                </Text>
+              </View>
             </TouchableOpacity>
           )}
           {secondaryButtonText && onSecondaryButtonPress && (
             <TouchableOpacity
-              className={`w-full py-3 rounded-lg items-center justify-center ${secondaryBtnBg}`}
+              className={`w-full py-3 rounded-lg items-center justify-center ${secondaryBtnBg} ${
+                secondaryButtonDisabled ? "opacity-50" : ""
+              }`}
               onPress={onSecondaryButtonPress}
+              disabled={secondaryButtonDisabled}
             >
               <Text className={`font-semibold ${secondaryBtnText}`}>
                 {secondaryButtonText}

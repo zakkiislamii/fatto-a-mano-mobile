@@ -12,6 +12,7 @@ const useRekap = () => {
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [tanggalMulai, setTanggalMulai] = useState<Date>(new Date());
   const [tanggalAkhir, setTanggalAkhir] = useState<Date>(new Date());
+  const [exportFormat, setExportFormat] = useState<"csv" | "xlsx">("xlsx");
 
   const openBottomSheet = useCallback(() => {
     setShowBottomSheet(true);
@@ -22,7 +23,6 @@ const useRekap = () => {
   }, []);
 
   const fetchRekap = async (): Promise<RekapKaryawan[]> => {
-    setLoading(true);
     try {
       const startStr = tanggalMulai.toISOString().split("T")[0];
       const endStr = tanggalAkhir.toISOString().split("T")[0];
@@ -33,7 +33,6 @@ const useRekap = () => {
           text1: "Tanggal Tidak Valid",
           text2: "Tanggal mulai harus lebih kecil dari tanggal akhir",
         });
-        setLoading(false);
         return [];
       }
 
@@ -50,7 +49,7 @@ const useRekap = () => {
 
       console.log(`[useRekap] Fetched rekap for ${data.length} employees`);
 
-      return data; // ✅ Return data langsung
+      return data;
     } catch (error) {
       console.error("[useRekap] Error fetching rekap:", error);
       Toast.show({
@@ -58,12 +57,14 @@ const useRekap = () => {
         text1: "Gagal Memuat Rekap",
         text2: "Terjadi kesalahan saat mengambil data rekap",
       });
-      setLoading(false);
       return [];
     }
   };
 
-  const exportToExcel = async (data: RekapKaryawan[]) => {
+  const exportToExcel = async (
+    data: RekapKaryawan[],
+    format: "csv" | "xlsx" = "xlsx"
+  ) => {
     if (data.length === 0) {
       Toast.show({
         type: "info",
@@ -75,14 +76,21 @@ const useRekap = () => {
 
     try {
       const excelService: IExcelExportService = new ExcelExportServiceImpl();
-      const fileName = `rekap-presensi-${new Date().getTime()}.csv`;
+      const timestamp = new Date().getTime();
 
-      await excelService.exportToCSV(data, fileName);
+      // ✅ Pilih format berdasarkan parameter
+      if (format === "xlsx") {
+        const fileName = `rekap-presensi-${timestamp}.xlsx`;
+        await excelService.exportToXLSX(data, fileName);
+      } else {
+        const fileName = `rekap-presensi-${timestamp}.csv`;
+        await excelService.exportToCSV(data, fileName);
+      }
 
       Toast.show({
         type: "success",
         text1: "Export Berhasil",
-        text2: "File tersimpan di folder Downloads",
+        text2: `File ${format.toUpperCase()} tersimpan di folder Downloads`,
       });
     } catch (error) {
       console.error("[useRekap] Error exporting:", error);
@@ -95,15 +103,20 @@ const useRekap = () => {
   };
 
   const handleFetchAndExport = useCallback(async () => {
-    const data = await fetchRekap();
+    setLoading(true);
 
-    if (data.length > 0) {
-      await exportToExcel(data);
+    try {
+      const data = await fetchRekap();
+
+      if (data.length > 0) {
+        await exportToExcel(data, exportFormat);
+      }
+    } catch (error) {
+      console.error("[useRekap] Error in handleFetchAndExport:", error);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
-    closeBottomSheet();
-  }, [tanggalMulai, tanggalAkhir]);
+  }, [tanggalMulai, tanggalAkhir, exportFormat]);
 
   return {
     loading,
@@ -115,6 +128,8 @@ const useRekap = () => {
     tanggalAkhir,
     setTanggalMulai,
     setTanggalAkhir,
+    exportFormat,
+    setExportFormat,
     fetchRekap,
     exportToExcel,
     handleFetchAndExport,

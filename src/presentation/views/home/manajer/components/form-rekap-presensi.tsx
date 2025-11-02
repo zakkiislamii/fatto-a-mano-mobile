@@ -4,24 +4,34 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useState } from "react";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
 
-interface RekapDatePickerProps {
+type ExportFormat = "csv" | "xlsx";
+
+interface FormRekapPresensiProps {
   tanggalMulai: Date;
   tanggalAkhir: Date;
   onTanggalMulaiChange: (date: Date) => void;
   onTanggalAkhirChange: (date: Date) => void;
+  exportFormat: ExportFormat;
+  onExportFormatChange: (format: ExportFormat) => void;
   isDark: boolean;
 }
 
-const RekapDatePicker = ({
+const FormRekapPresensi = ({
   tanggalMulai,
   tanggalAkhir,
   onTanggalMulaiChange,
   onTanggalAkhirChange,
+  exportFormat,
+  onExportFormatChange,
   isDark,
-}: RekapDatePickerProps) => {
+}: FormRekapPresensiProps) => {
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
+
   const textPrimary = isDark ? "text-textPrimaryDark" : "text-textPrimaryLight";
+  const textSecondary = isDark
+    ? "text-textSecondaryDark"
+    : "text-textSecondaryLight";
   const inputBg = isDark ? "bg-slate-700" : "bg-gray-100";
   const inputBorder = isDark ? "border-slate-600" : "border-gray-300";
 
@@ -99,8 +109,70 @@ const RekapDatePicker = ({
           minimumDate={tanggalMulai}
         />
       )}
+
+      {/* ✅ Format Export Selection */}
+      <View>
+        <Text className={`text-sm font-semibold mb-2 ${textPrimary}`}>
+          Format Export
+        </Text>
+        <View className="flex-row gap-x-3">
+          {/* XLSX Button */}
+          <TouchableOpacity
+            className={`flex-1 py-3 rounded-lg border ${
+              exportFormat === "xlsx"
+                ? "bg-blue-500 border-blue-500"
+                : `${inputBg} ${inputBorder}`
+            }`}
+            onPress={() => onExportFormatChange("xlsx")}
+          >
+            <View className="items-center">
+              <Text
+                className={`font-semibold ${
+                  exportFormat === "xlsx" ? "text-white" : textPrimary
+                }`}
+              >
+                Excel
+              </Text>
+              <Text
+                className={`text-xs mt-0.5 ${
+                  exportFormat === "xlsx" ? "text-blue-100" : textSecondary
+                }`}
+              >
+                (.xlsx)
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* CSV Button */}
+          <TouchableOpacity
+            className={`flex-1 py-3 rounded-lg border ${
+              exportFormat === "csv"
+                ? "bg-blue-500 border-blue-500"
+                : `${inputBg} ${inputBorder}`
+            }`}
+            onPress={() => onExportFormatChange("csv")}
+          >
+            <View className="items-center">
+              <Text
+                className={`font-semibold ${
+                  exportFormat === "csv" ? "text-white" : textPrimary
+                }`}
+              >
+                CSV
+              </Text>
+              <Text
+                className={`text-xs mt-0.5 ${
+                  exportFormat === "csv" ? "text-blue-100" : textSecondary
+                }`}
+              >
+                (.csv)
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
 
-export default RekapDatePicker;
+export default FormRekapPresensi;
