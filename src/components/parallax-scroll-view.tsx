@@ -2,6 +2,7 @@ import { ThemedView } from "@/src/components/themed-view";
 import { useColorScheme } from "@/src/hooks/use-color-scheme";
 import { useThemeColor } from "@/src/hooks/use-theme-color";
 import type { PropsWithChildren, ReactElement } from "react";
+import React from "react";
 import { StyleSheet } from "react-native";
 import Animated, {
   interpolate,
