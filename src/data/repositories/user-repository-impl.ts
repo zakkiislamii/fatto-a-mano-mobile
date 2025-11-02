@@ -52,7 +52,6 @@ export class UserRepositoryImpl implements IUserRepository {
         updated_at: Timestamp.now(),
       };
 
-      // Hapus field undefined agar tidak menimpa data yang ada
       Object.keys(dataToWrite).forEach((key) => {
         if (dataToWrite[key] === undefined) {
           delete dataToWrite[key];

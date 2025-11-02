@@ -41,7 +41,7 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
     handleTimeChange,
     handleSubmit,
     confirmSubmit,
-  } = useEditJadwalKaryawan(karyawan.uid);
+  } = useEditJadwalKaryawan();
 
   if (!karyawan) {
     return null;
@@ -131,7 +131,7 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
           primaryButtonText="Edit Jadwal"
           onPrimaryButtonPress={() => {
             setSheetVisible(false);
-            openModal();
+            openModal(karyawan.uid);
           }}
         />
       )}

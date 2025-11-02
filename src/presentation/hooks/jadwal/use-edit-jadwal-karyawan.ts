@@ -10,7 +10,7 @@ import { IUserRepository } from "@/src/domain/repositories/i-user-repository";
 import { useSendToKaryawan } from "@/src/hooks/use-notifikasi";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Unsubscribe } from "firebase/firestore";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Platform } from "react-native";
 import Toast from "react-native-toast-message";
@@ -23,7 +23,7 @@ const defaultValues: JadwalKaryawan = {
   is_wfa: false,
 };
 
-const useEditJadwalKaryawan = (uid: string | null) => {
+const useEditJadwalKaryawan = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [fetchingData, setFetchingData] = useState<boolean>(true);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -32,7 +32,10 @@ const useEditJadwalKaryawan = (uid: string | null) => {
   const [showJamKeluarPicker, setShowJamKeluarPicker] = useState(false);
   const [selectedHari, setSelectedHari] = useState<number[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [sheetyId, setsheetyId] = useState<number | null>(null);
+  const [sheetyId, setSheetyId] = useState<number | null>(null);
+  const [currentUid, setCurrentUid] = useState<string | null>(null);
+  const unsubscribeRef = useRef<Unsubscribe | null>(null);
+
   const { mutateAsync: sendNotification } = useSendToKaryawan();
   const { mutateAsync: editExcelRow } = useEditRow();
 
@@ -51,18 +54,33 @@ const useEditJadwalKaryawan = (uid: string | null) => {
   });
 
   useEffect(() => {
-    if (!uid) {
-      setFetchingData(false);
-      return;
-    }
+    return () => {
+      if (unsubscribeRef.current) {
+        unsubscribeRef.current();
+      }
+    };
+  }, []);
 
-    const userRepo: IUserRepository = new UserRepositoryImpl();
-    const unsubscribe: Unsubscribe | null = userRepo.getProfilRealTime(
-      uid,
-      (profil) => {
+  const fetchJadwalByUid = useCallback(
+    (uid: string) => {
+      if (!uid) {
+        setFetchingData(false);
+        return;
+      }
+
+      // Cleanup previous listener
+      if (unsubscribeRef.current) {
+        unsubscribeRef.current();
+      }
+
+      setFetchingData(true);
+      setCurrentUid(uid);
+
+      const userRepo: IUserRepository = new UserRepositoryImpl();
+      const unsubscribe = userRepo.getProfilRealTime(uid, (profil) => {
         if (profil) {
           if (profil.sheety_id) {
-            setsheetyId(profil.sheety_id);
+            setSheetyId(profil.sheety_id);
           }
 
           const jadwal = profil.jadwal;
@@ -81,23 +99,31 @@ const useEditJadwalKaryawan = (uid: string | null) => {
           }
         }
         setFetchingData(false);
-      }
-    );
+      });
 
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  }, [uid, reset]);
+      unsubscribeRef.current = unsubscribe;
+    },
+    [reset]
+  );
 
-  const openModal = useCallback(() => {
-    setShowModal(true);
-  }, []);
+  const openModal = useCallback(
+    (uid: string) => {
+      fetchJadwalByUid(uid);
+      setShowModal(true);
+    },
+    [fetchJadwalByUid]
+  );
 
   const closeModal = useCallback(() => {
     setShowModal(false);
     setError(null);
+
+    // Cleanup listener
+    if (unsubscribeRef.current) {
+      unsubscribeRef.current();
+      unsubscribeRef.current = null;
+    }
+
     const currentValues = watch();
     reset(currentValues, {
       keepValues: true,
@@ -114,7 +140,7 @@ const useEditJadwalKaryawan = (uid: string | null) => {
     setError(null);
     setLoading(true);
     try {
-      if (!uid) {
+      if (!currentUid) {
         throw new Error("UID tidak tersedia.");
       }
 
@@ -128,7 +154,7 @@ const useEditJadwalKaryawan = (uid: string | null) => {
       };
 
       // Update Firestore
-      await jadwalRepo.editJadwalKaryawan(uid, jadwalData);
+      await jadwalRepo.editJadwalKaryawan(currentUid, jadwalData);
 
       // Update Google Sheets
       if (sheetyId) {
@@ -156,7 +182,7 @@ const useEditJadwalKaryawan = (uid: string | null) => {
       // Kirim notifikasi
       let notifStatus = "";
       try {
-        await sendNotification(uid);
+        await sendNotification(currentUid);
         notifStatus = " & notifikasi terkirim";
       } catch (notifError) {
         console.error(

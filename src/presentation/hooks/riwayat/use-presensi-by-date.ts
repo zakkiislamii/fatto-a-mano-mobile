@@ -1,6 +1,6 @@
 import { RiwayatRepositoryImpl } from "@/src/data/repositories/riwayat-repository-impl";
 import { Presensi } from "@/src/domain/models/presensi";
-import { IRiwayatRepository } from "@/src/domain/repositories/riwayat/i-riwayat-repository";
+import { IRiwayatRepository } from "@/src/domain/repositories/i-riwayat-repository";
 import { useEffect, useState } from "react";
 
 export const usePresensiByDate = (uid: string, tanggal: string) => {
