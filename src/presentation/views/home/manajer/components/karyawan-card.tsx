@@ -1,6 +1,6 @@
-import { Karyawan } from "@/src/common/types/karyawan";
 import { DynamicBottomSheet } from "@/src/components/ui/dynamic-bottom-sheet";
 import { DynamicModal } from "@/src/components/ui/dynamic-modal";
+import { Karyawan } from "@/src/domain/models/karyawan";
 import useEditJadwalKaryawan from "@/src/presentation/hooks/jadwal/use-edit-jadwal-karyawan";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";

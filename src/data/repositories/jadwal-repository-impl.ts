@@ -1,5 +1,5 @@
-import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
 import { db } from "@/src/configs/firebase-config";
+import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
 import { Unsubscribe } from "firebase/auth";
 import { doc, onSnapshot, updateDoc, writeBatch } from "firebase/firestore";
@@ -90,19 +90,19 @@ export class JadwalRepositoryImpl implements IJadwalRepository {
   }
 
   public async sinkronJadwal(
-    data: Array<{ uid: string; jadwal: JadwalKaryawan; excelId: number }>
+    data: Array<{ uid: string; jadwal: JadwalKaryawan; sheetyId: number }>
   ): Promise<void> {
     try {
       const batch = writeBatch(db);
 
-      data.forEach(({ uid, jadwal, excelId }) => {
+      data.forEach(({ uid, jadwal, sheetyId }) => {
         const userRef = doc(db, "users", uid);
         batch.update(userRef, {
           "jadwal.jam_masuk": jadwal.jam_masuk,
           "jadwal.jam_keluar": jadwal.jam_keluar,
           "jadwal.hari_kerja": jadwal.hari_kerja,
           "jadwal.is_wfa": jadwal.is_wfa,
-          excel_id: excelId,
+          sheety_id: sheetyId,
           updated_at: new Date(),
         });
       });

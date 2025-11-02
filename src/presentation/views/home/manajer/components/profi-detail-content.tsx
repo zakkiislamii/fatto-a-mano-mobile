@@ -1,4 +1,4 @@
-import { Karyawan } from "@/src/common/types/karyawan";
+import { Karyawan } from "@/src/domain/models/karyawan";
 import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Text, View } from "react-native";

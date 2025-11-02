@@ -1,7 +1,7 @@
-import { PresensiKeluar } from "@/src/common/types/presensi-keluar";
 import Today from "@/src/common/utils/get-today";
 import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
 import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
+import { PresensiKeluar } from "@/src/domain/models/presensi-keluar";
 import { IPresensiRepository } from "@/src/domain/repositories/i-presensi-repository";
 import { useGetJadwal } from "@/src/presentation/hooks/jadwal/use-get-jadwal";
 import useLocation from "@/src/presentation/hooks/location/use-location";
@@ -17,7 +17,8 @@ const useAddPresensiKeluar = (uid: string) => {
   const { isWifiValid } = useWifi();
   const [loading, setLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const { presensiKeluarStatus, loading: presensiKeluarStatusLoading } = useGetStatusPresensiKeluarToday(uid);
+  const { presensiKeluarStatus, loading: presensiKeluarStatusLoading } =
+    useGetStatusPresensiKeluarToday(uid);
   const { jadwalKaryawan } = useGetJadwal(uid);
   const jadwalReady = !!jadwalKaryawan;
   const isWfa = !!jadwalKaryawan?.is_wfa;

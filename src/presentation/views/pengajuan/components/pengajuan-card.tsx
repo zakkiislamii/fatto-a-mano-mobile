@@ -1,6 +1,6 @@
 import { StatusPengajuan } from "@/src/common/enums/status-pengajuan";
-import { DaftarPengajuan } from "@/src/common/types/daftar-pengajuan";
 import formatTimestamp from "@/src/common/utils/format-timestamp";
+import { DaftarPengajuan } from "@/src/domain/models/daftar-pengajuan";
 import { AntDesign } from "@expo/vector-icons";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";

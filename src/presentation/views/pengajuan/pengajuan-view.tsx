@@ -1,7 +1,7 @@
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
-import { DaftarPengajuan } from "@/src/common/types/daftar-pengajuan";
 import { DynamicBottomSheet } from "@/src/components/ui/dynamic-bottom-sheet";
 import { DynamicModal } from "@/src/components/ui/dynamic-modal";
+import { DaftarPengajuan } from "@/src/domain/models/daftar-pengajuan";
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
 import { Feather } from "@expo/vector-icons";
 import React from "react";

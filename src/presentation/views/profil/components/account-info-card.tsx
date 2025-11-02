@@ -1,8 +1,8 @@
 import { UserRole } from "@/src/common/enums/user-role";
-import { ProfilKaryawan } from "@/src/common/types/profil-karyawan";
 import Button from "@/src/components/ui/button";
 import { DynamicBottomSheet } from "@/src/components/ui/dynamic-bottom-sheet";
 import { DynamicModal } from "@/src/components/ui/dynamic-modal";
+import { ProfilKaryawan } from "@/src/domain/models/profil-karyawan";
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
 import useEditProfil from "@/src/presentation/hooks/profile/use-edit-profil";
 import { useGetProfile } from "@/src/presentation/hooks/profile/use-get-profil";

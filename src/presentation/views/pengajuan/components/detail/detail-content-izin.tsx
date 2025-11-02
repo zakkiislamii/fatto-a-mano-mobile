@@ -1,5 +1,5 @@
 import { StatusPengajuan } from "@/src/common/enums/status-pengajuan";
-import { PengajuanIzin } from "@/src/common/types/pengajuan_izin";
+import { PengajuanIzin } from "@/src/domain/models/pengajuan_izin";
 import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React from "react";

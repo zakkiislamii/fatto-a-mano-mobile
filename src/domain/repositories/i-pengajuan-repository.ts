@@ -1,4 +1,3 @@
-import { DaftarPengajuan } from "@/src/common/types/daftar-pengajuan";
 import {
   EditPengajuanIzinData,
   EditPengajuanLemburData,
@@ -9,6 +8,7 @@ import {
   TambahPengajuanLemburData,
   TambahPengajuanSakitData,
 } from "@/src/common/types/tambah-pengajuan-data";
+import { DaftarPengajuan } from "@/src/domain/models/daftar-pengajuan";
 import { Pengajuan } from "@/src/domain/models/pengajuan";
 import { Unsubscribe } from "firebase/firestore";
 

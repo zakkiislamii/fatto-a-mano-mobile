@@ -1,6 +1,5 @@
 import { StatusPengajuan } from "@/src/common/enums/status-pengajuan";
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
-import { DaftarPengajuan } from "@/src/common/types/daftar-pengajuan";
 import {
   EditPengajuanIzinData,
   EditPengajuanLemburData,
@@ -12,6 +11,7 @@ import {
   TambahPengajuanSakitData,
 } from "@/src/common/types/tambah-pengajuan-data";
 import { db } from "@/src/configs/firebase-config";
+import { DaftarPengajuan } from "@/src/domain/models/daftar-pengajuan";
 import { Pengajuan } from "@/src/domain/models/pengajuan";
 import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import {

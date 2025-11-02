@@ -1,5 +1,5 @@
 import { UserRole } from "@/src/common/enums/user-role";
-import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
+import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { Timestamp } from "firebase/firestore";
 
 export interface User {
@@ -10,6 +10,7 @@ export interface User {
   role: UserRole;
   divisi?: string;
   jadwal: JadwalKaryawan;
+  sheety_id?: number;
   created_at: Timestamp;
   updated_at: Timestamp;
 }

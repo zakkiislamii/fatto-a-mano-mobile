@@ -1,7 +1,7 @@
 import { HARI_OPTIONS } from "@/src/common/constants/constants";
-import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
 import { parseTimeToDate } from "@/src/common/utils/parse-time-to-date";
 import Button from "@/src/components/ui/button";
+import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { Feather } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import React from "react";

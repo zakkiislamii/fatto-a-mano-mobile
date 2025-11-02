@@ -1,5 +1,5 @@
-import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
 import { JadwalRepositoryImpl } from "@/src/data/repositories/jadwal-repository-impl";
+import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
 import { Unsubscribe } from "firebase/auth";
 import { useEffect, useState } from "react";

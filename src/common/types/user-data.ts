@@ -1,4 +1,4 @@
-import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
+import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 
 export type EditProfilData = {
   nama?: string;
@@ -10,5 +10,5 @@ export type LengkapiProfilData = {
   nomor_hp?: string;
   divisi?: string;
   jadwal?: JadwalKaryawan;
-  excel_id?: number;
+  sheety_id?: number;
 };

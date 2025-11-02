@@ -1,6 +1,5 @@
 import { KeteranganFile } from "@/src/common/enums/keterangan-file";
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
-import { DaftarPengajuan } from "@/src/common/types/daftar-pengajuan";
 import { EditPengajuanIzinData } from "@/src/common/types/edit-pengajuan-data";
 import formatDateToString from "@/src/common/utils/format-date-to-string";
 import { pickImageFromLibrary } from "@/src/common/utils/image-picker";
@@ -10,6 +9,7 @@ import {
 } from "@/src/common/utils/upload-to-supabase";
 import { PengajuanIzinFormSchema } from "@/src/common/validators/pengajuan/pengajuan-izin-form-schema";
 import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
+import { DaftarPengajuan } from "@/src/domain/models/daftar-pengajuan";
 import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useState } from "react";

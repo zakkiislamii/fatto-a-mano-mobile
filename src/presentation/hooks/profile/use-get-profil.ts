@@ -1,5 +1,5 @@
-import { ProfilKaryawan } from "@/src/common/types/profil-karyawan";
 import { UserRepositoryImpl } from "@/src/data/repositories/user-repository-impl";
+import { ProfilKaryawan } from "@/src/domain/models/profil-karyawan";
 import { IUserRepository } from "@/src/domain/repositories/i-user-repository";
 import { Unsubscribe } from "firebase/firestore";
 import { useEffect, useState } from "react";

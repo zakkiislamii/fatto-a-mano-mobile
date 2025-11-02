@@ -1,6 +1,6 @@
 import { StatusPresensi } from "@/src/common/enums/status-presensi";
-import { PresensiKeluar } from "@/src/common/types/presensi-keluar";
-import { PresensiMasuk } from "@/src/common/types/presensi-masuk";
+import { PresensiKeluar } from "@/src/domain/models/presensi-keluar";
+import { PresensiMasuk } from "@/src/domain/models/presensi-masuk";
 import { Timestamp } from "firebase/firestore";
 
 export interface Presensi {

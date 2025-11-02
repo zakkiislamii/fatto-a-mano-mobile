@@ -1,5 +1,5 @@
-import { DaftarPengajuan } from "@/src/common/types/daftar-pengajuan";
 import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
+import { DaftarPengajuan } from "@/src/domain/models/daftar-pengajuan";
 import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
 import { Unsubscribe } from "firebase/firestore";

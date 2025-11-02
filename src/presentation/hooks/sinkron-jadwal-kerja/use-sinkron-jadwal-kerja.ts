@@ -1,6 +1,6 @@
-import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
 import { SheetyServiceImpl } from "@/src/data/data-sources/sheety-service-impl";
 import { JadwalRepositoryImpl } from "@/src/data/repositories/jadwal-repository-impl";
+import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
 import { ISheetyService } from "@/src/domain/services/i-sheety-service";
 import { useSendToAll } from "@/src/hooks/use-notifikasi";
@@ -38,7 +38,7 @@ const useSinkronJadwalKerja = () => {
             hari_kerja: row.hariKerja,
             is_wfa: row.isWfa,
           } as JadwalKaryawan,
-          excelId: row.id as number,
+          sheetyId: row.id as number,
         }));
 
       // Sinkron ke Firestore

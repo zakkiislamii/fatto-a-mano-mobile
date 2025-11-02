@@ -1,4 +1,4 @@
-import { Karyawan } from "@/src/common/types/karyawan";
+import { Karyawan } from "@/src/domain/models/karyawan";
 import { useMemo, useState } from "react";
 
 export const useKaryawanSearch = (karyawanList: Karyawan[]) => {

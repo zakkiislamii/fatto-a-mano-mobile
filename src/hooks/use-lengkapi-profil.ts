@@ -1,4 +1,4 @@
-import type { ProfilKaryawan } from "@/src/common/types/profil-karyawan";
+import type { ProfilKaryawan } from "@/src/domain/models/profil-karyawan";
 import type { Unsubscribe } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { UserRepositoryImpl } from "../data/repositories/user-repository-impl";

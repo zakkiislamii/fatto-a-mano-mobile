@@ -1,4 +1,4 @@
-import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
+import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { Unsubscribe } from "firebase/auth";
 
 export interface IJadwalRepository {
@@ -13,6 +13,6 @@ export interface IJadwalRepository {
   ): Promise<void>;
 
   sinkronJadwal(
-    data: Array<{ uid: string; jadwal: JadwalKaryawan; excelId: number }>
+    data: Array<{ uid: string; jadwal: JadwalKaryawan; sheetyId: number }>
   ): Promise<void>;
 }

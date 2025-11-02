@@ -6,13 +6,13 @@ import { useForm } from "react-hook-form";
 import { Platform } from "react-native";
 import Toast from "react-native-toast-message";
 import { SheetyResponse } from "../common/types/excel-response";
-import { LengkapiProfil } from "../common/types/lengkapi-profil";
 import { LengkapiProfilData } from "../common/types/user-data";
 import { expandHariKerja } from "../common/utils/expand-hari-kerja";
 import formatHariKerja from "../common/utils/format-hari-kerja";
 import { LengkapiProfilFormSchema } from "../common/validators/profil/update-lengkapi-profil-schema";
 import { SheetyServiceImpl } from "../data/data-sources/sheety-service-impl";
 import { UserRepositoryImpl } from "../data/repositories/user-repository-impl";
+import { LengkapiProfil } from "../domain/models/lengkapi-profil";
 import { Sheets } from "../domain/models/sheets";
 import { IUserRepository } from "../domain/repositories/i-user-repository";
 import { ISheetyService } from "../domain/services/i-sheety-service";
@@ -163,10 +163,10 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
         await excelService.addRow(excelData);
 
       // SIMPAN ID ke Firestore
-      const excelId = SheetyResponse.sheet1.id;
-      if (excelId) {
+      const sheetyId = SheetyResponse.sheet1.id;
+      if (sheetyId) {
         await userRepo.updateLengkapiProfil(uid, {
-          excel_id: excelId,
+          sheety_id: sheetyId,
         });
       }
 

@@ -1,8 +1,8 @@
-import { ProfilKaryawan } from "@/src/common/types/profil-karyawan";
 import {
   EditProfilData,
   LengkapiProfilData,
 } from "@/src/common/types/user-data";
+import { ProfilKaryawan } from "@/src/domain/models/profil-karyawan";
 import { Unsubscribe } from "firebase/firestore";
 
 export interface IUserRepository {

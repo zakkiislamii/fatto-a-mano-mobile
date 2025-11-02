@@ -1,9 +1,9 @@
-import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
 import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
 import formatHariKerja from "@/src/common/utils/format-hari-kerja";
 import { EditJadwalKaryawanFormSchema } from "@/src/common/validators/jadwal/edit-jadwal-karyawan-form-schema";
 import { JadwalRepositoryImpl } from "@/src/data/repositories/jadwal-repository-impl";
 import { UserRepositoryImpl } from "@/src/data/repositories/user-repository-impl";
+import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { Sheets } from "@/src/domain/models/sheets";
 import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
 import { IUserRepository } from "@/src/domain/repositories/i-user-repository";
@@ -32,7 +32,7 @@ const useEditJadwalKaryawan = (uid: string | null) => {
   const [showJamKeluarPicker, setShowJamKeluarPicker] = useState(false);
   const [selectedHari, setSelectedHari] = useState<number[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [excelId, setExcelId] = useState<number | null>(null);
+  const [sheetyId, setsheetyId] = useState<number | null>(null);
   const { mutateAsync: sendNotification } = useSendToKaryawan();
   const { mutateAsync: editExcelRow } = useEditRow();
 
@@ -61,8 +61,8 @@ const useEditJadwalKaryawan = (uid: string | null) => {
       uid,
       (profil) => {
         if (profil) {
-          if (profil.excel_id) {
-            setExcelId(profil.excel_id);
+          if (profil.sheety_id) {
+            setsheetyId(profil.sheety_id);
           }
 
           const jadwal = profil.jadwal;
@@ -131,7 +131,7 @@ const useEditJadwalKaryawan = (uid: string | null) => {
       await jadwalRepo.editJadwalKaryawan(uid, jadwalData);
 
       // Update Google Sheets
-      if (excelId) {
+      if (sheetyId) {
         try {
           const excelData: Partial<Sheets> = {
             hariKerja: data.hari_kerja,
@@ -140,7 +140,7 @@ const useEditJadwalKaryawan = (uid: string | null) => {
             isWfa: !!data.is_wfa,
           };
 
-          await editExcelRow({ id: excelId, data: excelData });
+          await editExcelRow({ id: sheetyId, data: excelData });
         } catch (excelError) {
           console.error(
             "[useEditJadwalKaryawan] Gagal update Excel:",

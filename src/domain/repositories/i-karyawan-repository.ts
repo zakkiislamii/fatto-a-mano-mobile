@@ -1,4 +1,4 @@
-import { Karyawan } from "@/src/common/types/karyawan";
+import { Karyawan } from "@/src/domain/models/karyawan";
 import { Unsubscribe } from "firebase/firestore";
 
 export interface IKaryawanRepository {

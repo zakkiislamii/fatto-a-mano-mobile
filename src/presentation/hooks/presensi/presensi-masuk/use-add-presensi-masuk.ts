@@ -1,9 +1,9 @@
 import { StatusPresensi } from "@/src/common/enums/status-presensi";
-import { PresensiMasuk } from "@/src/common/types/presensi-masuk";
 import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
 import Today from "@/src/common/utils/get-today";
 import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
 import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
+import { PresensiMasuk } from "@/src/domain/models/presensi-masuk";
 import { IPresensiRepository } from "@/src/domain/repositories/i-presensi-repository";
 import { useGetJadwal } from "@/src/presentation/hooks/jadwal/use-get-jadwal";
 import useLocation from "@/src/presentation/hooks/location/use-location";

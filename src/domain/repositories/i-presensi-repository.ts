@@ -1,8 +1,8 @@
 import { StatusPresensi } from "@/src/common/enums/status-presensi";
-import { PresensiKeluar } from "@/src/common/types/presensi-keluar";
 import { PresensiKeluarStatus } from "@/src/common/types/presensi-keluar-status";
-import { PresensiMasuk } from "@/src/common/types/presensi-masuk";
 import { PresensiMasukStatus } from "@/src/common/types/presensi-masuk-status";
+import { PresensiKeluar } from "@/src/domain/models/presensi-keluar";
+import { PresensiMasuk } from "@/src/domain/models/presensi-masuk";
 import { Unsubscribe } from "firebase/firestore";
 
 export interface IPresensiRepository {

@@ -1,10 +1,10 @@
-import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
-import { ProfilKaryawan } from "@/src/common/types/profil-karyawan";
 import {
   EditProfilData,
   LengkapiProfilData,
 } from "@/src/common/types/user-data";
 import { db } from "@/src/configs/firebase-config";
+import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
+import { ProfilKaryawan } from "@/src/domain/models/profil-karyawan";
 import { IUserRepository } from "@/src/domain/repositories/i-user-repository";
 import {
   DocumentData,

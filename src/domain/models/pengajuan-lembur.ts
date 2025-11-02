@@ -1,5 +1,5 @@
 import { Pengajuan } from "@/src/domain/models/pengajuan";
-import { TipePengajuan } from "../enums/tipe-pengajuan";
+import { TipePengajuan } from "../../common/enums/tipe-pengajuan";
 
 export interface PengajuanLembur extends Pengajuan {
   keterangan: string;

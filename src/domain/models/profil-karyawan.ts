@@ -7,6 +7,6 @@ export interface ProfilKaryawan {
   nama: string;
   jadwal?: JadwalKaryawan;
   divisi: string;
-  excel_id: number;
+  sheety_id: number;
   updated_at: Timestamp;
 }

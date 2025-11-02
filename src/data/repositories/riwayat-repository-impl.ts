@@ -1,7 +1,7 @@
-import { PresensiKeluar } from "@/src/common/types/presensi-keluar";
-import { PresensiMasuk } from "@/src/common/types/presensi-masuk";
 import { db } from "@/src/configs/firebase-config";
 import { Presensi } from "@/src/domain/models/presensi";
+import { PresensiKeluar } from "@/src/domain/models/presensi-keluar";
+import { PresensiMasuk } from "@/src/domain/models/presensi-masuk";
 import { IRiwayatRepository } from "@/src/domain/repositories/riwayat/i-riwayat-repository";
 import { doc, onSnapshot, Timestamp, Unsubscribe } from "firebase/firestore";
 

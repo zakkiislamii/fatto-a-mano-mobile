@@ -1,6 +1,4 @@
 import { KeteranganFile } from "@/src/common/enums/keterangan-file";
-import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
-import { PresensiKeluar } from "@/src/common/types/presensi-keluar";
 import { TambahPengajuanLemburData } from "@/src/common/types/tambah-pengajuan-data";
 import Today from "@/src/common/utils/get-today";
 import { pickImageFromLibrary } from "@/src/common/utils/image-picker";
@@ -9,6 +7,8 @@ import { uploadToSupabase } from "@/src/common/utils/upload-to-supabase";
 import { PengajuanLemburFormSchema } from "@/src/common/validators/pengajuan/pengajuan-lembur-form-schema";
 import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
 import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
+import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
+import { PresensiKeluar } from "@/src/domain/models/presensi-keluar";
 import { IPresensiRepository } from "@/src/domain/repositories/i-presensi-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useState } from "react";

@@ -1,4 +1,4 @@
-import { JadwalKaryawan } from "@/src/common/types/jadwal-karyawan";
+import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Text, View } from "react-native";
@@ -22,15 +22,15 @@ const JadwalDetailContent = ({
       ? "bg-info-dark-bg"
       : "bg-info-light-bg"
     : isDark
-    ? "bg-neutral-dark-bg"
-    : "bg-neutral-light-bg";
+      ? "bg-neutral-dark-bg"
+      : "bg-neutral-light-bg";
   const statusText = isWFA
     ? isDark
       ? "text-info-dark"
       : "text-info-light"
     : isDark
-    ? "text-neutral-dark"
-    : "text-neutral-light";
+      ? "text-neutral-dark"
+      : "text-neutral-light";
 
   return (
     <View className="gap-y-4 px-1 pb-2">

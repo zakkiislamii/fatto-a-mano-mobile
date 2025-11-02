@@ -1,6 +1,6 @@
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
-import { PengajuanLembur } from "@/src/common/types/pengajuan-lembur";
 import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
+import { PengajuanLembur } from "@/src/domain/models/pengajuan-lembur";
 import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import { useCallback, useEffect, useRef, useState } from "react";
 

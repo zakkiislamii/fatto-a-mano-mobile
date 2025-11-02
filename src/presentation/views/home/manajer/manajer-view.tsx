@@ -1,6 +1,6 @@
-import { Karyawan } from "@/src/common/types/karyawan";
 import Button from "@/src/components/ui/button";
 import PaginationControls from "@/src/components/ui/pagination-controls";
+import { Karyawan } from "@/src/domain/models/karyawan";
 import { useKaryawanRealTime } from "@/src/presentation/hooks/karyawan/use-karyawan-realtime";
 import useSinkronJadwalKerja from "@/src/presentation/hooks/sinkron-jadwal-kerja/use-sinkron-jadwal-kerja";
 import React from "react";
