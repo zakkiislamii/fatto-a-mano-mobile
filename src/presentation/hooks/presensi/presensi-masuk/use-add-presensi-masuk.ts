@@ -3,107 +3,91 @@ import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
 import Today from "@/src/common/utils/get-today";
 import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
 import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
+import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { PresensiMasuk } from "@/src/domain/models/presensi-masuk";
 import { IPresensiRepository } from "@/src/domain/repositories/i-presensi-repository";
-import { useGetJadwal } from "@/src/presentation/hooks/jadwal/use-get-jadwal";
 import useLocation from "@/src/presentation/hooks/location/use-location";
 import useWifi from "@/src/presentation/hooks/wifi/use-wifi";
 import { useState } from "react";
 import Toast from "react-native-toast-message";
 
-const useAddPresensiMasuk = (uid: string) => {
+const useAddPresensiMasuk = () => {
   const { isLocationValid } = useLocation();
   const { isWifiValid } = useWifi();
   const [loading, setLoading] = useState<boolean>(false);
-  const { jadwalKaryawan } = useGetJadwal(uid);
-  const isWfa = !!jadwalKaryawan?.is_wfa;
 
-  const handlePresensiMasuk = async (): Promise<boolean> => {
-    // VALIDASI 1: Jadwal harus tersedia
+  const handlePresensiMasuk = async (
+    uid: string,
+    jadwalKaryawan: JadwalKaryawan | null
+  ): Promise<boolean> => {
+    const isWfa = !!jadwalKaryawan?.is_wfa;
+
+    // Validasi jadwal
     if (!jadwalKaryawan) {
-      Toast.show({
-        type: "error",
-        text1: "Jadwal karyawan belum tersedia. Mohon tunggu.",
-      });
+      Toast.show({ text1: "Jadwal tidak tersedia" });
       return false;
     }
 
-    // VALIDASI 2: Koneksi (WFH vs Office)
+    // Validasi WFO
     if (!isWfa) {
-      // Office: butuh lokasi + WiFi
       if (!isLocationValid) {
-        Toast.show({
-          type: "error",
-          text1: "Tidak dapat presensi",
-          text2: "Lokasi tidak valid atau Anda berada di luar area kantor",
-        });
+        Toast.show({ text1: "Lokasi tidak valid" });
         return false;
       }
       if (!isWifiValid) {
-        Toast.show({
-          type: "error",
-          text1: "Tidak dapat presensi",
-          text2: "Silakan sambungkan ke jaringan Wi-Fi kantor",
-        });
+        Toast.show({ text1: "WiFi tidak valid" });
         return false;
       }
     }
 
-    // VALIDASI 3: Hari kerja
+    // Validasi hari kerja
     const today = new Date();
     const todayIdx = today.getDay();
     const workingDays = expandHariKerja(jadwalKaryawan.hari_kerja);
 
     if (!workingDays.includes(todayIdx)) {
-      Toast.show({
-        type: "error",
-        text1: "Hari ini bukan hari kerja.",
-      });
+      Toast.show({ text1: "Bukan hari kerja" });
       return false;
     }
 
-    // VALIDASI 4: Format jam masuk & keluar
+    //  Format jam masuk & keluar
     const jamMasukDate = parseJamToDateToday(jadwalKaryawan.jam_masuk, today);
     if (!jamMasukDate) {
       Toast.show({ type: "error", text1: "Format jam masuk tidak valid." });
       return false;
     }
-
-    const jamKeluarDate = parseJamToDateToday(jadwalKaryawan.jam_keluar, today);
-    if (!jamKeluarDate) {
-      Toast.show({ type: "error", text1: "Format jam keluar tidak valid." });
-      return false;
-    }
-
-    // VALIDASI 5: Waktu presensi (tidak terlalu awal)
+    // Hitung batas waktu
     const batasAwal = new Date(jamMasukDate.getTime() - 15 * 60 * 1000);
     const batasTerlambat = new Date(jamMasukDate.getTime() + 5 * 60 * 1000);
     const now = new Date();
 
+    // VALIDASI waktu presensi
+    let status: StatusPresensi;
+    let terlambat: boolean;
+    let durasi_terlambat: string | undefined;
+
     if (now < batasAwal) {
+      // Terlalu awal
       Toast.show({
         type: "error",
         text1: "Presensi terlalu awal!",
         text2: "Coba lagi 15 menit sebelum jam masuk.",
       });
       return false;
-    }
-
-    // DETERMINE STATUS & WAKTU
-    let status = StatusPresensi.hadir;
-    let waktu = now.toTimeString().slice(0, 5);
-    let terlambat = false;
-    let durasi_terlambat: string | undefined = undefined;
-
-    if (now > batasTerlambat) {
-      // Lewat batas toleransi = TERLAMBAT
+    } else if (now > batasTerlambat) {
+      // Terlambat
       status = StatusPresensi.terlambat;
       terlambat = true;
       const diffMs = now.getTime() - jamMasukDate.getTime();
       const diffMin = Math.floor(diffMs / 60000);
       durasi_terlambat = `${diffMin} menit`;
+    } else {
+      // Tepat waktu
+      status = StatusPresensi.hadir;
+      terlambat = false;
     }
 
+    const waktu = now.toTimeString().slice(0, 5);
     const presensiMasuk: PresensiMasuk = {
       waktu,
       terlambat,
@@ -112,7 +96,7 @@ const useAddPresensiMasuk = (uid: string) => {
 
     const tanggal = Today();
 
-    // SAVE TO FIRESTORE
+    // Save
     setLoading(true);
     try {
       const presensiRepo: IPresensiRepository = new PresensiRepositoryImpl();
@@ -128,7 +112,7 @@ const useAddPresensiMasuk = (uid: string) => {
       console.error("[useAddPresensiMasuk] error:", err);
       Toast.show({
         type: "error",
-        text1: "Gagal melakukan presensi. Silakan coba lagi.",
+        text1: "Gagal presensi. Silakan coba lagi.",
       });
       return false;
     } finally {

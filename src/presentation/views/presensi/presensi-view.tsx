@@ -5,6 +5,7 @@ import { DynamicModal } from "@/src/components/ui/dynamic-modal";
 import { router } from "expo-router";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import { useGetJadwal } from "../../hooks/jadwal/use-get-jadwal";
 import useLocation from "../../hooks/location/use-location";
 import useAddPresensiKeluar from "../../hooks/presensi/presensi-keluar/use-add-presensi-keluar";
 import useAddPresensiMasuk from "../../hooks/presensi/presensi-masuk/use-add-presensi-masuk";
@@ -27,8 +28,9 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
   const { isWifiConnected, isBssid, wifiLoading, refreshWifi } = useWifi();
   const { isLocationValid } = useLocation();
   const { isAlpa, isIzinAktif, isSakitAktif } = useAutoPresensiChecker(uid);
+  const { jadwalKaryawan } = useGetJadwal(uid);
   const { handlePresensiMasuk, loading: presensiMasukLoading } =
-    useAddPresensiMasuk(uid);
+    useAddPresensiMasuk();
   const { presensiMasukStatus, loading: presensiMasukStatusLoading } =
     useGetStatusPresensiMasukToday(uid);
   const {
@@ -176,7 +178,7 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
         onPress={
           presensiMasukStatus.sudah_masuk
             ? handlePresensiKeluar
-            : handlePresensiMasuk
+            : () => handlePresensiMasuk(uid, jadwalKaryawan)
         }
         loading={
           presensiMasukStatus.sudah_masuk
