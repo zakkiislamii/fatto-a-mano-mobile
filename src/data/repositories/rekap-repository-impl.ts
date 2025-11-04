@@ -71,7 +71,6 @@ export class RekapRepositoryImpl implements IRekapRepository {
         rekapList.push({
           uid: uid,
           email: userData.email || "-",
-          nomor_hp: userData.nomor_hp || "-",
           nama: userData.nama || "-",
           divisi: userData.divisi || "-",
           jadwal: userData.jadwal || ({} as JadwalKaryawan),

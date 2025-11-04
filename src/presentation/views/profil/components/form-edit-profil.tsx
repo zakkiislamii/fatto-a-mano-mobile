@@ -76,53 +76,6 @@ const FormEditProfil = ({
           )}
         </View>
 
-        {/* Nomor HP */}
-        <View className="mb-2">
-          <Text
-            className={`mb-2 font-medium ${
-              isDark ? "text-textSecondaryDark" : "text-textSecondaryLight"
-            }`}
-          >
-            Nomor HP
-          </Text>
-          <View
-            className={`flex-row items-center rounded-lg border ${inputBg} ${
-              isDark ? "border-gray-600" : "border-gray-300"
-            }`}
-          >
-            <Feather
-              name="phone"
-              size={20}
-              color={placeholderColor}
-              style={{ marginLeft: 12 }}
-            />
-            <Controller
-              control={control}
-              name="nomor_hp"
-              render={({ field: { value, onChange, onBlur } }) => (
-                <TextInput
-                  className={`flex-1 p-4 ml-2 text-base ${primaryText}`}
-                  placeholder="Contoh: 08123456789"
-                  placeholderTextColor={placeholderColor}
-                  keyboardType="phone-pad"
-                  value={value ?? ""}
-                  onChangeText={(text) => {
-                    const cleaned = text.replace(/\D+/g, "");
-                    onChange(cleaned);
-                  }}
-                  onBlur={onBlur}
-                  editable={!loading}
-                />
-              )}
-            />
-          </View>
-          {errors?.nomor_hp?.message && (
-            <Text className="mt-1 text-danger-light dark:text-danger-dark">
-              ❌ {String(errors.nomor_hp.message)}
-            </Text>
-          )}
-        </View>
-
         {/* Submit */}
         <View className="mt-4">
           <Button

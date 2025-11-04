@@ -102,12 +102,7 @@ const AccountInfoCard = ({
           value={profilKaryawan.nama || "-"}
           isDark={isDark}
         />
-        <InfoRow
-          icon="phone"
-          label="Nomor HP"
-          value={profilKaryawan.nomor_hp || "-"}
-          isDark={isDark}
-        />
+
         {role === UserRole.karyawan && (
           <InfoRow
             icon="briefcase"

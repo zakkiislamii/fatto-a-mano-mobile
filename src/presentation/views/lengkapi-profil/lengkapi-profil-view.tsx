@@ -105,32 +105,6 @@ const LengkapiProfilView = () => {
             )}
           </View>
 
-          {/* Nomor HP */}
-          <View className="mb-4">
-            <Text className={`text-sm font-semibold mb-2 ${textPrimary}`}>
-              Nomor HP
-            </Text>
-            <Controller
-              control={control}
-              name="nomor_hp"
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  className={`${inputBg} ${inputBorder} border rounded-lg px-4 py-3 ${textPrimary}`}
-                  placeholder="Masukkan nomor HP"
-                  placeholderTextColor={isDark ? "#9ca3af" : "#6b7280"}
-                  value={value}
-                  onChangeText={onChange}
-                  keyboardType="phone-pad"
-                />
-              )}
-            />
-            {errors.nomor_hp && (
-              <Text className="text-danger-light text-xs mt-1">
-                {errors.nomor_hp.message}
-              </Text>
-            )}
-          </View>
-
           {/* Divisi Dropdown */}
           <View className="mb-4">
             <Text className={`text-sm font-semibold mb-2 ${textPrimary}`}>

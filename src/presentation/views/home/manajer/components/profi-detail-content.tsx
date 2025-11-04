@@ -40,17 +40,6 @@ const ProfilDetailContent = ({
         </View>
       </View>
 
-      {/* Nomor HP */}
-      <View className="flex-row items-center">
-        <Feather name="phone" size={18} color={iconColor} />
-        <View className="ml-3 flex-1 gap-0.5">
-          <Text className={`text-sm ${textSecondary}`}>Nomor HP</Text>
-          <Text className={`text-base font-semibold ${textPrimary}`}>
-            {karyawan.nomor_hp || "-"}
-          </Text>
-        </View>
-      </View>
-
       {/* Divisi */}
       <View className="flex-row items-center">
         <Feather name="briefcase" size={18} color={iconColor} />

@@ -34,7 +34,7 @@ export const useGetProfile = (uid?: string | null) => {
 
         setProfilKaryawan({
           nama: typeof raw.nama === "string" ? raw.nama : "",
-          nomor_hp: typeof raw.nomor_hp === "string" ? raw.nomor_hp : "",
+          sheety_id: typeof raw.sheety_id === "number" ? raw.sheety_id : 0,
           email: typeof raw.email === "string" ? raw.email : "",
           divisi: typeof raw.divisi === "string" ? raw.divisi : "",
           updated_at: raw.updated_at,

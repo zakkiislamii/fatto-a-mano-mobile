@@ -20,7 +20,6 @@ import { ISheetyService } from "../domain/services/i-sheety-service";
 const defaultValues: LengkapiProfil = {
   nama: "",
   divisi: "",
-  nomor_hp: "",
   jadwal: {
     jam_masuk: "",
     jam_keluar: "",
@@ -68,7 +67,6 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
         if (data) {
           setEmail(data.email || "");
           setValue("nama", data.nama || "", { shouldValidate: false });
-          setValue("nomor_hp", data.nomor_hp || "", { shouldValidate: false });
           setValue("divisi", data.divisi || "", {
             shouldValidate: false,
           });
@@ -134,7 +132,6 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
       // untuk Firestore
       const firestoreData: LengkapiProfilData = {
         nama: data.nama,
-        nomor_hp: data.nomor_hp,
         divisi: data.divisi,
         jadwal: {
           jam_masuk: data.jadwal.jam_masuk,
@@ -151,7 +148,6 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
         uid: uid,
         email: email,
         nama: data.nama,
-        nomorHp: data.nomor_hp,
         divisi: data.divisi,
         hariKerja: data.jadwal.hari_kerja,
         jamMasuk: data.jadwal.jam_masuk,
@@ -159,8 +155,9 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
         isWfa: !!data.jadwal.is_wfa,
       };
 
-      const SheetyResponse: SheetyResponse =
-        await excelService.addRow(excelData);
+      const SheetyResponse: SheetyResponse = await excelService.addRow(
+        excelData
+      );
 
       // SIMPAN ID ke Firestore
       const sheetyId = SheetyResponse.sheet1.id;

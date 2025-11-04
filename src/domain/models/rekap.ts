@@ -4,7 +4,6 @@ import { Presensi } from "./presensi";
 export interface RekapKaryawan {
   uid: string;
   email: string;
-  nomor_hp: string;
   nama: string;
   divisi: string;
   jadwal: JadwalKaryawan;

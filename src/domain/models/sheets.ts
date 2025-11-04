@@ -3,7 +3,6 @@ export interface Sheets {
   uid: string;
   email: string;
   nama: string;
-  nomorHp: string;
   divisi: string;
   hariKerja: string;
   jamMasuk: string;

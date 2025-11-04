@@ -96,16 +96,6 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
               {karyawan.email || "-"}
             </Text>
           </View>
-
-          <View style={styles.infoRow}>
-            <Feather name="phone" size={14} color={iconColor} />
-            <Text
-              style={[styles.infoText, { color: textSecondary }]}
-              numberOfLines={1}
-            >
-              {karyawan.nomor_hp || "-"}
-            </Text>
-          </View>
         </View>
 
         {/* Action Buttons */}

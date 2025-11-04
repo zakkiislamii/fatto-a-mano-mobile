@@ -1,10 +1,5 @@
 import * as yup from "yup";
 
-const phoneTransform = (value: unknown) => {
-  const s = String(value).trim();
-  return s === "" ? undefined : s;
-};
-
 export const LengkapiProfilFormSchema = yup.object({
   nama: yup
     .string()
@@ -15,15 +10,6 @@ export const LengkapiProfilFormSchema = yup.object({
     .string()
     .max(100, "Maksimal 100 karakter")
     .required("Divisi wajib diisi"),
-
-  nomor_hp: yup
-    .string()
-    .transform(phoneTransform)
-    .matches(
-      /^(\+?62\d{7,15}|0\d{7,15})$/,
-      "Format nomor HP tidak valid (gunakan +62… atau 08…)"
-    )
-    .required("Nomor HP wajib diisi"),
 
   jadwal: yup
     .object({

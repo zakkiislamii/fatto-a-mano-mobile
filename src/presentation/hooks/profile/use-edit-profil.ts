@@ -10,7 +10,6 @@ import Toast from "react-native-toast-message";
 
 interface ProfilKaryawan {
   nama?: string;
-  nomor_hp?: string;
 }
 
 const useEditProfil = (
@@ -35,7 +34,6 @@ const useEditProfil = (
     resolver: yupResolver(UpdateProfilFormSchema),
     defaultValues: {
       nama: "",
-      nomor_hp: "",
     },
     mode: "onChange",
     reValidateMode: "onChange",
@@ -45,7 +43,6 @@ const useEditProfil = (
     if (profilKaryawan) {
       reset({
         nama: profilKaryawan.nama ?? "",
-        nomor_hp: profilKaryawan.nomor_hp ?? "",
       });
     }
   }, [profilKaryawan, reset]);
@@ -66,10 +63,6 @@ const useEditProfil = (
       payload.nama = String(values.nama).trim();
     }
 
-    if (values?.nomor_hp && values.nomor_hp !== profilKaryawan?.nomor_hp) {
-      payload.nomor_hp = String(values.nomor_hp).trim();
-    }
-
     if (Object.keys(payload).length === 0) {
       Toast.show({ type: "info", text1: "Tidak ada perubahan" });
       setShowModal(false);
@@ -84,10 +77,7 @@ const useEditProfil = (
       setShowModal(false);
       setShowEditSheet(false);
       Toast.show({ type: "success", text1: "Profil diperbarui" });
-      reset({
-        nama: values.nama ?? "",
-        nomor_hp: values.nomor_hp ?? "",
-      });
+      reset({ nama: values.nama ?? "" });
       router.replace("/(tabs)/profil");
     } catch (err: any) {
       const errorMessage = err?.message ?? "Gagal memperbarui profil.";

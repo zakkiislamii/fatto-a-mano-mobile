@@ -3,7 +3,6 @@ export interface SheetyResponse {
     uid: string;
     email: string;
     nama: string;
-    nomorHp: string;
     divisi: string;
     hariKerja: string;
     jamMasuk: string;
@@ -18,7 +17,6 @@ export interface SheetyPartialResponse {
     uid: string;
     email: string;
     nama: string;
-    nomorHp: string;
     divisi: string;
     hariKerja: string;
     jamMasuk: string;

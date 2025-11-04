@@ -125,11 +125,10 @@ export class UserRepositoryImpl implements IUserRepository {
           const data = snap.data() as Partial<LengkapiProfilData>;
 
           const namaOk = isNonEmptyString(data.nama);
-          const nomorOk = isNonEmptyString(data.nomor_hp);
           const divisiOk = isNonEmptyString(data.divisi);
           const jadwalOk = isJadwalValid(data.jadwal);
 
-          const isComplete = namaOk && nomorOk && divisiOk && jadwalOk;
+          const isComplete = namaOk && divisiOk && jadwalOk;
           cb(isComplete);
         },
         (error: unknown) => {
