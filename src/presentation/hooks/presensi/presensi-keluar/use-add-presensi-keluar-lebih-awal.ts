@@ -8,16 +8,20 @@ import { useForm } from "react-hook-form";
 import Toast from "react-native-toast-message";
 
 interface UseAddPresensiKeluarLebihAwalProps {
-  uid: string;
-  onSubmitSuccess: (alasan: string, buktiUrl: string) => Promise<void>;
+  onSubmitSuccess: (
+    uid: string,
+    alasan: string,
+    buktiUrl: string
+  ) => Promise<boolean>;
 }
 
-const useAddPresensiKeluarLebihAwal = ({
-  uid,
-  onSubmitSuccess,
-}: UseAddPresensiKeluarLebihAwalProps) => {
+const useAddPresensiKeluarLebihAwal = (
+  props: UseAddPresensiKeluarLebihAwalProps
+) => {
+  const { onSubmitSuccess } = props;
   const [loading, setLoading] = useState<boolean>(false);
   const [showBottomSheet, setShowBottomSheet] = useState<boolean>(false);
+  const [currentUid, setCurrentUid] = useState<string>("");
 
   const {
     control,
@@ -50,7 +54,7 @@ const useAddPresensiKeluarLebihAwal = ({
     setLoading(true);
     try {
       const uploadResult = await uploadToSupabase(
-        uid,
+        currentUid,
         data.bukti_keluar_awal,
         KeteranganFile.bukti_keluar_awal
       );
@@ -59,10 +63,16 @@ const useAddPresensiKeluarLebihAwal = ({
         throw new Error("URL bukti tidak tersedia setelah upload");
       }
 
-      await onSubmitSuccess(data.alasan_keluar_awal, uploadResult.url);
+      const success = await onSubmitSuccess(
+        currentUid,
+        data.alasan_keluar_awal,
+        uploadResult.url
+      );
 
-      reset();
-      setShowBottomSheet(false);
+      if (success) {
+        reset();
+        setShowBottomSheet(false);
+      }
     } catch (error) {
       console.error("Upload error:", error);
       Toast.show({
@@ -75,11 +85,15 @@ const useAddPresensiKeluarLebihAwal = ({
     }
   });
 
-  const openBottomSheet = () => setShowBottomSheet(true);
+  const openBottomSheet = (uid: string) => {
+    setCurrentUid(uid);
+    setShowBottomSheet(true);
+  };
 
   const closeBottomSheet = useCallback(() => {
     setShowBottomSheet(false);
     reset();
+    setCurrentUid("");
   }, [reset]);
 
   const canSubmit = isValid && !loading && !isSubmitting && isDirty;

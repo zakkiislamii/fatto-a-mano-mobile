@@ -13,6 +13,6 @@ export interface IJadwalRepository {
   ): Promise<void>;
 
   sinkronJadwal(
-    data: Array<{ uid: string; jadwal: JadwalKaryawan; sheetyId: number }>
+    data: { uid: string; jadwal: JadwalKaryawan; sheetyId: number }[]
   ): Promise<void>;
 }

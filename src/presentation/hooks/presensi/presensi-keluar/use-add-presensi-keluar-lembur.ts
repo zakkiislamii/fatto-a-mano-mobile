@@ -1,34 +1,31 @@
 import { KeteranganFile } from "@/src/common/enums/keterangan-file";
-import { TambahPengajuanLemburData } from "@/src/common/types/tambah-pengajuan-data";
-import Today from "@/src/common/utils/get-today";
 import { pickImageFromLibrary } from "@/src/common/utils/image-picker";
 import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
 import { uploadToSupabase } from "@/src/common/utils/upload-to-supabase";
 import { PengajuanLemburFormSchema } from "@/src/common/validators/pengajuan/pengajuan-lembur-form-schema";
-import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
-import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
 import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
-import { PresensiKeluar } from "@/src/domain/models/presensi-keluar";
-import { IPresensiRepository } from "@/src/domain/repositories/i-presensi-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import Toast from "react-native-toast-message";
 
 interface UseAddPresensiKeluarLemburProps {
-  uid: string;
-  jadwalKaryawan: JadwalKaryawan | null;
+  onSubmitSuccess: (
+    uid: string,
+    keterangan: string,
+    buktiUrl: string,
+    lemburDurasiMenit: number
+  ) => Promise<boolean>;
 }
 
-const useAddPresensiKeluarLembur = ({
-  uid,
-  jadwalKaryawan,
-}: UseAddPresensiKeluarLemburProps) => {
+const useAddPresensiKeluarLembur = (props: UseAddPresensiKeluarLemburProps) => {
+  const { onSubmitSuccess } = props;
   const [loading, setLoading] = useState<boolean>(false);
   const [showLemburSheet, setShowLemburSheet] = useState<boolean>(false);
   const [lemburDurasiMenit, setLemburDurasiMenit] = useState<number | null>(
     null
   );
+  const [currentUid, setCurrentUid] = useState<string>("");
 
   const {
     control,
@@ -57,47 +54,41 @@ const useAddPresensiKeluarLembur = ({
     }
   }, [setValue]);
 
-  const calculateLemburDuration = useCallback((): number => {
-    if (!jadwalKaryawan) return 0;
+  const calculateLemburDuration = useCallback(
+    (jadwalKaryawan: JadwalKaryawan | null): number => {
+      if (!jadwalKaryawan) return 0;
 
-    const today = new Date();
-    const jamKeluarDate = parseJamToDateToday(jadwalKaryawan.jam_keluar, today);
-    if (!jamKeluarDate) return 0;
+      const today = new Date();
+      const jamKeluarDate = parseJamToDateToday(
+        jadwalKaryawan.jam_keluar,
+        today
+      );
+      if (!jamKeluarDate) return 0;
 
-    const keluarLembur = new Date(jamKeluarDate.getTime());
-    const diffMs = today.getTime() - keluarLembur.getTime();
-    const diffMenit = Math.max(0, Math.floor(diffMs / (1000 * 60)));
+      const keluarLembur = new Date(jamKeluarDate.getTime());
+      const diffMs = today.getTime() - keluarLembur.getTime();
+      const diffMenit = Math.max(0, Math.floor(diffMs / (1000 * 60)));
 
-    if (diffMenit < 30) return diffMenit;
-    if (diffMenit <= 60) return 60;
-    return diffMenit;
-  }, [jadwalKaryawan]);
+      if (diffMenit < 30) return diffMenit;
+      if (diffMenit <= 60) return 60;
+      return diffMenit;
+    },
+    []
+  );
 
-  const openLemburSheet = useCallback(() => {
-    const durasi = calculateLemburDuration();
-    setLemburDurasiMenit(durasi);
-    setShowLemburSheet(true);
-  }, [calculateLemburDuration]);
-
-  const closeLemburSheet = useCallback(() => {
-    setShowLemburSheet(false);
-    setLemburDurasiMenit(null);
-    reset();
-  }, [reset]);
-
-  const prosesPresensiKeluarLembur = handleSubmit(async (data) => {
+  const handleSubmitLembur = handleSubmit(async (data) => {
     if (!lemburDurasiMenit) {
       Toast.show({
         type: "error",
         text1: "Durasi lembur tidak valid",
       });
-      return false;
+      return;
     }
 
     setLoading(true);
     try {
       const uploadResult = await uploadToSupabase(
-        uid,
+        currentUid,
         data.bukti_pendukung,
         KeteranganFile.bukti_lembur
       );
@@ -106,54 +97,47 @@ const useAddPresensiKeluarLembur = ({
         throw new Error("URL bukti tidak tersedia setelah upload");
       }
 
-      const now = new Date();
-      const waktu = now.toTimeString().slice(0, 5);
-      const durasiLemburStr = `${lemburDurasiMenit} menit`;
-      const tanggal = Today();
+      const success = await onSubmitSuccess(
+        currentUid,
+        data.keterangan,
+        uploadResult.url,
+        lemburDurasiMenit
+      );
 
-      const presensiKeluarData: PresensiKeluar = {
-        waktu,
-        lembur: true,
-        durasi_lembur: durasiLemburStr,
-        keluar_awal: false,
-      };
-
-      const presensiRepo: IPresensiRepository = new PresensiRepositoryImpl();
-      await presensiRepo.addPresensiKeluar(uid, tanggal, presensiKeluarData);
-
-      const pengajuanData: TambahPengajuanLemburData = {
-        tanggal_pengajuan: tanggal,
-        keterangan: data.keterangan,
-        bukti_pendukung: uploadResult.url,
-        durasi_lembur: durasiLemburStr,
-      };
-
-      const pengajuanRepo = new PengajuanRepositoryImpl();
-      await pengajuanRepo.tambahLembur(uid, pengajuanData);
-
-      Toast.show({
-        type: "success",
-        text1: "Presensi keluar lembur berhasil",
-        text2: "Pengajuan lembur telah diajukan",
-      });
-
-      reset();
-      setShowLemburSheet(false);
-      setLemburDurasiMenit(null);
-
-      return true;
+      if (success) {
+        reset();
+        setShowLemburSheet(false);
+        setLemburDurasiMenit(null);
+        setCurrentUid("");
+      }
     } catch (error) {
-      console.error("Presensi lembur error:", error);
+      console.error("Upload error:", error);
       Toast.show({
         type: "error",
-        text1: "Gagal melakukan presensi keluar lembur",
-        text2: error instanceof Error ? error.message : "Silahkan coba lagi!",
+        text1: "Gagal upload bukti",
+        text2: error instanceof Error ? error.message : "Unknown error",
       });
-      return false;
     } finally {
       setLoading(false);
     }
   });
+
+  const openLemburSheet = useCallback(
+    (uid: string, jadwalKaryawan: JadwalKaryawan | null) => {
+      setCurrentUid(uid);
+      const durasi = calculateLemburDuration(jadwalKaryawan);
+      setLemburDurasiMenit(durasi);
+      setShowLemburSheet(true);
+    },
+    [calculateLemburDuration]
+  );
+
+  const closeLemburSheet = useCallback(() => {
+    setShowLemburSheet(false);
+    setLemburDurasiMenit(null);
+    setCurrentUid("");
+    reset();
+  }, [reset]);
 
   const canSubmit =
     isValid &&
@@ -173,7 +157,7 @@ const useAddPresensiKeluarLembur = ({
     openLemburSheet,
     closeLemburSheet,
     handlePickEvidence,
-    prosesPresensiKeluarLembur,
+    handleSubmitLembur,
   };
 };
 

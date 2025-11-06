@@ -90,7 +90,7 @@ export class JadwalRepositoryImpl implements IJadwalRepository {
   }
 
   public async sinkronJadwal(
-    data: Array<{ uid: string; jadwal: JadwalKaryawan; sheetyId: number }>
+    data: { uid: string; jadwal: JadwalKaryawan; sheetyId: number }[]
   ): Promise<void> {
     try {
       const batch = writeBatch(db);

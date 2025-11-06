@@ -8,6 +8,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { useGetJadwal } from "../../hooks/jadwal/use-get-jadwal";
 import useLocation from "../../hooks/location/use-location";
 import useAddPresensiKeluar from "../../hooks/presensi/presensi-keluar/use-add-presensi-keluar";
+import useGetStatusPresensiKeluarToday from "../../hooks/presensi/presensi-keluar/use-get-status-presensi-keluar-today";
 import useAddPresensiMasuk from "../../hooks/presensi/presensi-masuk/use-add-presensi-masuk";
 import useGetStatusPresensiMasukToday from "../../hooks/presensi/presensi-masuk/use-get-status-presensi-masuk-today";
 import useAutoPresensiChecker from "../../hooks/presensi/use-auto-presensi-checker";
@@ -33,19 +34,18 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
     useAddPresensiMasuk();
   const { presensiMasukStatus, loading: presensiMasukStatusLoading } =
     useGetStatusPresensiMasukToday(uid);
+  const { presensiKeluarStatus, loading: presensiKeluarStatusLoading } =
+    useGetStatusPresensiKeluarToday(uid);
   const {
     handlePresensiKeluar,
     loading: presensiKeluarLoading,
-    isButtonDisabled: presensiKeluarButtonDisabled,
     showModal,
     closeModal,
     handleKeluarBiasa,
     handleAjukanLembur,
     keluarLebihAwal,
     lembur,
-    presensiKeluarStatus,
-    presensiKeluarStatusLoading,
-  } = useAddPresensiKeluar(uid);
+  } = useAddPresensiKeluar();
 
   const bgColor = isDark ? "bg-cardDark" : "bg-cardLight";
   const buttonBg = isDark ? "bg-button-dark" : "bg-button-light";
@@ -97,6 +97,15 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
 
   const presensiMasukButtonDisabled = Boolean(
     presensiMasukLoading || isAlpa || isIzinAktif || isSakitAktif
+  );
+
+  const jadwalReady = !!jadwalKaryawan;
+
+  const presensiKeluarButtonDisabled = Boolean(
+    presensiKeluarLoading ||
+      !jadwalReady ||
+      presensiKeluarStatusLoading ||
+      presensiKeluarStatus.sudah_keluar
   );
 
   const finalButtonDisabled = presensiMasukStatus.sudah_masuk
@@ -177,7 +186,7 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
         title={buttonTitle}
         onPress={
           presensiMasukStatus.sudah_masuk
-            ? handlePresensiKeluar
+            ? () => handlePresensiKeluar(uid, jadwalKaryawan)
             : () => handlePresensiMasuk(uid, jadwalKaryawan)
         }
         loading={
@@ -218,9 +227,9 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
         message="Anda keluar lebih dari 30 menit setelah jam kerja. Apakah Anda ingin mengajukan lembur?"
         isDark={isDark}
         primaryButtonText="Ajukan Lembur"
-        onPrimaryButtonPress={handleAjukanLembur}
+        onPrimaryButtonPress={() => handleAjukanLembur(uid, jadwalKaryawan)}
         secondaryButtonText="Keluar Biasa"
-        onSecondaryButtonPress={handleKeluarBiasa}
+        onSecondaryButtonPress={() => handleKeluarBiasa(uid)}
       />
 
       <DynamicBottomSheet
@@ -235,7 +244,7 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
             handlePickEvidence={lembur.handlePickEvidence}
             buktiPendukung={lembur.buktiPendukung}
             isDark={isDark}
-            onSubmit={lembur.prosesPresensiKeluarLembur}
+            onSubmit={lembur.handleSubmit}
             canSubmit={lembur.canSubmit}
             loading={lembur.loading}
             buttonBg={buttonBg}

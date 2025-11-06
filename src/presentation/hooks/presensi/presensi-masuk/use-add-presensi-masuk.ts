@@ -88,7 +88,7 @@ const useAddPresensiMasuk = () => {
     }
 
     const waktu = now.toTimeString().slice(0, 5);
-    const presensiMasuk: PresensiMasuk = {
+    const presensiMasukData: PresensiMasuk = {
       waktu,
       terlambat,
       ...(durasi_terlambat ? { durasi_terlambat } : {}),
@@ -100,7 +100,12 @@ const useAddPresensiMasuk = () => {
     setLoading(true);
     try {
       const presensiRepo: IPresensiRepository = new PresensiRepositoryImpl();
-      await presensiRepo.addPresensiMasuk(uid, tanggal, status, presensiMasuk);
+      await presensiRepo.addPresensiMasuk(
+        uid,
+        tanggal,
+        status,
+        presensiMasukData
+      );
 
       Toast.show({
         type: "success",
