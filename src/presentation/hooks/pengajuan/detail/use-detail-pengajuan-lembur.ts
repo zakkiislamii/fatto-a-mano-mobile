@@ -56,24 +56,15 @@ const useDetailPengajuanLembur = (uid?: string) => {
         return;
       }
 
-      const dDetail = data as PengajuanLembur;
+      if (data.tipe !== TipePengajuan.lembur) {
+        setDetail(null);
+        setLoading(false);
+        return;
+      }
 
-      const mapped: PengajuanLembur = {
-        id: data.id,
-        uid: data.uid,
-        tipe: data.tipe as TipePengajuan.lembur,
-        tanggal_pengajuan: data.tanggal_pengajuan ?? "",
-        status: data.status,
-        created_at: data.created_at,
-        updated_at: data.updated_at,
-        detail: {
-          keterangan: dDetail.detail.keterangan ?? "",
-          bukti_pendukung: dDetail.detail.bukti_pendukung ?? "",
-          durasi_lembur: dDetail.detail.durasi_lembur ?? "",
-        },
-      };
+      const lemburData = data as PengajuanLembur;
 
-      setDetail(mapped);
+      setDetail(lemburData);
       setLoading(false);
     });
 

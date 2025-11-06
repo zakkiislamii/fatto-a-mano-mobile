@@ -1,11 +1,10 @@
 import { KeteranganFile } from "@/src/common/enums/keterangan-file";
-import { TambahPengajuanIzinData } from "@/src/common/types/tambah-pengajuan-data";
 import formatDateToString from "@/src/common/utils/format-date-to-string";
-import Today from "@/src/common/utils/get-today";
 import { pickImageFromLibrary } from "@/src/common/utils/image-picker";
 import { uploadToSupabase } from "@/src/common/utils/upload-to-supabase";
 import { PengajuanIzinFormSchema } from "@/src/common/validators/pengajuan/pengajuan-izin-form-schema";
 import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
+import { DetailPengajuanIzin } from "@/src/domain/models/detail-pengajuan-izin";
 import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useState } from "react";
@@ -112,12 +111,9 @@ const useTambahPengajuanIzin = (uid: string | undefined) => {
         throw new Error("URL bukti tidak tersedia setelah upload");
       }
 
-      const tanggal = Today();
-
       const repository: IPengajuanRepository = new PengajuanRepositoryImpl();
 
-      const dataPengajuan: TambahPengajuanIzinData = {
-        tanggal_pengajuan: tanggal,
+      const dataPengajuan: DetailPengajuanIzin = {
         keterangan: data.keterangan.trim(),
         bukti_pendukung: uploadResult.url,
         tanggal_mulai: data.tanggal_mulai,

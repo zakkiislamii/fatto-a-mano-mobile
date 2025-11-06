@@ -1,11 +1,8 @@
 import { Pengajuan } from "@/src/domain/models/pengajuan";
 import { TipePengajuan } from "../../common/enums/tipe-pengajuan";
+import { DetailPengajuanLembur } from "./detail-pengajuan-lembur";
 
 export interface PengajuanLembur extends Pengajuan {
-  detail: {
-    keterangan: string;
-    bukti_pendukung: string;
-    durasi_lembur: string;
-  };
+  detail: DetailPengajuanLembur;
   tipe: TipePengajuan.lembur;
 }

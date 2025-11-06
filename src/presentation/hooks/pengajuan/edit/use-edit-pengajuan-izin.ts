@@ -1,6 +1,5 @@
 import { KeteranganFile } from "@/src/common/enums/keterangan-file";
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
-import { EditPengajuanIzinData } from "@/src/common/types/edit-pengajuan-data";
 import formatDateToString from "@/src/common/utils/format-date-to-string";
 import { pickImageFromLibrary } from "@/src/common/utils/image-picker";
 import {
@@ -10,6 +9,8 @@ import {
 import { PengajuanIzinFormSchema } from "@/src/common/validators/pengajuan/pengajuan-izin-form-schema";
 import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
 import { DaftarPengajuan } from "@/src/domain/models/daftar-pengajuan";
+import { DetailPengajuanIzin } from "@/src/domain/models/detail-pengajuan-izin";
+import { PengajuanIzin } from "@/src/domain/models/pengajuan-izin";
 import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useState } from "react";
@@ -105,22 +106,25 @@ const useEditPengajuanIzin = (uid: string | undefined) => {
 
     const unsubscribe = repository.getDetail(uid, item.id, (data) => {
       if (data && data.tipe === TipePengajuan.izin) {
-        const detail = data.detail || {};
-        setValue("keterangan", detail.keterangan || "");
-        setValue("bukti_pendukung", detail.bukti_pendukung || "");
-        setValue("tanggal_mulai", detail.tanggal_mulai || "");
-        setValue("tanggal_berakhir", detail.tanggal_berakhir || "");
-        setOldBuktiUrl(detail.bukti_pendukung || "");
-        setBuktiPendukung(detail.bukti_pendukung || null);
+        const dDetail = data as PengajuanIzin;
+        setValue("keterangan", dDetail.detail.keterangan || "");
+        setValue("bukti_pendukung", dDetail.detail.bukti_pendukung || "");
+        setValue("tanggal_mulai", dDetail.detail.tanggal_mulai || "");
+        setValue("tanggal_berakhir", dDetail.detail.tanggal_berakhir || "");
+        setOldBuktiUrl(dDetail.detail.bukti_pendukung || "");
+        setBuktiPendukung(dDetail.detail.bukti_pendukung || null);
+
         const parseToDate = (maybeDateStr?: string | null) => {
           if (!maybeDateStr) return null;
           const d = new Date(maybeDateStr);
           return isNaN(d.getTime()) ? null : d;
         };
-        const parsedStart = parseToDate(detail.tanggal_mulai);
-        const parsedEnd = parseToDate(detail.tanggal_berakhir);
+
+        const parsedStart = parseToDate(dDetail.detail.tanggal_mulai);
+        const parsedEnd = parseToDate(dDetail.detail.tanggal_berakhir);
         setLeaveStartDate(parsedStart);
         setLeaveEndDate(parsedEnd ?? parsedStart ?? null);
+
         if (parsedStart) {
           setValue("tanggal_mulai", formatDateToString(parsedStart), {
             shouldDirty: false,
@@ -146,12 +150,8 @@ const useEditPengajuanIzin = (uid: string | undefined) => {
 
       setShowEditSheet(true);
 
-      try {
-        if (unsubscribe) {
-          unsubscribe();
-        }
-      } catch (e) {
-        console.error(e);
+      if (unsubscribe) {
+        unsubscribe();
       }
     });
   };
@@ -187,7 +187,7 @@ const useEditPengajuanIzin = (uid: string | undefined) => {
 
     try {
       const repository: IPengajuanRepository = new PengajuanRepositoryImpl();
-      const dataToUpdate: EditPengajuanIzinData = {};
+      const dataToUpdate: Partial<DetailPengajuanIzin> = {};
       const keterangan = watch("keterangan");
       if (keterangan !== undefined) {
         dataToUpdate.keterangan = (keterangan || "").trim();

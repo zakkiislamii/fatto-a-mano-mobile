@@ -1,12 +1,12 @@
 import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 
-export type EditProfilData = {
+export interface EditProfilData {
   nama?: string;
-};
+}
 
-export type LengkapiProfilData = {
+export interface LengkapiProfilData {
   nama?: string;
   divisi?: string;
   jadwal?: JadwalKaryawan;
   sheety_id?: number;
-};
+}

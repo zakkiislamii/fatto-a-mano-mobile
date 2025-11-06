@@ -1,18 +1,15 @@
 import { StatusPengajuan } from "@/src/common/enums/status-pengajuan";
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
-import {
-  EditPengajuanIzinData,
-  EditPengajuanLemburData,
-  EditPengajuanSakitData,
-} from "@/src/common/types/edit-pengajuan-data";
-import {
-  TambahPengajuanIzinData,
-  TambahPengajuanLemburData,
-  TambahPengajuanSakitData,
-} from "@/src/common/types/tambah-pengajuan-data";
+import Today from "@/src/common/utils/get-today";
 import { db } from "@/src/configs/firebase-config";
 import { DaftarPengajuan } from "@/src/domain/models/daftar-pengajuan";
+import { DetailPengajuanIzin } from "@/src/domain/models/detail-pengajuan-izin";
+import { DetailPengajuanLembur } from "@/src/domain/models/detail-pengajuan-lembur";
+import { DetailPengajuanSakit } from "@/src/domain/models/detail-pengajuan-sakit";
 import { Pengajuan } from "@/src/domain/models/pengajuan";
+import { PengajuanIzin } from "@/src/domain/models/pengajuan-izin";
+import { PengajuanLembur } from "@/src/domain/models/pengajuan-lembur";
+import { PengajuanSakit } from "@/src/domain/models/pengajuan-sakit";
 import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import {
   addDoc,
@@ -82,28 +79,58 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
             return;
           }
 
-          const data = docSnap.data();
-          let detailData: any = {
-            keterangan: data.keterangan,
-            bukti_pendukung: data.bukti_pendukung,
-          };
+          const data = docSnap.data() as DocumentData;
+          const tipe = data.tipe as TipePengajuan;
+          const rawDetail = data.detail ?? data;
 
-          if (data.tipe === TipePengajuan.izin) {
-            detailData.tanggal_mulai = data.tanggal_mulai;
-            detailData.tanggal_berakhir = data.tanggal_berakhir;
-          } else if (data.tipe === TipePengajuan.lembur) {
-            detailData.durasi_lembur = data.durasi_lembur;
-          }
-
-          callback({
+          // Base pengajuan object
+          const basePengajuan = {
             id: docSnap.id,
             uid: data.uid,
-            tipe: data.tipe,
-            tanggal_pengajuan: data.tanggal_pengajuan,
-            status: data.status,
-            created_at: data.created_at,
-            updated_at: data.updated_at,
-          });
+            tipe,
+            tanggal_pengajuan: data.tanggal_pengajuan ?? "",
+            status: data.status as StatusPengajuan,
+            created_at: data.created_at as Timestamp,
+            updated_at: data.updated_at as Timestamp,
+          };
+
+          let pengajuan: Pengajuan;
+
+          // Assign detail based on tipe
+          if (tipe === TipePengajuan.sakit) {
+            pengajuan = {
+              ...basePengajuan,
+              detail: {
+                keterangan: rawDetail.keterangan ?? "",
+                bukti_pendukung: rawDetail.bukti_pendukung ?? "",
+              },
+            } as PengajuanSakit;
+          } else if (tipe === TipePengajuan.izin) {
+            pengajuan = {
+              ...basePengajuan,
+              detail: {
+                keterangan: rawDetail.keterangan ?? "",
+                bukti_pendukung: rawDetail.bukti_pendukung ?? "",
+                tanggal_mulai: rawDetail.tanggal_mulai ?? "",
+                tanggal_berakhir: rawDetail.tanggal_berakhir ?? "",
+              },
+            } as PengajuanIzin;
+          } else if (tipe === TipePengajuan.lembur) {
+            pengajuan = {
+              ...basePengajuan,
+              detail: {
+                keterangan: rawDetail.keterangan ?? "",
+                bukti_pendukung: rawDetail.bukti_pendukung ?? "",
+                durasi_lembur: rawDetail.durasi_lembur ?? "",
+              },
+            } as PengajuanLembur;
+          } else {
+            console.warn("[PengajuanRepo] Unknown tipe:", tipe);
+            callback(null);
+            return;
+          }
+
+          callback(pengajuan);
         },
         (error) => {
           console.error("[PengajuanRepo] Error getDetail:", error);
@@ -129,14 +156,16 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
 
   public async tambahIzin(
     uid: string,
-    data: TambahPengajuanIzinData
+    data: DetailPengajuanIzin
   ): Promise<void> {
     try {
       const colRef = collection(db, `users/${uid}/pengajuan`);
+      const tanggal = Today();
       await addDoc(colRef, {
         uid: uid,
         tipe: TipePengajuan.izin,
         status: StatusPengajuan.menunggu,
+        tanggal_pengajuan: tanggal,
         detail: {
           ...data,
         },
@@ -151,14 +180,16 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
 
   public async tambahLembur(
     uid: string,
-    data: TambahPengajuanLemburData
+    data: DetailPengajuanLembur
   ): Promise<void> {
     try {
+      const tanggal = Today();
       const colRef = collection(db, `users/${uid}/pengajuan`);
       await addDoc(colRef, {
         uid: uid,
         tipe: TipePengajuan.lembur,
         status: StatusPengajuan.menunggu,
+        tanggal_pengajuan: tanggal,
         detail: {
           ...data,
         },
@@ -173,14 +204,16 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
 
   public async tambahSakit(
     uid: string,
-    data: TambahPengajuanSakitData
+    data: DetailPengajuanSakit
   ): Promise<void> {
     try {
+      const tanggal = Today();
       const colRef = collection(db, `users/${uid}/pengajuan`);
       await addDoc(colRef, {
         uid: uid,
         tipe: TipePengajuan.sakit,
         status: StatusPengajuan.menunggu,
+        tanggal_pengajuan: tanggal,
         detail: {
           ...data,
         },
@@ -193,19 +226,61 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
     }
   }
 
-  public async editIzin(
+  public async editSakit(
     uid: string,
     pengajuanId: string,
-    data: EditPengajuanIzinData
+    data: Partial<DetailPengajuanSakit>
   ): Promise<void> {
     try {
       const docRef = doc(db, `users/${uid}/pengajuan`, pengajuanId);
+
       const updateData: DocumentData = {
-        detail: {
-          ...data,
-        },
         updated_at: Timestamp.now(),
       };
+
+      if (data.keterangan !== undefined) {
+        updateData["detail.keterangan"] = data.keterangan;
+      }
+
+      if (data.bukti_pendukung !== undefined) {
+        updateData["detail.bukti_pendukung"] = data.bukti_pendukung;
+      }
+
+      await updateDoc(docRef, updateData);
+    } catch (error) {
+      console.error("[PengajuanRepo] Error editSakit:", error);
+      throw error;
+    }
+  }
+
+  public async editIzin(
+    uid: string,
+    pengajuanId: string,
+    data: Partial<DetailPengajuanIzin>
+  ): Promise<void> {
+    try {
+      const docRef = doc(db, `users/${uid}/pengajuan`, pengajuanId);
+
+      const updateData: DocumentData = {
+        updated_at: Timestamp.now(),
+      };
+
+      if (data.keterangan !== undefined) {
+        updateData["detail.keterangan"] = data.keterangan;
+      }
+
+      if (data.bukti_pendukung !== undefined) {
+        updateData["detail.bukti_pendukung"] = data.bukti_pendukung;
+      }
+
+      if (data.tanggal_mulai !== undefined) {
+        updateData["detail.tanggal_mulai"] = data.tanggal_mulai;
+      }
+
+      if (data.tanggal_berakhir !== undefined) {
+        updateData["detail.tanggal_berakhir"] = data.tanggal_berakhir;
+      }
+
       await updateDoc(docRef, updateData);
     } catch (error) {
       console.error("[PengajuanRepo] Error editIzin:", error);
@@ -216,39 +291,30 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
   public async editLembur(
     uid: string,
     pengajuanId: string,
-    data: EditPengajuanLemburData
+    data: Partial<DetailPengajuanLembur>
   ): Promise<void> {
     try {
       const docRef = doc(db, `users/${uid}/pengajuan`, pengajuanId);
+
       const updateData: DocumentData = {
-        detail: {
-          ...data,
-        },
         updated_at: Timestamp.now(),
       };
+
+      if (data.keterangan !== undefined) {
+        updateData["detail.keterangan"] = data.keterangan;
+      }
+
+      if (data.bukti_pendukung !== undefined) {
+        updateData["detail.bukti_pendukung"] = data.bukti_pendukung;
+      }
+
+      if (data.durasi_lembur !== undefined) {
+        updateData["detail.durasi_lembur"] = data.durasi_lembur;
+      }
+
       await updateDoc(docRef, updateData);
     } catch (error) {
       console.error("[PengajuanRepo] Error editLembur:", error);
-      throw error;
-    }
-  }
-
-  public async editSakit(
-    uid: string,
-    pengajuanId: string,
-    data: EditPengajuanSakitData
-  ): Promise<void> {
-    try {
-      const docRef = doc(db, `users/${uid}/pengajuan`, pengajuanId);
-      const updateData: DocumentData = {
-        detail: {
-          ...data,
-        },
-        updated_at: Timestamp.now(),
-      };
-      await updateDoc(docRef, updateData);
-    } catch (error) {
-      console.error("[PengajuanRepo] Error editSakit:", error);
       throw error;
     }
   }

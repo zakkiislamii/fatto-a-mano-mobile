@@ -1,12 +1,8 @@
 import { Pengajuan } from "@/src/domain/models/pengajuan";
 import { TipePengajuan } from "../../common/enums/tipe-pengajuan";
+import { DetailPengajuanIzin } from "./detail-pengajuan-izin";
 
 export interface PengajuanIzin extends Pengajuan {
-  detail: {
-    keterangan: string;
-    bukti_pendukung: string;
-    tanggal_mulai: string;
-    tanggal_berakhir: string;
-  };
+  detail: DetailPengajuanIzin;
   tipe: TipePengajuan.izin;
 }

@@ -56,25 +56,15 @@ const useDetailPengajuanIzin = (uid?: string) => {
         return;
       }
 
-      const dDetail = data as PengajuanIzin;
+      if (data.tipe !== TipePengajuan.izin) {
+        setDetail(null);
+        setLoading(false);
+        return;
+      }
 
-      const mapped: PengajuanIzin = {
-        id: data.id,
-        uid: data.uid,
-        tipe: data.tipe as TipePengajuan.izin,
-        tanggal_pengajuan: data.tanggal_pengajuan ?? "",
-        status: data.status,
-        created_at: data.created_at,
-        updated_at: data.updated_at,
-        detail: {
-          keterangan: dDetail.detail?.keterangan ?? "",
-          bukti_pendukung: dDetail.detail?.bukti_pendukung ?? "",
-          tanggal_mulai: dDetail.detail?.tanggal_mulai ?? "",
-          tanggal_berakhir: dDetail.detail?.tanggal_berakhir ?? "",
-        },
-      };
+      const izinData = data as PengajuanIzin;
 
-      setDetail(mapped);
+      setDetail(izinData);
       setLoading(false);
     });
 

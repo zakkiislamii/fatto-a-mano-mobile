@@ -184,7 +184,7 @@ const PengajuanView = () => {
     handleViewDetailSakitPress,
     closeDetailSakit,
   } = useDetailPengajuanSakit(uid);
-
+  console.log("Detail Sakit", detailSakit);
   const screenBg = isDark ? "bg-screenDark" : "bg-screenLight";
   const textPrimary = isDark ? "text-textPrimaryDark" : "text-textPrimaryLight";
   const textSecondary = isDark
@@ -235,12 +235,12 @@ const PengajuanView = () => {
   );
 
   const ListEmptyComponent = () => (
-    <View className="flex-1 items-center justify-center mt-20">
+    <View className="flex-1 items-center justify-center">
       <Text className={`text-lg ${textSecondary} opacity-70`}>
         Belum ada pengajuan.
       </Text>
       <Text className={`${textSecondary} opacity-70`}>
-        Tekan &quot;+&quot; untuk memulai.
+        Tekan &quot;+&quot; untuk menambah.
       </Text>
     </View>
   );
@@ -275,7 +275,7 @@ const PengajuanView = () => {
               renderItem={renderItem}
               keyExtractor={(item) => item.id}
               ListEmptyComponent={ListEmptyComponent}
-              contentContainerStyle={{ paddingBottom: 20 }}
+              contentContainerStyle={{ paddingBottom: 20, flexGrow: 1 }}
               showsVerticalScrollIndicator={false}
             />
             {totalItems > 0 && (

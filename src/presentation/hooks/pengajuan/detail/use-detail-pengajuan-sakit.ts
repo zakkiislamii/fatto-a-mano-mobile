@@ -56,23 +56,15 @@ const useDetailPengajuanSakit = (uid?: string) => {
         return;
       }
 
-      const dDetail = data as PengajuanSakit;
+      if (data.tipe !== TipePengajuan.sakit) {
+        setDetail(null);
+        setLoading(false);
+        return;
+      }
 
-      const mapped: PengajuanSakit = {
-        id: data.id,
-        uid: data.uid,
-        tipe: data.tipe as TipePengajuan.sakit,
-        tanggal_pengajuan: data.tanggal_pengajuan ?? "",
-        status: data.status,
-        created_at: data.created_at,
-        updated_at: data.updated_at,
-        detail: {
-          keterangan: dDetail.detail.keterangan ?? "",
-          bukti_pendukung: dDetail.detail.bukti_pendukung ?? "",
-        },
-      };
+      const sakitData = data as PengajuanSakit;
 
-      setDetail(mapped);
+      setDetail(sakitData);
       setLoading(false);
     });
 

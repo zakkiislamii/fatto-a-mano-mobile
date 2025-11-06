@@ -1,8 +1,8 @@
-import { TambahPengajuanLemburData } from "@/src/common/types/tambah-pengajuan-data";
 import Today from "@/src/common/utils/get-today";
 import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
 import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
 import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
+import { DetailPengajuanLembur } from "@/src/domain/models/detail-pengajuan-lembur";
 import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { PresensiKeluar } from "@/src/domain/models/presensi-keluar";
 import { IPresensiRepository } from "@/src/domain/repositories/i-presensi-repository";
@@ -84,8 +84,7 @@ const useAddPresensiKeluar = () => {
       const presensiRepo: IPresensiRepository = new PresensiRepositoryImpl();
       await presensiRepo.addPresensiKeluar(uid, tanggal, presensiKeluarData);
 
-      const pengajuanLemburData: TambahPengajuanLemburData = {
-        tanggal_pengajuan: tanggal,
+      const pengajuanLemburData: DetailPengajuanLembur = {
         keterangan: keterangan,
         bukti_pendukung: buktiUrl,
         durasi_lembur: durasiLemburStr,

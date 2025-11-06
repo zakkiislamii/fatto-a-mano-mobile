@@ -161,7 +161,7 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
 
       // SIMPAN ID ke Firestore
       const sheetyId = SheetyResponse.sheet1.id;
-      if (sheetyId) {
+      if (sheetyId === 0) {
         await userRepo.updateLengkapiProfil(uid, {
           sheety_id: sheetyId,
         });

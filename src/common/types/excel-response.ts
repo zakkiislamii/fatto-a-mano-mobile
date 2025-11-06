@@ -1,27 +1,9 @@
+import { Sheets } from "@/src/domain/models/sheets";
+
 export interface SheetyResponse {
-  sheet1: {
-    uid: string;
-    email: string;
-    nama: string;
-    divisi: string;
-    hariKerja: string;
-    jamMasuk: string;
-    jamKeluar: string;
-    isWfa: boolean;
-    id: number;
-  };
+  sheet1: Sheets;
 }
 
 export interface SheetyPartialResponse {
-  sheet1: Partial<{
-    uid: string;
-    email: string;
-    nama: string;
-    divisi: string;
-    hariKerja: string;
-    jamMasuk: string;
-    jamKeluar: string;
-    isWfa: boolean;
-    id: number;
-  }>;
+  sheet1: Partial<Sheets>;
 }

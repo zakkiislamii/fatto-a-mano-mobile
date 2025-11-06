@@ -1,6 +1,5 @@
 import { KeteranganFile } from "@/src/common/enums/keterangan-file";
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
-import { EditPengajuanLemburData } from "@/src/common/types/edit-pengajuan-data";
 import { pickImageFromLibrary } from "@/src/common/utils/image-picker";
 import {
   updateFileInSupabase,
@@ -9,6 +8,8 @@ import {
 import { PengajuanLemburFormSchema } from "@/src/common/validators/pengajuan/pengajuan-lembur-form-schema";
 import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
 import { DaftarPengajuan } from "@/src/domain/models/daftar-pengajuan";
+import { DetailPengajuanLembur } from "@/src/domain/models/detail-pengajuan-lembur";
+import { PengajuanLembur } from "@/src/domain/models/pengajuan-lembur";
 import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCallback, useState } from "react";
@@ -51,10 +52,11 @@ const useEditPengajuanLembur = (uid: string | undefined) => {
 
     const unsubscribe = repository.getDetail(uid, item.id, (data) => {
       if (data && data.tipe === TipePengajuan.lembur) {
-        setValue("keterangan", data.detail.keterangan || "");
-        setValue("bukti_pendukung", data.detail.bukti_pendukung || "");
-        setOldBuktiUrl(data.detail.bukti_pendukung || "");
-        setBuktiPendukung(data.detail.bukti_pendukung || null);
+        const dDetail = data as PengajuanLembur;
+        setValue("keterangan", dDetail.detail.keterangan || "");
+        setValue("bukti_pendukung", dDetail.detail.bukti_pendukung || "");
+        setOldBuktiUrl(dDetail.detail.bukti_pendukung || "");
+        setBuktiPendukung(dDetail.detail.bukti_pendukung || null);
       } else {
         setValue("keterangan", "");
         setValue("bukti_pendukung", "");
@@ -64,13 +66,8 @@ const useEditPengajuanLembur = (uid: string | undefined) => {
 
       setShowEditSheet(true);
 
-      try {
-        if (unsubscribe) {
-          unsubscribe();
-        }
-      } catch (e) {
-        console.error(e);
-        throw e;
+      if (unsubscribe) {
+        unsubscribe();
       }
     });
   };
@@ -104,7 +101,7 @@ const useEditPengajuanLembur = (uid: string | undefined) => {
 
     try {
       const repository: IPengajuanRepository = new PengajuanRepositoryImpl();
-      const dataToUpdate: EditPengajuanLemburData = {};
+      const dataToUpdate: Partial<DetailPengajuanLembur> = {};
 
       const keterangan = watch("keterangan");
       if (keterangan !== undefined) {
