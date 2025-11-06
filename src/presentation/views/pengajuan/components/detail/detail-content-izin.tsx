@@ -1,5 +1,5 @@
 import { StatusPengajuan } from "@/src/common/enums/status-pengajuan";
-import { PengajuanIzin } from "@/src/domain/models/pengajuan_izin";
+import { PengajuanIzin } from "@/src/domain/models/pengajuan-izin";
 import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React from "react";
@@ -88,12 +88,14 @@ const DetailContentIzin = ({
           />
           <View className="flex-1">
             <Text className={`font-medium ${textSecondary}`}>Keterangan</Text>
-            <Text className={`${textPrimary} mt-1`}>{d.keterangan ?? "-"}</Text>
+            <Text className={`${textPrimary} mt-1`}>
+              {d.detail.keterangan ?? "-"}
+            </Text>
           </View>
         </View>
 
         {/* Tanggal Mulai */}
-        {d.tanggal_mulai && (
+        {d.detail.tanggal_mulai && (
           <View className="flex-row items-start mb-5">
             <Feather
               name="calendar"
@@ -105,13 +107,15 @@ const DetailContentIzin = ({
               <Text className={`font-medium ${textSecondary}`}>
                 Tanggal Mulai
               </Text>
-              <Text className={`${textPrimary} mt-1`}>{d.tanggal_mulai}</Text>
+              <Text className={`${textPrimary} mt-1`}>
+                {d.detail.tanggal_mulai}
+              </Text>
             </View>
           </View>
         )}
 
         {/* Tanggal Berakhir */}
-        {d.tanggal_berakhir && (
+        {d.detail.tanggal_berakhir && (
           <View className="flex-row items-start">
             <Feather
               name="calendar"
@@ -124,14 +128,14 @@ const DetailContentIzin = ({
                 Tanggal Berakhir
               </Text>
               <Text className={`${textPrimary} mt-1`}>
-                {d.tanggal_berakhir}
+                {d.detail.tanggal_berakhir}
               </Text>
             </View>
           </View>
         )}
       </View>
 
-      {d.bukti_pendukung ? (
+      {d.detail.bukti_pendukung ? (
         <View className={`rounded-lg p-3 ${cardBg} border ${cardBorder}`}>
           <View className="flex-row items-center mb-3">
             <Feather
@@ -145,7 +149,7 @@ const DetailContentIzin = ({
             </Text>
           </View>
           <Image
-            source={{ uri: d.bukti_pendukung }}
+            source={{ uri: d.detail.bukti_pendukung }}
             style={{
               width: "100%",
               height: 220,

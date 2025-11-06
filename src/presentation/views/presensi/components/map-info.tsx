@@ -12,7 +12,7 @@ const MapInfo = ({ isDark }: MapInfoProps) => {
   const infoBg = isDark ? "bg-blue-900/40" : "bg-blue-200";
 
   return (
-    <View className={`flex-row items-center ${infoBg} p-3 rounded-lg w-full`}>
+    <View className={`flex-row items-center ${infoBg} p-3 mt-3 rounded-lg w-full`}>
       <Feather name="info" size={20} color={infoIconColor} />
       <Text className={`${infoText} ml-3`}>
         Area hijau pada peta menunjukkan zona presensi.

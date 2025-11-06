@@ -1,5 +1,8 @@
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
 import { DetailVerifikasi } from "@/src/domain/models/detail-verifikasi";
+import { PengajuanIzin } from "@/src/domain/models/pengajuan-izin";
+import { PengajuanLembur } from "@/src/domain/models/pengajuan-lembur";
+import { PengajuanSakit } from "@/src/domain/models/pengajuan-sakit";
 import { Image } from "expo-image";
 import React from "react";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
@@ -50,7 +53,6 @@ const DetailBottomSheetContent = ({
   }
 
   const { karyawan, pengajuan } = detail;
-  const pengajuanDetails = pengajuan.detail || {};
 
   const DetailRow = ({ label, value }: { label: string; value: string }) => (
     <View className="mb-2">
@@ -89,6 +91,19 @@ const DetailBottomSheetContent = ({
     );
   };
 
+  const getPengajuanDetail = () => {
+    if (pengajuan.tipe === TipePengajuan.lembur) {
+      return (pengajuan as PengajuanLembur).detail;
+    } else if (pengajuan.tipe === TipePengajuan.izin) {
+      return (pengajuan as PengajuanIzin).detail;
+    } else if (pengajuan.tipe === TipePengajuan.sakit) {
+      return (pengajuan as PengajuanSakit).detail;
+    }
+    return null;
+  };
+
+  const pengajuanDetail = getPengajuanDetail();
+
   return (
     <ScrollView style={{ maxHeight: 400 }}>
       <View className="mb-4">
@@ -109,34 +124,41 @@ const DetailBottomSheetContent = ({
           label="Tanggal Pengajuan"
           value={pengajuan.tanggal_pengajuan}
         />
-        {pengajuan.tipe === TipePengajuan.lembur && (
+
+        {pengajuan.tipe === TipePengajuan.lembur && pengajuanDetail && (
           <>
             <DetailRow
               label="Durasi Lembur"
-              value={pengajuanDetails.durasi_lembur}
+              value={
+                (pengajuanDetail as PengajuanLembur["detail"]).durasi_lembur
+              }
             />
-            <DetailRow label="Keterangan" value={pengajuanDetails.keterangan} />
-            <BuktiPendukung uri={pengajuanDetails.bukti_pendukung} />
+            <DetailRow label="Keterangan" value={pengajuanDetail.keterangan} />
+            <BuktiPendukung uri={pengajuanDetail.bukti_pendukung} />
           </>
         )}
-        {pengajuan.tipe === TipePengajuan.izin && (
+
+        {pengajuan.tipe === TipePengajuan.izin && pengajuanDetail && (
           <>
             <DetailRow
               label="Tanggal Mulai"
-              value={pengajuanDetails.tanggal_mulai}
+              value={(pengajuanDetail as PengajuanIzin["detail"]).tanggal_mulai}
             />
             <DetailRow
               label="Tanggal Berakhir"
-              value={pengajuanDetails.tanggal_berakhir}
+              value={
+                (pengajuanDetail as PengajuanIzin["detail"]).tanggal_berakhir
+              }
             />
-            <DetailRow label="Keterangan" value={pengajuanDetails.keterangan} />
-            <BuktiPendukung uri={pengajuanDetails.bukti_pendukung} />
+            <DetailRow label="Keterangan" value={pengajuanDetail.keterangan} />
+            <BuktiPendukung uri={pengajuanDetail.bukti_pendukung} />
           </>
         )}
-        {pengajuan.tipe === TipePengajuan.sakit && (
+
+        {pengajuan.tipe === TipePengajuan.sakit && pengajuanDetail && (
           <>
-            <DetailRow label="Keterangan" value={pengajuanDetails.keterangan} />
-            <BuktiPendukung uri={pengajuanDetails.bukti_pendukung} />
+            <DetailRow label="Keterangan" value={pengajuanDetail.keterangan} />
+            <BuktiPendukung uri={pengajuanDetail.bukti_pendukung} />
           </>
         )}
       </View>

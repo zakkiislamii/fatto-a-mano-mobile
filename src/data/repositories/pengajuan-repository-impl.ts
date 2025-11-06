@@ -101,7 +101,6 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
             tipe: data.tipe,
             tanggal_pengajuan: data.tanggal_pengajuan,
             status: data.status,
-            detail: detailData,
             created_at: data.created_at,
             updated_at: data.updated_at,
           });
@@ -138,7 +137,9 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
         uid: uid,
         tipe: TipePengajuan.izin,
         status: StatusPengajuan.menunggu,
-        ...data,
+        detail: {
+          ...data,
+        },
         created_at: Timestamp.now(),
         updated_at: Timestamp.now(),
       });
@@ -158,7 +159,9 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
         uid: uid,
         tipe: TipePengajuan.lembur,
         status: StatusPengajuan.menunggu,
-        ...data,
+        detail: {
+          ...data,
+        },
         created_at: Timestamp.now(),
         updated_at: Timestamp.now(),
       });
@@ -178,7 +181,9 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
         uid: uid,
         tipe: TipePengajuan.sakit,
         status: StatusPengajuan.menunggu,
-        ...data,
+        detail: {
+          ...data,
+        },
         created_at: Timestamp.now(),
         updated_at: Timestamp.now(),
       });
@@ -196,7 +201,9 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
     try {
       const docRef = doc(db, `users/${uid}/pengajuan`, pengajuanId);
       const updateData: DocumentData = {
-        ...data,
+        detail: {
+          ...data,
+        },
         updated_at: Timestamp.now(),
       };
       await updateDoc(docRef, updateData);
@@ -214,7 +221,9 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
     try {
       const docRef = doc(db, `users/${uid}/pengajuan`, pengajuanId);
       const updateData: DocumentData = {
-        ...data,
+        detail: {
+          ...data,
+        },
         updated_at: Timestamp.now(),
       };
       await updateDoc(docRef, updateData);
@@ -232,7 +241,9 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
     try {
       const docRef = doc(db, `users/${uid}/pengajuan`, pengajuanId);
       const updateData: DocumentData = {
-        ...data,
+        detail: {
+          ...data,
+        },
         updated_at: Timestamp.now(),
       };
       await updateDoc(docRef, updateData);

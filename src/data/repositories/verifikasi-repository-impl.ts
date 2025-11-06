@@ -3,7 +3,9 @@ import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
 import { db } from "@/src/configs/firebase-config";
 import { DaftarVerifikasi } from "@/src/domain/models/daftar-verifikasi";
 import { DetailVerifikasi } from "@/src/domain/models/detail-verifikasi";
-import { Pengajuan } from "@/src/domain/models/pengajuan";
+import { PengajuanIzin } from "@/src/domain/models/pengajuan-izin";
+import { PengajuanLembur } from "@/src/domain/models/pengajuan-lembur";
+import { PengajuanSakit } from "@/src/domain/models/pengajuan-sakit";
 import { ProfilKaryawan } from "@/src/domain/models/profil-karyawan";
 import { IVerifikasiRepository } from "@/src/domain/repositories/i-verifikasi-repository";
 import {
@@ -79,7 +81,11 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
       const pengajuanDocRef = doc(db, `users/${uid}/pengajuan`, pengajuanId);
 
       let karyawanData: ProfilKaryawan | null = null;
-      let pengajuanData: Pengajuan | null = null;
+      let pengajuanData:
+        | PengajuanIzin
+        | PengajuanLembur
+        | PengajuanSakit
+        | null = null;
       let unsubscribeCount = 0;
 
       const checkAndCallback = () => {
@@ -117,28 +123,52 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
         (pengajuanSnap) => {
           if (pengajuanSnap.exists()) {
             const data = pengajuanSnap.data();
-            let detailData: any = {
-              keterangan: data.keterangan,
-              bukti_pendukung: data.bukti_pendukung,
-            };
-
             if (data.tipe === TipePengajuan.izin) {
-              detailData.tanggal_mulai = data.tanggal_mulai;
-              detailData.tanggal_berakhir = data.tanggal_berakhir;
+              pengajuanData = {
+                id: pengajuanSnap.id,
+                uid: data.uid,
+                tipe: TipePengajuan.izin,
+                tanggal_pengajuan: data.tanggal_pengajuan,
+                status: data.status,
+                created_at: data.created_at,
+                updated_at: data.updated_at,
+                detail: {
+                  keterangan: data.keterangan ?? "",
+                  bukti_pendukung: data.bukti_pendukung ?? "",
+                  tanggal_mulai: data.tanggal_mulai ?? "",
+                  tanggal_berakhir: data.tanggal_berakhir ?? "",
+                },
+              };
             } else if (data.tipe === TipePengajuan.lembur) {
-              detailData.durasi_lembur = data.durasi_lembur;
+              pengajuanData = {
+                id: pengajuanSnap.id,
+                uid: data.uid,
+                tipe: TipePengajuan.lembur,
+                tanggal_pengajuan: data.tanggal_pengajuan,
+                status: data.status,
+                created_at: data.created_at,
+                updated_at: data.updated_at,
+                detail: {
+                  keterangan: data.keterangan ?? "",
+                  bukti_pendukung: data.bukti_pendukung ?? "",
+                  durasi_lembur: data.durasi_lembur ?? "",
+                },
+              };
+            } else if (data.tipe === TipePengajuan.sakit) {
+              pengajuanData = {
+                id: pengajuanSnap.id,
+                uid: data.uid,
+                tipe: TipePengajuan.sakit,
+                tanggal_pengajuan: data.tanggal_pengajuan,
+                status: data.status,
+                created_at: data.created_at,
+                updated_at: data.updated_at,
+                detail: {
+                  keterangan: data.keterangan ?? "",
+                  bukti_pendukung: data.bukti_pendukung ?? "",
+                },
+              };
             }
-
-            pengajuanData = {
-              id: pengajuanSnap.id,
-              uid: data.uid,
-              tipe: data.tipe,
-              tanggal_pengajuan: data.tanggal_pengajuan,
-              status: data.status,
-              detail: detailData,
-              created_at: data.created_at,
-              updated_at: data.updated_at,
-            };
           }
           unsubscribeCount++;
           checkAndCallback();

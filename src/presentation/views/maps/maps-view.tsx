@@ -199,31 +199,6 @@ const MapsView = ({ isDark }: MapsViewProps) => {
           </TouchableOpacity>
         </View>
       </View>
-
-      <View className="mt-3">
-        {address ? (
-          <View className="flex-row items-start p-3">
-            <Feather
-              name="map-pin"
-              size={15}
-              color={isDark ? "#9ca3af" : "#64748b"}
-              className="mt-1"
-            />
-            <Text className={`${mutedText} ml-2 flex-1`}>{address}</Text>
-          </View>
-        ) : (
-          <View className="flex-row items-center p-2">
-            <Feather
-              name="navigation"
-              size={15}
-              color={isDark ? "#9ca3af" : "#64748b"}
-            />
-            <Text className={`text-xs ${mutedText} ml-2`}>
-              {location.lat.toFixed(6)}, {location.lon.toFixed(6)}
-            </Text>
-          </View>
-        )}
-      </View>
     </View>
   );
 };

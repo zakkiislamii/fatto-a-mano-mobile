@@ -56,7 +56,7 @@ const useDetailPengajuanLembur = (uid?: string) => {
         return;
       }
 
-      const dDetail = data.detail || {};
+      const dDetail = data as PengajuanLembur;
 
       const mapped: PengajuanLembur = {
         id: data.id,
@@ -64,12 +64,13 @@ const useDetailPengajuanLembur = (uid?: string) => {
         tipe: data.tipe as TipePengajuan.lembur,
         tanggal_pengajuan: data.tanggal_pengajuan ?? "",
         status: data.status,
-        detail: dDetail,
         created_at: data.created_at,
         updated_at: data.updated_at,
-        keterangan: dDetail.keterangan ?? "",
-        bukti_pendukung: dDetail.bukti_pendukung ?? "",
-        durasi_lembur: dDetail.durasi_lembur ?? "",
+        detail: {
+          keterangan: dDetail.detail.keterangan ?? "",
+          bukti_pendukung: dDetail.detail.bukti_pendukung ?? "",
+          durasi_lembur: dDetail.detail.durasi_lembur ?? "",
+        },
       };
 
       setDetail(mapped);

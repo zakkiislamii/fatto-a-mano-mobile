@@ -1,6 +1,6 @@
 import { TipePengajuan } from "@/src/common/enums/tipe-pengajuan";
 import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
-import { PengajuanIzin } from "@/src/domain/models/pengajuan_izin";
+import { PengajuanIzin } from "@/src/domain/models/pengajuan-izin";
 import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -56,7 +56,7 @@ const useDetailPengajuanIzin = (uid?: string) => {
         return;
       }
 
-      const dDetail = data.detail || {};
+      const dDetail = data as PengajuanIzin;
 
       const mapped: PengajuanIzin = {
         id: data.id,
@@ -64,13 +64,14 @@ const useDetailPengajuanIzin = (uid?: string) => {
         tipe: data.tipe as TipePengajuan.izin,
         tanggal_pengajuan: data.tanggal_pengajuan ?? "",
         status: data.status,
-        detail: dDetail,
         created_at: data.created_at,
         updated_at: data.updated_at,
-        keterangan: dDetail.keterangan ?? "",
-        bukti_pendukung: dDetail.bukti_pendukung ?? "",
-        tanggal_mulai: dDetail.tanggal_mulai ?? "",
-        tanggal_berakhir: dDetail.tanggal_berakhir ?? "",
+        detail: {
+          keterangan: dDetail.detail?.keterangan ?? "",
+          bukti_pendukung: dDetail.detail?.bukti_pendukung ?? "",
+          tanggal_mulai: dDetail.detail?.tanggal_mulai ?? "",
+          tanggal_berakhir: dDetail.detail?.tanggal_berakhir ?? "",
+        },
       };
 
       setDetail(mapped);

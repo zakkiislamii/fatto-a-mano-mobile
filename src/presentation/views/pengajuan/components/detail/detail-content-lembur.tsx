@@ -90,7 +90,9 @@ const DetailContentLembur = ({
           />
           <View className="flex-1">
             <Text className={`font-medium ${textSecondary}`}>Keterangan</Text>
-            <Text className={`${textPrimary} mt-1`}>{d.keterangan ?? "-"}</Text>
+            <Text className={`${textPrimary} mt-1`}>
+              {d.detail.keterangan ?? "-"}
+            </Text>
           </View>
         </View>
 
@@ -107,13 +109,13 @@ const DetailContentLembur = ({
               Durasi Lembur
             </Text>
             <Text className={`${textPrimary} mt-1`}>
-              {d.durasi_lembur ?? "-"}
+              {d.detail.durasi_lembur ?? "-"}
             </Text>
           </View>
         </View>
       </View>
 
-      {d.bukti_pendukung ? (
+      {d.detail.bukti_pendukung ? (
         <View className={`rounded-lg p-3 ${cardBg} border ${cardBorder}`}>
           <View className="flex-row items-center mb-3">
             <Feather
@@ -127,7 +129,7 @@ const DetailContentLembur = ({
             </Text>
           </View>
           <Image
-            source={{ uri: d.bukti_pendukung }}
+            source={{ uri: d.detail.bukti_pendukung }}
             style={{
               width: "100%",
               height: 220,

@@ -8,7 +8,6 @@ export interface Pengajuan {
   tipe: TipePengajuan;
   tanggal_pengajuan: string;
   status: StatusPengajuan;
-  detail: Record<string, any>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }
