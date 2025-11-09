@@ -12,7 +12,7 @@ const RegisterTokenGate = () => {
   const isRegistering = useRef(false);
 
   useEffect(() => {
-    if (isLoading || role === UserRole.manajer) {
+    if (isLoading || role === UserRole.MANAJER) {
       return;
     }
 
@@ -46,7 +46,7 @@ const RegisterTokenGate = () => {
   }, [isLoading, user, role, registerToken, isPending]);
 
   useEffect(() => {
-    if (!user?.uid || role === UserRole.manajer) {
+    if (!user?.uid || role === UserRole.MANAJER) {
       return;
     }
 

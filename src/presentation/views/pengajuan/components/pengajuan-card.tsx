@@ -18,11 +18,11 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const getStatusBadge = (status: StatusPengajuan) => {
   const baseClasses = "px-3 py-1 rounded-full text-xs font-medium self-start";
   switch (status) {
-    case StatusPengajuan.menunggu:
+    case StatusPengajuan.MENUNGGU:
       return `${baseClasses} bg-yellow-500/20 text-yellow-500`;
-    case StatusPengajuan.disetujui:
+    case StatusPengajuan.DISETUJUI:
       return `${baseClasses} bg-green-500/20 text-green-500`;
-    case StatusPengajuan.ditolak:
+    case StatusPengajuan.DITOLAK:
       return `${baseClasses} bg-red-500/20 text-red-500`;
     default:
       return `${baseClasses} bg-gray-500/20 text-gray-500`;
@@ -43,8 +43,8 @@ const PengajuanCard = ({
     : "text-textSecondaryLight";
   const borderColor = isDark ? "border-gray-700" : "border-gray-200";
   const pengajuanDisetujui =
-    item.status === StatusPengajuan.disetujui ||
-    item.status === StatusPengajuan.ditolak;
+    item.status === StatusPengajuan.DISETUJUI ||
+    item.status === StatusPengajuan.DITOLAK;
 
   return (
     <View className={`rounded-lg p-4 border ${borderColor} ${cardBg} mb-3`}>

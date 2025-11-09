@@ -29,7 +29,7 @@ export class AuthRepositoryImpl implements IAuthRepository {
         {
           uid: userCredential.user.uid,
           email: email.trim(),
-          role: UserRole.karyawan,
+          role: UserRole.KARYAWAN,
           created_at: Timestamp.now(),
           updated_at: Timestamp.now(),
         },
@@ -79,7 +79,7 @@ export class AuthRepositoryImpl implements IAuthRepository {
           {
             uid: userCredential.user.uid,
             ...userData,
-            role: UserRole.karyawan,
+            role: UserRole.KARYAWAN,
             created_at: Timestamp.now(),
           },
           { merge: true }

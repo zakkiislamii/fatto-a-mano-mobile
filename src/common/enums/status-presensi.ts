@@ -1,7 +1,7 @@
 export enum StatusPresensi {
-  hadir = "hadir",
-  terlambat = "terlambat",
-  alpa = "alpa",
-  sakit = "sakit",
-  izin = "izin",
+  HADIR = "hadir",
+  TERLAMBAT = "terlambat",
+  ALPA = "alpa",
+  SAKIT = "sakit",
+  IZIN = "izin",
 }

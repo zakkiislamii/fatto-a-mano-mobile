@@ -1,5 +1,5 @@
 export enum StatusPengajuan {
-  menunggu = "menunggu",
-  disetujui = "disetujui",
-  ditolak = "ditolak",
+  MENUNGGU = "menunggu",
+  DISETUJUI = "disetujui",
+  DITOLAK = "ditolak",
 }

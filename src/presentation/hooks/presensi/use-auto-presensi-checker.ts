@@ -41,7 +41,7 @@ const useAutoPresensiChecker = (uid: string) => {
       await presensiRepo.addPresensiMasuk(
         uid,
         tanggal,
-        StatusPresensi.alpa,
+        StatusPresensi.ALPA,
         presensiMasuk
       );
 
@@ -65,7 +65,7 @@ const useAutoPresensiChecker = (uid: string) => {
       await presensiRepo.addPresensiMasuk(
         uid,
         tanggal,
-        StatusPresensi.izin,
+        StatusPresensi.IZIN,
         presensiMasuk
       );
 
@@ -89,7 +89,7 @@ const useAutoPresensiChecker = (uid: string) => {
       await presensiRepo.addPresensiMasuk(
         uid,
         tanggal,
-        StatusPresensi.sakit,
+        StatusPresensi.SAKIT,
         presensiMasuk
       );
 

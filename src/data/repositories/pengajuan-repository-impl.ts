@@ -97,7 +97,7 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
           let pengajuan: Pengajuan;
 
           // Assign detail based on tipe
-          if (tipe === TipePengajuan.sakit) {
+          if (tipe === TipePengajuan.SAKIT) {
             pengajuan = {
               ...basePengajuan,
               detail: {
@@ -105,7 +105,7 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
                 bukti_pendukung: rawDetail.bukti_pendukung ?? "",
               },
             } as PengajuanSakit;
-          } else if (tipe === TipePengajuan.izin) {
+          } else if (tipe === TipePengajuan.IZIN) {
             pengajuan = {
               ...basePengajuan,
               detail: {
@@ -115,7 +115,7 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
                 tanggal_berakhir: rawDetail.tanggal_berakhir ?? "",
               },
             } as PengajuanIzin;
-          } else if (tipe === TipePengajuan.lembur) {
+          } else if (tipe === TipePengajuan.LEMBUR) {
             pengajuan = {
               ...basePengajuan,
               detail: {
@@ -163,8 +163,8 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
       const tanggal = Today();
       await addDoc(colRef, {
         uid: uid,
-        tipe: TipePengajuan.izin,
-        status: StatusPengajuan.menunggu,
+        tipe: TipePengajuan.IZIN,
+        status: StatusPengajuan.MENUNGGU,
         tanggal_pengajuan: tanggal,
         detail: {
           ...data,
@@ -187,8 +187,8 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
       const colRef = collection(db, `users/${uid}/pengajuan`);
       await addDoc(colRef, {
         uid: uid,
-        tipe: TipePengajuan.lembur,
-        status: StatusPengajuan.menunggu,
+        tipe: TipePengajuan.LEMBUR,
+        status: StatusPengajuan.MENUNGGU,
         tanggal_pengajuan: tanggal,
         detail: {
           ...data,
@@ -211,8 +211,8 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
       const colRef = collection(db, `users/${uid}/pengajuan`);
       await addDoc(colRef, {
         uid: uid,
-        tipe: TipePengajuan.sakit,
-        status: StatusPengajuan.menunggu,
+        tipe: TipePengajuan.SAKIT,
+        status: StatusPengajuan.MENUNGGU,
         tanggal_pengajuan: tanggal,
         detail: {
           ...data,
@@ -328,8 +328,8 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
       if (!uid) return null;
       const q = query(
         collection(db, `users/${uid}/pengajuan`),
-        where("tipe", "==", TipePengajuan.izin),
-        where("status", "==", StatusPengajuan.disetujui)
+        where("tipe", "==", TipePengajuan.IZIN),
+        where("status", "==", StatusPengajuan.DISETUJUI)
       );
 
       return onSnapshot(
@@ -368,8 +368,8 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
       if (!uid) return null;
       const q = query(
         collection(db, `users/${uid}/pengajuan`),
-        where("tipe", "==", TipePengajuan.sakit),
-        where("status", "==", StatusPengajuan.disetujui),
+        where("tipe", "==", TipePengajuan.SAKIT),
+        where("status", "==", StatusPengajuan.DISETUJUI),
         where("tanggal_pengajuan", "==", tanggalHariIni)
       );
 

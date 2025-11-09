@@ -59,9 +59,9 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
 
   const getStatusDisplay = () => {
     const status = presensiMasukStatus.status;
-    if (status === StatusPresensi.hadir) {
+    if (status === StatusPresensi.HADIR) {
       return { text: "✓ HADIR", color: "text-green-500" };
-    } else if (status === StatusPresensi.terlambat) {
+    } else if (status === StatusPresensi.TERLAMBAT) {
       return { text: "⏱ TERLAMBAT", color: "text-yellow-500" };
     }
     return { text: "", color: "" };
@@ -69,8 +69,8 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
 
   const statusDisplay = getStatusDisplay();
 
-  const isSakit = presensiMasukStatus.status === StatusPresensi.sakit;
-  const isIzin = presensiMasukStatus.status === StatusPresensi.izin;
+  const isSakit = presensiMasukStatus.status === StatusPresensi.SAKIT;
+  const isIzin = presensiMasukStatus.status === StatusPresensi.IZIN;
   const hasSpecialStatus = isAlpa || isSakit || isIzin;
 
   const buttonTitle = presensiMasukStatus.sudah_masuk ? "Keluar" : "Masuk";

@@ -4,5 +4,5 @@ import { DetailPengajuanSakit } from "./detail-pengajuan-sakit";
 
 export interface PengajuanSakit extends Pengajuan {
   detail: DetailPengajuanSakit;
-  tipe: TipePengajuan.sakit;
+  tipe: TipePengajuan.SAKIT;
 }

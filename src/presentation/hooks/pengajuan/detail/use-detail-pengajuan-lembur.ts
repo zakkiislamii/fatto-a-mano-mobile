@@ -56,7 +56,7 @@ const useDetailPengajuanLembur = (uid?: string) => {
         return;
       }
 
-      if (data.tipe !== TipePengajuan.lembur) {
+      if (data.tipe !== TipePengajuan.LEMBUR) {
         setDetail(null);
         setLoading(false);
         return;

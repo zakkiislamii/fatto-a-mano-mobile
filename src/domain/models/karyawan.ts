@@ -2,5 +2,5 @@ import { UserRole } from "@/src/common/enums/user-role";
 import { User } from "@/src/domain/models/user";
 
 export interface Karyawan extends User {
-  role: UserRole.karyawan;
+  role: UserRole.KARYAWAN;
 }

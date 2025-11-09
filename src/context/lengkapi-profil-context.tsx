@@ -25,7 +25,7 @@ const LengkapiProfilContext = ({ children }: ProfilCompletionContextProps) => {
 
     const isIgnored = IGNORED_ROUTES.includes(current);
 
-    if (role === UserRole.manajer) {
+    if (role === UserRole.MANAJER) {
       if (current === "lengkapi-profil") {
         router.replace("/(tabs)");
       }

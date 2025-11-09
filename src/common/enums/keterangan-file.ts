@@ -1,6 +1,6 @@
 export enum KeteranganFile {
-  bukti_keluar_awal = "bukti keluar awal",
-  bukti_lembur = "bukti lembur",
-  bukti_sakit = "bukti sakit",
-  bukti_izin = "bukti izin",
+  BUKTI_KELUAR_AWAL = "bukti keluar awal",
+  BUKTI_LEMBUR = "bukti lembur",
+  BUKTI_SAKIT = "bukti sakit",
+  BUKTI_IZIN = "bukti izin",
 }

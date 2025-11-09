@@ -51,7 +51,7 @@ const useEditPengajuanLembur = (uid: string | undefined) => {
     const repository: IPengajuanRepository = new PengajuanRepositoryImpl();
 
     const unsubscribe = repository.getDetail(uid, item.id, (data) => {
-      if (data && data.tipe === TipePengajuan.lembur) {
+      if (data && data.tipe === TipePengajuan.LEMBUR) {
         const dDetail = data as PengajuanLembur;
         setValue("keterangan", dDetail.detail.keterangan || "");
         setValue("bukti_pendukung", dDetail.detail.bukti_pendukung || "");
@@ -116,14 +116,14 @@ const useEditPengajuanLembur = (uid: string | undefined) => {
             uid,
             buktiPendukung,
             oldBuktiUrl,
-            KeteranganFile.bukti_lembur
+            KeteranganFile.BUKTI_LEMBUR
           );
           uploadedUrl = result.url || "";
         } else {
           const result = await uploadToSupabase(
             uid,
             buktiPendukung,
-            KeteranganFile.bukti_lembur
+            KeteranganFile.BUKTI_LEMBUR
           );
           uploadedUrl = result.url || "";
         }

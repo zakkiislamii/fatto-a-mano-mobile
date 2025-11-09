@@ -56,7 +56,7 @@ const useDetailPengajuanIzin = (uid?: string) => {
         return;
       }
 
-      if (data.tipe !== TipePengajuan.izin) {
+      if (data.tipe !== TipePengajuan.IZIN) {
         setDetail(null);
         setLoading(false);
         return;

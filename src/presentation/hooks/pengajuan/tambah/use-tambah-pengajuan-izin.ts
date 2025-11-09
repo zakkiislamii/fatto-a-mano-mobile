@@ -104,7 +104,7 @@ const useTambahPengajuanIzin = (uid: string | undefined) => {
       const uploadResult = await uploadToSupabase(
         uid,
         data.bukti_pendukung,
-        KeteranganFile.bukti_izin
+        KeteranganFile.BUKTI_IZIN
       );
 
       if (!uploadResult.url) {

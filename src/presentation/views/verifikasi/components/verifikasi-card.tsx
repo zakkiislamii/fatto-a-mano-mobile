@@ -62,7 +62,7 @@ const VerifikasiCard = ({
           className={`${detailBtnBg} rounded-lg py-2 px-4`}
           textClassName="text-white font-bold text-sm"
         />
-        {item.status === StatusPengajuan.menunggu && (
+        {item.status === StatusPengajuan.MENUNGGU && (
           <>
             <Button
               title="Tolak"

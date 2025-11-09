@@ -56,7 +56,7 @@ const useDetailPengajuanSakit = (uid?: string) => {
         return;
       }
 
-      if (data.tipe !== TipePengajuan.sakit) {
+      if (data.tipe !== TipePengajuan.SAKIT) {
         setDetail(null);
         setLoading(false);
         return;

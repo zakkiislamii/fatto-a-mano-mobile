@@ -10,7 +10,7 @@ import React from "react";
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { role } = useFirebaseAuth();
-  const isManagement = role === UserRole.manajer;
+  const isManagement = role === UserRole.MANAJER;
   return (
     <Tabs
       screenOptions={{

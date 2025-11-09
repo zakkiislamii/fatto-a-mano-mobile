@@ -19,7 +19,7 @@ const useLogout = () => {
   const onConfirmLogout = async () => {
     setLoading(true);
     try {
-      if (uid && role === UserRole.karyawan) {
+      if (uid && role === UserRole.KARYAWAN) {
         try {
           await deleteToken(uid);
         } catch (tokenError) {

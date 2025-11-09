@@ -26,8 +26,8 @@ export function useFirebaseAuth() {
         try {
           const snap = await getDoc(doc(db, "users", firebaseUser.uid));
           const raw = snap.exists() ? (snap.data().role as unknown) : null;
-          if (raw === UserRole.manajer) nextRole = UserRole.manajer;
-          else if (raw === UserRole.karyawan) nextRole = UserRole.karyawan;
+          if (raw === UserRole.MANAJER) nextRole = UserRole.MANAJER;
+          else if (raw === UserRole.KARYAWAN) nextRole = UserRole.KARYAWAN;
           else nextRole = null;
         } catch (e) {
           console.error("Gagal ambil user role:", e);

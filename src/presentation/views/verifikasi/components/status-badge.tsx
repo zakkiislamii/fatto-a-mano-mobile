@@ -12,15 +12,15 @@ const StatusBadge = ({
   let bgColor, textColor;
 
   switch (status) {
-    case StatusPengajuan.menunggu:
+    case StatusPengajuan.MENUNGGU:
       bgColor = isDark ? "bg-info-dark-bg" : "bg-info-light-bg";
       textColor = isDark ? "text-info-dark" : "text-info-light";
       break;
-    case StatusPengajuan.disetujui:
+    case StatusPengajuan.DISETUJUI:
       bgColor = isDark ? "bg-success-dark-bg" : "bg-success-light-bg";
       textColor = isDark ? "text-success-dark" : "text-success-light";
       break;
-    case StatusPengajuan.ditolak:
+    case StatusPengajuan.DITOLAK:
       bgColor = isDark ? "bg-danger-dark-bg" : "bg-danger-light-bg";
       textColor = isDark ? "text-danger-dark" : "text-danger-light";
       break;

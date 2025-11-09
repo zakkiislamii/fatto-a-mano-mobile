@@ -49,7 +49,7 @@ const useTambahPengajuanSakit = (uid: string | undefined) => {
       const uploadResult = await uploadToSupabase(
         uid,
         data.bukti_pendukung,
-        KeteranganFile.bukti_sakit
+        KeteranganFile.BUKTI_SAKIT
       );
 
       if (!uploadResult.url) {

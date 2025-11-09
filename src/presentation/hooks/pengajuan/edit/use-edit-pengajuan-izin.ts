@@ -105,7 +105,7 @@ const useEditPengajuanIzin = (uid: string | undefined) => {
     const repository: IPengajuanRepository = new PengajuanRepositoryImpl();
 
     const unsubscribe = repository.getDetail(uid, item.id, (data) => {
-      if (data && data.tipe === TipePengajuan.izin) {
+      if (data && data.tipe === TipePengajuan.IZIN) {
         const dDetail = data as PengajuanIzin;
         setValue("keterangan", dDetail.detail.keterangan || "");
         setValue("bukti_pendukung", dDetail.detail.bukti_pendukung || "");
@@ -201,14 +201,14 @@ const useEditPengajuanIzin = (uid: string | undefined) => {
             uid,
             buktiPendukung,
             oldBuktiUrl,
-            KeteranganFile.bukti_izin
+            KeteranganFile.BUKTI_IZIN
           );
           uploadedUrl = result.url || "";
         } else {
           const result = await uploadToSupabase(
             uid,
             buktiPendukung,
-            KeteranganFile.bukti_izin
+            KeteranganFile.BUKTI_IZIN
           );
           uploadedUrl = result.url || "";
         }

@@ -87,10 +87,10 @@ const VerifikasiView = () => {
     }
 
     const pendingList = verifikasiList.filter(
-      (v) => v.status === StatusPengajuan.menunggu
+      (v) => v.status === StatusPengajuan.MENUNGGU
     );
     const completedList = verifikasiList.filter(
-      (v) => v.status !== StatusPengajuan.menunggu
+      (v) => v.status !== StatusPengajuan.MENUNGGU
     );
 
     return (
@@ -180,8 +180,8 @@ const VerifikasiView = () => {
           verifikasiLoading
             ? "Memproses..."
             : konfirmasiAksi === "setujui"
-              ? "Setujui"
-              : "Tolak"
+            ? "Setujui"
+            : "Tolak"
         }
         onPrimaryButtonPress={
           verifikasiLoading ? () => {} : handleKonfirmasiAksi

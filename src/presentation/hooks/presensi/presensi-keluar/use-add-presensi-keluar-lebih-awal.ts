@@ -56,7 +56,7 @@ const useAddPresensiKeluarLebihAwal = (
       const uploadResult = await uploadToSupabase(
         currentUid,
         data.bukti_keluar_awal,
-        KeteranganFile.bukti_keluar_awal
+        KeteranganFile.BUKTI_KELUAR_AWAL
       );
 
       if (!uploadResult.url) {

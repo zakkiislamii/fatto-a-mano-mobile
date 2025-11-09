@@ -17,6 +17,6 @@ export interface IVerifikasiRepository {
   verifikasiPengajuan(
     uid: string,
     pengajuanId: string,
-    status: StatusPengajuan.disetujui | StatusPengajuan.ditolak
+    status: StatusPengajuan.DISETUJUI | StatusPengajuan.DITOLAK
   ): Promise<void>;
 }

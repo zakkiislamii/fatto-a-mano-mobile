@@ -123,11 +123,11 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
         (pengajuanSnap) => {
           if (pengajuanSnap.exists()) {
             const data = pengajuanSnap.data();
-            if (data.tipe === TipePengajuan.izin) {
+            if (data.tipe === TipePengajuan.IZIN) {
               pengajuanData = {
                 id: pengajuanSnap.id,
                 uid: data.uid,
-                tipe: TipePengajuan.izin,
+                tipe: TipePengajuan.IZIN,
                 tanggal_pengajuan: data.tanggal_pengajuan,
                 status: data.status,
                 created_at: data.created_at,
@@ -139,11 +139,11 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
                   tanggal_berakhir: data.tanggal_berakhir ?? "",
                 },
               };
-            } else if (data.tipe === TipePengajuan.lembur) {
+            } else if (data.tipe === TipePengajuan.LEMBUR) {
               pengajuanData = {
                 id: pengajuanSnap.id,
                 uid: data.uid,
-                tipe: TipePengajuan.lembur,
+                tipe: TipePengajuan.LEMBUR,
                 tanggal_pengajuan: data.tanggal_pengajuan,
                 status: data.status,
                 created_at: data.created_at,
@@ -154,11 +154,11 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
                   durasi_lembur: data.durasi_lembur ?? "",
                 },
               };
-            } else if (data.tipe === TipePengajuan.sakit) {
+            } else if (data.tipe === TipePengajuan.SAKIT) {
               pengajuanData = {
                 id: pengajuanSnap.id,
                 uid: data.uid,
-                tipe: TipePengajuan.sakit,
+                tipe: TipePengajuan.SAKIT,
                 tanggal_pengajuan: data.tanggal_pengajuan,
                 status: data.status,
                 created_at: data.created_at,
@@ -196,7 +196,7 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
   public async verifikasiPengajuan(
     uid: string,
     pengajuanId: string,
-    status: StatusPengajuan.disetujui | StatusPengajuan.ditolak
+    status: StatusPengajuan.DISETUJUI | StatusPengajuan.DITOLAK
   ): Promise<void> {
     try {
       if (!uid || !pengajuanId) {
@@ -204,8 +204,8 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
       }
 
       if (
-        status !== StatusPengajuan.disetujui &&
-        status !== StatusPengajuan.ditolak
+        status !== StatusPengajuan.DISETUJUI &&
+        status !== StatusPengajuan.DITOLAK
       ) {
         throw new Error("Status verifikasi tidak valid");
       }
@@ -219,7 +219,7 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
 
       console.log(
         `[VerifikasiRepo] Pengajuan ${pengajuanId} berhasil ${
-          status === StatusPengajuan.disetujui ? "disetujui" : "ditolak"
+          status === StatusPengajuan.DISETUJUI ? "disetujui" : "ditolak"
         }`
       );
     } catch (error) {

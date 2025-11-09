@@ -77,10 +77,6 @@ export class RekapRepositoryImpl implements IRekapRepository {
           presensi_list: presensiList,
         });
       }
-
-      console.log(
-        `[RekapRepo] Retrieved rekap for ${rekapList.length} users from ${tanggalMulai} to ${tanggalAkhir}`
-      );
       return rekapList;
     } catch (error) {
       console.error("[RekapRepo] Error getRekapPresensi:", error);

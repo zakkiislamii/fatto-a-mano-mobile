@@ -8,17 +8,17 @@ import { ScrollView } from "react-native-gesture-handler";
 
 const getStatusStyle = (status: StatusPengajuan) => {
   switch (status) {
-    case StatusPengajuan.disetujui:
+    case StatusPengajuan.DISETUJUI:
       return {
         container: "bg-green-100 dark:bg-green-900",
         text: "text-green-800 dark:text-green-100",
       };
-    case StatusPengajuan.ditolak:
+    case StatusPengajuan.DITOLAK:
       return {
         container: "bg-red-100 dark:bg-red-900",
         text: "text-red-800 dark:text-red-100",
       };
-    case StatusPengajuan.menunggu:
+    case StatusPengajuan.MENUNGGU:
     default:
       return {
         container: "bg-yellow-100 dark:bg-yellow-900",

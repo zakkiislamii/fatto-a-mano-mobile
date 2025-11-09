@@ -51,7 +51,7 @@ const useEditPengajuanSakit = (uid: string | undefined) => {
     const repository: IPengajuanRepository = new PengajuanRepositoryImpl();
 
     const unsubscribe = repository.getDetail(uid, item.id, (data) => {
-      if (data && data.tipe === TipePengajuan.sakit) {
+      if (data && data.tipe === TipePengajuan.SAKIT) {
         const dDetail = data as PengajuanSakit;
         setValue("keterangan", dDetail.detail.keterangan || "");
         setValue("bukti_pendukung", dDetail.detail.bukti_pendukung || "");
@@ -116,14 +116,14 @@ const useEditPengajuanSakit = (uid: string | undefined) => {
             uid,
             buktiPendukung,
             oldBuktiUrl,
-            KeteranganFile.bukti_sakit
+            KeteranganFile.BUKTI_SAKIT
           );
           uploadedUrl = result.url || "";
         } else {
           const result = await uploadToSupabase(
             uid,
             buktiPendukung,
-            KeteranganFile.bukti_sakit
+            KeteranganFile.BUKTI_SAKIT
           );
           uploadedUrl = result.url || "";
         }

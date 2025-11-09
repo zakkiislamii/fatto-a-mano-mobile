@@ -28,7 +28,7 @@ const CalendarView = ({
     const status = riwayatPresensi.status?.toLowerCase();
 
     if (
-      status === StatusPresensi.hadir &&
+      status === StatusPresensi.HADIR &&
       riwayatPresensi.presensi_masuk.terlambat
     ) {
       return isDark ? "#f97316" : "#ea580c";

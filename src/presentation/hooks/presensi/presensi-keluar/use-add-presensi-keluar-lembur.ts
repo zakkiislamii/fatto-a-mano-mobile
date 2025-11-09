@@ -90,7 +90,7 @@ const useAddPresensiKeluarLembur = (props: UseAddPresensiKeluarLemburProps) => {
       const uploadResult = await uploadToSupabase(
         currentUid,
         data.bukti_pendukung,
-        KeteranganFile.bukti_lembur
+        KeteranganFile.BUKTI_LEMBUR
       );
 
       if (!uploadResult.url) {

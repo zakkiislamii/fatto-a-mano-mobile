@@ -17,7 +17,7 @@ export class KaryawanRepositoryImpl implements IKaryawanRepository {
     try {
       const q = query(
         collection(db, "users"),
-        where("role", "==", UserRole.karyawan)
+        where("role", "==", UserRole.KARYAWAN)
       );
 
       const unsubscribe = onSnapshot(

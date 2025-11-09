@@ -26,13 +26,11 @@ export interface IPengajuanRepository {
     pengajuanId: string,
     data: Partial<DetailPengajuanIzin>
   ): Promise<void>;
-
   editLembur(
     uid: string,
     pengajuanId: string,
     data: Partial<DetailPengajuanLembur>
   ): Promise<void>;
-
   editSakit(
     uid: string,
     pengajuanId: string,

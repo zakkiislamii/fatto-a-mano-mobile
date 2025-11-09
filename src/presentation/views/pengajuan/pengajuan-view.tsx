@@ -193,15 +193,15 @@ const PengajuanView = () => {
   const buttonBg = isDark ? "bg-button-dark" : "bg-button-light";
 
   const handleEditPress = (item: DaftarPengajuan) => {
-    if (item.tipe === TipePengajuan.lembur) {
+    if (item.tipe === TipePengajuan.LEMBUR) {
       openEditLemburSheet(item);
       return;
     }
-    if (item.tipe === TipePengajuan.sakit) {
+    if (item.tipe === TipePengajuan.SAKIT) {
       openEditSakitSheet(item);
       return;
     }
-    if (item.tipe === TipePengajuan.izin) {
+    if (item.tipe === TipePengajuan.IZIN) {
       openEditIzinSheet(item);
       return;
     }
@@ -209,15 +209,15 @@ const PengajuanView = () => {
   };
 
   const handleDetailPress = (item: DaftarPengajuan) => {
-    if (item.tipe === TipePengajuan.lembur) {
+    if (item.tipe === TipePengajuan.LEMBUR) {
       handleViewDetailLemburPress(item);
       return;
     }
-    if (item.tipe === TipePengajuan.sakit) {
+    if (item.tipe === TipePengajuan.SAKIT) {
       handleViewDetailSakitPress(item);
       return;
     }
-    if (item.tipe === TipePengajuan.izin) {
+    if (item.tipe === TipePengajuan.IZIN) {
       handleViewDetailIzinPress(item);
       return;
     }

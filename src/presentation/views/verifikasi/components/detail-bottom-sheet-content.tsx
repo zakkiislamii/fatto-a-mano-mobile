@@ -92,11 +92,11 @@ const DetailBottomSheetContent = ({
   };
 
   const getPengajuanDetail = () => {
-    if (pengajuan.tipe === TipePengajuan.lembur) {
+    if (pengajuan.tipe === TipePengajuan.LEMBUR) {
       return (pengajuan as PengajuanLembur).detail;
-    } else if (pengajuan.tipe === TipePengajuan.izin) {
+    } else if (pengajuan.tipe === TipePengajuan.IZIN) {
       return (pengajuan as PengajuanIzin).detail;
-    } else if (pengajuan.tipe === TipePengajuan.sakit) {
+    } else if (pengajuan.tipe === TipePengajuan.SAKIT) {
       return (pengajuan as PengajuanSakit).detail;
     }
     return null;
@@ -125,7 +125,7 @@ const DetailBottomSheetContent = ({
           value={pengajuan.tanggal_pengajuan}
         />
 
-        {pengajuan.tipe === TipePengajuan.lembur && pengajuanDetail && (
+        {pengajuan.tipe === TipePengajuan.LEMBUR && pengajuanDetail && (
           <>
             <DetailRow
               label="Durasi Lembur"
@@ -138,7 +138,7 @@ const DetailBottomSheetContent = ({
           </>
         )}
 
-        {pengajuan.tipe === TipePengajuan.izin && pengajuanDetail && (
+        {pengajuan.tipe === TipePengajuan.IZIN && pengajuanDetail && (
           <>
             <DetailRow
               label="Tanggal Mulai"
@@ -155,7 +155,7 @@ const DetailBottomSheetContent = ({
           </>
         )}
 
-        {pengajuan.tipe === TipePengajuan.sakit && pengajuanDetail && (
+        {pengajuan.tipe === TipePengajuan.SAKIT && pengajuanDetail && (
           <>
             <DetailRow label="Keterangan" value={pengajuanDetail.keterangan} />
             <BuktiPendukung uri={pengajuanDetail.bukti_pendukung} />

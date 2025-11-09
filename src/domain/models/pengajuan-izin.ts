@@ -4,5 +4,5 @@ import { DetailPengajuanIzin } from "./detail-pengajuan-izin";
 
 export interface PengajuanIzin extends Pengajuan {
   detail: DetailPengajuanIzin;
-  tipe: TipePengajuan.izin;
+  tipe: TipePengajuan.IZIN;
 }

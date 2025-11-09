@@ -76,14 +76,14 @@ const useAddPresensiMasuk = () => {
       return false;
     } else if (now > batasTerlambat) {
       // Terlambat
-      status = StatusPresensi.terlambat;
+      status = StatusPresensi.TERLAMBAT;
       terlambat = true;
       const diffMs = now.getTime() - jamMasukDate.getTime();
       const diffMin = Math.floor(diffMs / 60000);
       durasi_terlambat = `${diffMin} menit`;
     } else {
       // Tepat waktu
-      status = StatusPresensi.hadir;
+      status = StatusPresensi.HADIR;
       terlambat = false;
     }
 

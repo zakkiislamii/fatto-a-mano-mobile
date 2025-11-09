@@ -18,7 +18,7 @@ const useVerifikasiPengajuan = () => {
     async (
       uid: string,
       pengajuanId: string,
-      status: StatusPengajuan.disetujui | StatusPengajuan.ditolak
+      status: StatusPengajuan.DISETUJUI | StatusPengajuan.DITOLAK
     ) => {
       setLoading(true);
       try {
@@ -30,7 +30,7 @@ const useVerifikasiPengajuan = () => {
         await repo.verifikasiPengajuan(uid, pengajuanId, status);
 
         const statusText =
-          status === StatusPengajuan.disetujui ? "disetujui" : "ditolak";
+          status === StatusPengajuan.DISETUJUI ? "disetujui" : "ditolak";
 
         Toast.show({
           type: "success",
@@ -58,14 +58,14 @@ const useVerifikasiPengajuan = () => {
 
   const setujuiPengajuan = useCallback(
     async (uid: string, pengajuanId: string) => {
-      await handleVerifikasi(uid, pengajuanId, StatusPengajuan.disetujui);
+      await handleVerifikasi(uid, pengajuanId, StatusPengajuan.DISETUJUI);
     },
     [handleVerifikasi]
   );
 
   const tolakPengajuan = useCallback(
     async (uid: string, pengajuanId: string) => {
-      await handleVerifikasi(uid, pengajuanId, StatusPengajuan.ditolak);
+      await handleVerifikasi(uid, pengajuanId, StatusPengajuan.DITOLAK);
     },
     [handleVerifikasi]
   );

@@ -103,7 +103,7 @@ const AccountInfoCard = ({
           isDark={isDark}
         />
 
-        {role === UserRole.karyawan && (
+        {role === UserRole.KARYAWAN && (
           <InfoRow
             icon="briefcase"
             label="Divisi"

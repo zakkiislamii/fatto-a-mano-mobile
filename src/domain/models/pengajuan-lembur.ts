@@ -4,5 +4,5 @@ import { DetailPengajuanLembur } from "./detail-pengajuan-lembur";
 
 export interface PengajuanLembur extends Pengajuan {
   detail: DetailPengajuanLembur;
-  tipe: TipePengajuan.lembur;
+  tipe: TipePengajuan.LEMBUR;
 }
