@@ -2,7 +2,7 @@ import { UserRole } from "@/src/common/enums/user-role";
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
 import { useRouter, useSegments } from "expo-router";
 import React, { ReactNode, useEffect } from "react";
-import useProfilLengkap from "../hooks/use-lengkapi-profil";
+import useGetLengkapiProfil from "../hooks/use-get-lengkapi-profil";
 
 const IGNORED_ROUTES = ["login", "register", "lengkapi-profil"];
 
@@ -12,7 +12,7 @@ interface ProfilCompletionContextProps {
 
 const LengkapiProfilContext = ({ children }: ProfilCompletionContextProps) => {
   const { user, uid, isLoading: authLoading, role } = useFirebaseAuth();
-  const { isComplete, loading: profileLoading } = useProfilLengkap(uid);
+  const { isComplete, loading: profileLoading } = useGetLengkapiProfil(uid);
   const segments = useSegments();
   const router = useRouter();
 

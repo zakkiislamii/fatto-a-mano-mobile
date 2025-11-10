@@ -12,7 +12,12 @@ export interface IUserRepository {
     cb: (data: ProfilKaryawan | null) => void
   ): Unsubscribe | null;
   editProfil(uid: string, data: EditProfilData): Promise<void>;
-  updateLengkapiProfil(uid: string, data: LengkapiProfilData): Promise<void>;
+  lengkapiProfil(uid: string, data: LengkapiProfilData): Promise<void>;
+  lengkapiProfilWithSync(
+    uid: string,
+    email: string,
+    data: LengkapiProfilData
+  ): Promise<void>;
   getLengkapiProfilRealTime(
     uid: string,
     cb: (isComplete: boolean) => void

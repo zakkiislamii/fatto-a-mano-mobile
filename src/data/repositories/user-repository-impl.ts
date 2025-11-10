@@ -7,7 +7,9 @@ import { db } from "@/src/configs/firebase-config";
 import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { Karyawan } from "@/src/domain/models/karyawan";
 import { ProfilKaryawan } from "@/src/domain/models/profil-karyawan";
+import { Sheets } from "@/src/domain/models/sheets";
 import { IUserRepository } from "@/src/domain/repositories/i-user-repository";
+import { ISheetyService } from "@/src/domain/services/i-sheety-service";
 import {
   DocumentData,
   Timestamp,
@@ -19,8 +21,15 @@ import {
   setDoc,
   where,
 } from "firebase/firestore";
+import { SheetyServiceImpl } from "../data-sources/sheety-service-impl";
 
 export class UserRepositoryImpl implements IUserRepository {
+  private sheetyService: ISheetyService;
+
+  constructor() {
+    this.sheetyService = new SheetyServiceImpl();
+  }
+
   public getProfilRealTime(
     uid: string,
     cb: (data: ProfilKaryawan | null) => void
@@ -75,7 +84,7 @@ export class UserRepositoryImpl implements IUserRepository {
     }
   }
 
-  public async updateLengkapiProfil(
+  public async lengkapiProfil(
     uid: string,
     data: LengkapiProfilData
   ): Promise<void> {
@@ -97,6 +106,41 @@ export class UserRepositoryImpl implements IUserRepository {
       await setDoc(ref, dataToWrite, { merge: true });
     } catch (err) {
       console.error("[UserRepository] updateLengkapiProfil error:", err);
+      throw err;
+    }
+  }
+
+  public async lengkapiProfilWithSync(
+    uid: string,
+    email: string,
+    data: LengkapiProfilData
+  ): Promise<void> {
+    try {
+      await this.lengkapiProfil(uid, data);
+
+      const excelData: Sheets = {
+        uid: uid,
+        email: email,
+        nama: data.nama!,
+        divisi: data.divisi!,
+        hariKerja: data.jadwal!.hari_kerja!,
+        jamMasuk: data.jadwal!.jam_masuk!,
+        jamKeluar: data.jadwal!.jam_keluar!,
+        isWfa: !!data.jadwal!.is_wfa,
+      };
+
+      const response = await this.sheetyService.addRow(excelData);
+
+      if (response.sheet1.id) {
+        await this.lengkapiProfil(uid, {
+          sheety_id: response.sheet1.id,
+        });
+      }
+    } catch (err) {
+      console.error(
+        "[UserRepository] updateLengkapiProfilWithSync error:",
+        err
+      );
       throw err;
     }
   }

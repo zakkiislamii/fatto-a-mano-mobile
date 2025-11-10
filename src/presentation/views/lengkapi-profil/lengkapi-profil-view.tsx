@@ -3,7 +3,7 @@ import { parseTimeToDate } from "@/src/common/utils/parse-time-to-date";
 import Button from "@/src/components/ui/button";
 import { DynamicModal } from "@/src/components/ui/dynamic-modal";
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
-import useEditLengkapiProfil from "@/src/hooks/use-edit-lengkapi-profil";
+import useLengkapiProfil from "@/src/hooks/use-lengkapi-profil";
 import { Feather } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import React from "react";
@@ -46,7 +46,7 @@ const LengkapiProfilView = () => {
     showConfirmModal,
     closeConfirmModal,
     confirmSubmit,
-  } = useEditLengkapiProfil(uid);
+  } = useLengkapiProfil(uid);
 
   const bgColor = isDark ? "bg-screenDark" : "bg-screenLight";
   const cardBg = isDark ? "bg-cardDark" : "bg-cardLight";
