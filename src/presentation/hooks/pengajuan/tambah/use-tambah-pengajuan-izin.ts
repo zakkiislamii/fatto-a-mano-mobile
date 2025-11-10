@@ -119,7 +119,7 @@ const useTambahPengajuanIzin = (uid: string | undefined) => {
         tanggal_mulai: data.tanggal_mulai,
         tanggal_berakhir: data.tanggal_berakhir,
       };
-      await repository.tambahIzin(uid, dataPengajuan);
+      await repository.addPengajuanIzin(uid, dataPengajuan);
 
       Toast.show({
         type: "success",

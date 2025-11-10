@@ -131,7 +131,7 @@ const useEditPengajuanLembur = (uid: string | undefined) => {
         dataToUpdate.bukti_pendukung = uploadedUrl;
       }
 
-      await repository.editLembur(uid, selectedId, dataToUpdate);
+      await repository.editPengajuanLembur(uid, selectedId, dataToUpdate);
 
       Toast.show({
         type: "success",

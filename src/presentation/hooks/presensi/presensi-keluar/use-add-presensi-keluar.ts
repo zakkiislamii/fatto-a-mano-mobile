@@ -91,7 +91,7 @@ const useAddPresensiKeluar = () => {
       };
 
       const pengajuanRepo = new PengajuanRepositoryImpl();
-      await pengajuanRepo.tambahLembur(uid, pengajuanLemburData);
+      await pengajuanRepo.addPengajuanLembur(uid, pengajuanLemburData);
 
       Toast.show({
         type: "success",

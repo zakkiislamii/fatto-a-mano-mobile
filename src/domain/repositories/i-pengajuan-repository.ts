@@ -18,32 +18,32 @@ export interface IPengajuanRepository {
   ): Unsubscribe | null;
 
   hapus(uid: string, pengajuanId: string): Promise<void>;
-  tambahIzin(uid: string, data: DetailPengajuanIzin): Promise<void>;
-  tambahLembur(uid: string, data: DetailPengajuanLembur): Promise<void>;
-  tambahSakit(uid: string, data: DetailPengajuanSakit): Promise<void>;
-  editIzin(
+  addPengajuanIzin(uid: string, data: DetailPengajuanIzin): Promise<void>;
+  addPengajuanLembur(uid: string, data: DetailPengajuanLembur): Promise<void>;
+  addPengajuanSakit(uid: string, data: DetailPengajuanSakit): Promise<void>;
+  editPengajuanIzin(
     uid: string,
     pengajuanId: string,
     data: Partial<DetailPengajuanIzin>
   ): Promise<void>;
-  editLembur(
+  editPengajuanLembur(
     uid: string,
     pengajuanId: string,
     data: Partial<DetailPengajuanLembur>
   ): Promise<void>;
-  editSakit(
+  editPengajuanSakit(
     uid: string,
     pengajuanId: string,
     data: Partial<DetailPengajuanSakit>
   ): Promise<void>;
 
-  getStatusIzinAktif(
+  getStatusPengajuanIzin(
     uid: string,
     tanggalHariIni: string,
     callback: (isIzinAktif: boolean) => void
   ): Unsubscribe | null;
 
-  getStatusSakitAktif(
+  getStatusPengajuanSakit(
     uid: string,
     tanggalHariIni: string,
     callback: (isSakitAktif: boolean) => void

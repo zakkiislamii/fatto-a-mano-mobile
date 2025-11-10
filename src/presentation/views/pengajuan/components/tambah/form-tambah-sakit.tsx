@@ -16,7 +16,7 @@ interface FormSakitProps {
   loading: boolean;
 }
 
-const FormTambahSakit = ({
+const FormAddPengajuanSakit = ({
   control,
   errors,
   handlePickEvidence,
@@ -124,4 +124,4 @@ const FormTambahSakit = ({
   );
 };
 
-export default FormTambahSakit;
+export default FormAddPengajuanSakit;

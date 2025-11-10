@@ -220,7 +220,7 @@ const useEditPengajuanIzin = (uid: string | undefined) => {
       const tanggalBerakhir = watch("tanggal_berakhir");
       if (tanggalMulai) dataToUpdate.tanggal_mulai = tanggalMulai;
       if (tanggalBerakhir) dataToUpdate.tanggal_berakhir = tanggalBerakhir;
-      await repository.editIzin(uid, selectedId, dataToUpdate);
+      await repository.editPengajuanIzin(uid, selectedId, dataToUpdate);
 
       Toast.show({
         type: "success",

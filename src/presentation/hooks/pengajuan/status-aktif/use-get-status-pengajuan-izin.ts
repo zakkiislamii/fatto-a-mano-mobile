@@ -3,8 +3,8 @@ import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repos
 import { IPengajuanRepository } from "@/src/domain/repositories/i-pengajuan-repository";
 import { useEffect, useState } from "react";
 
-const useGetStatusSakitAktif = (uid: string) => {
-  const [isSakitAktif, setIsSakitAktif] = useState<boolean>(false);
+const useGetStatusPengajuanIzin = (uid: string) => {
+  const [isIzinAktif, setIsIzinAktif] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -18,11 +18,11 @@ const useGetStatusSakitAktif = (uid: string) => {
 
     setLoading(true);
 
-    const unsubscribe = repo.getStatusSakitAktif(
+    const unsubscribe = repo.getStatusPengajuanIzin(
       uid,
       tanggalHariIni,
       (isAktif) => {
-        setIsSakitAktif(isAktif);
+        setIsIzinAktif(isAktif);
         setLoading(false);
       }
     );
@@ -35,9 +35,9 @@ const useGetStatusSakitAktif = (uid: string) => {
   }, [uid]);
 
   return {
-    isSakitAktif,
+    isIzinAktif,
     loading,
   };
 };
 
-export default useGetStatusSakitAktif;
+export default useGetStatusPengajuanIzin;

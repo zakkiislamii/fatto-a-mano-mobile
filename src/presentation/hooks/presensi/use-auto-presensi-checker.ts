@@ -1,5 +1,3 @@
-// src/presentation/hooks/presensi/presensi-masuk/use-auto-presensi-checker.ts
-
 import { StatusPresensi } from "@/src/common/enums/status-presensi";
 import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
 import Today from "@/src/common/utils/get-today";
@@ -7,10 +5,10 @@ import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today"
 import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
 import { PresensiMasuk } from "@/src/domain/models/presensi-masuk";
 import { useGetJadwal } from "@/src/presentation/hooks/jadwal/use-get-jadwal";
-import useGetStatusIzinAktif from "@/src/presentation/hooks/pengajuan/status-aktif/use-get-status-izin-aktif";
-import useGetStatusSakitAktif from "@/src/presentation/hooks/pengajuan/status-aktif/use-get-status-sakit-aktif";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
+import useGetStatusPengajuanIzin from "../pengajuan/status-aktif/use-get-status-pengajuan-izin";
+import useGetStatusPengajuanSakit from "../pengajuan/status-aktif/use-get-status-pengajuan-sakit";
 import useGetStatusPresensiMasukToday from "./presensi-masuk/use-get-status-presensi-masuk-today";
 
 const useAutoPresensiChecker = (uid: string) => {
@@ -18,8 +16,8 @@ const useAutoPresensiChecker = (uid: string) => {
   const { jadwalKaryawan } = useGetJadwal(uid);
   const { presensiMasukStatus, loading: presensiMasukStatusLoading } =
     useGetStatusPresensiMasukToday(uid);
-  const { isIzinAktif, loading: izinLoading } = useGetStatusIzinAktif(uid);
-  const { isSakitAktif, loading: sakitLoading } = useGetStatusSakitAktif(uid);
+  const { isIzinAktif, loading: izinLoading } = useGetStatusPengajuanIzin(uid);
+  const { isSakitAktif, loading: sakitLoading } = useGetStatusPengajuanSakit(uid);
   const hasShownAlpaToastRef = useRef<boolean>(false);
   const hasCreatedAlpaRecordRef = useRef<boolean>(false);
   const hasShownIzinToastRef = useRef<boolean>(false);

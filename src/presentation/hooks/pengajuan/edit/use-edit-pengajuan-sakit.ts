@@ -131,7 +131,7 @@ const useEditPengajuanSakit = (uid: string | undefined) => {
         dataToUpdate.bukti_pendukung = uploadedUrl;
       }
 
-      await repository.editSakit(uid, selectedId, dataToUpdate);
+      await repository.editPengajuanSakit(uid, selectedId, dataToUpdate);
 
       Toast.show({
         type: "success",

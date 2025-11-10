@@ -33,8 +33,8 @@ import FormEditLembur from "./components/edit/form-edit-lembur";
 import FormEditSakit from "./components/edit/form-edit-sakit";
 import FormDateTimePicker from "./components/form-date-time-picker";
 import PengajuanCard from "./components/pengajuan-card";
-import FormTambahIzin from "./components/tambah/form-tambah-izin";
-import FormTambahSakit from "./components/tambah/form-tambah-sakit";
+import FormAddPengajuanIzin from "./components/tambah/form-tambah-izin";
+import FormAddPengajuanSakit from "./components/tambah/form-tambah-sakit";
 import usePengajuanView from "./hooks/use-pengajuan-view";
 
 const PengajuanView = () => {
@@ -43,7 +43,7 @@ const PengajuanView = () => {
   const isDark = colorScheme === "dark";
 
   const {
-    loading: loadingTambahSakit,
+    loading: loadingaddPengajuanSakit,
     buktiPendukung: buktiPendukungSakit,
     handlePickEvidence: handlePickEvidenceSakit,
     canSubmit: canSubmitSakit,
@@ -65,7 +65,7 @@ const PengajuanView = () => {
     closeIzinSheet,
     showIzinSheet,
     handleTambahPengajuanIzin,
-    loading: loadingTambahIzin,
+    loading: loadingaddPengajuanIzin,
     showDatePicker,
     showPickerFor,
     onDateChange,
@@ -314,7 +314,7 @@ const PengajuanView = () => {
         onClose={closeSakitSheet}
         isDark={isDark}
         customContent={
-          <FormTambahSakit
+          <FormAddPengajuanSakit
             control={controlSakit}
             errors={errorsSakit}
             handlePickEvidence={handlePickEvidenceSakit}
@@ -322,7 +322,7 @@ const PengajuanView = () => {
             isDark={isDark}
             onSubmit={handleTambahPengajuanSakit}
             canSubmit={canSubmitSakit}
-            loading={loadingTambahSakit}
+            loading={loadingaddPengajuanSakit}
           />
         }
       />
@@ -334,7 +334,7 @@ const PengajuanView = () => {
         onClose={closeIzinSheet}
         isDark={isDark}
         customContent={
-          <FormTambahIzin
+          <FormAddPengajuanIzin
             control={control}
             errors={errors}
             handlePickEvidence={handlePickEvidence}
@@ -342,7 +342,7 @@ const PengajuanView = () => {
             isDark={isDark}
             onSubmit={handleTambahPengajuanIzin}
             canSubmit={canSubmit}
-            loading={loadingTambahIzin}
+            loading={loadingaddPengajuanIzin}
             showPickerFor={showPickerFor}
             leaveStartDate={leaveStartDate}
             leaveEndDate={leaveEndDate}

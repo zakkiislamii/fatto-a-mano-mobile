@@ -63,7 +63,7 @@ const useTambahPengajuanSakit = (uid: string | undefined) => {
         bukti_pendukung: uploadResult.url,
       };
 
-      await repository.tambahSakit(uid, dataPengajuan);
+      await repository.addPengajuanSakit(uid, dataPengajuan);
 
       Toast.show({
         type: "success",

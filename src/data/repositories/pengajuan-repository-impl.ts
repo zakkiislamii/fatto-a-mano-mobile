@@ -154,7 +154,7 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
     }
   }
 
-  public async tambahIzin(
+  public async addPengajuanIzin(
     uid: string,
     data: DetailPengajuanIzin
   ): Promise<void> {
@@ -173,12 +173,12 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
         updated_at: Timestamp.now(),
       });
     } catch (error) {
-      console.error("[PengajuanRepo] Error tambahIzin:", error);
+      console.error("[PengajuanRepo] Error addPengajuanIzin:", error);
       throw error;
     }
   }
 
-  public async tambahLembur(
+  public async addPengajuanLembur(
     uid: string,
     data: DetailPengajuanLembur
   ): Promise<void> {
@@ -197,12 +197,12 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
         updated_at: Timestamp.now(),
       });
     } catch (error) {
-      console.error("[PengajuanRepo] Error tambahLembur:", error);
+      console.error("[PengajuanRepo] Error addPengajuanLembur:", error);
       throw error;
     }
   }
 
-  public async tambahSakit(
+  public async addPengajuanSakit(
     uid: string,
     data: DetailPengajuanSakit
   ): Promise<void> {
@@ -221,12 +221,12 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
         updated_at: Timestamp.now(),
       });
     } catch (error) {
-      console.error("[PengajuanRepo] Error tambahSakit:", error);
+      console.error("[PengajuanRepo] Error addPengajuanSakit:", error);
       throw error;
     }
   }
 
-  public async editSakit(
+  public async editPengajuanSakit(
     uid: string,
     pengajuanId: string,
     data: Partial<DetailPengajuanSakit>
@@ -253,7 +253,7 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
     }
   }
 
-  public async editIzin(
+  public async editPengajuanIzin(
     uid: string,
     pengajuanId: string,
     data: Partial<DetailPengajuanIzin>
@@ -288,7 +288,7 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
     }
   }
 
-  public async editLembur(
+  public async editPengajuanLembur(
     uid: string,
     pengajuanId: string,
     data: Partial<DetailPengajuanLembur>
@@ -319,7 +319,7 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
     }
   }
 
-  public getStatusIzinAktif(
+  public getStatusPengajuanIzin(
     uid: string,
     tanggalHariIni: string,
     callback: (isIzinAktif: boolean) => void
@@ -359,7 +359,7 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
     }
   }
 
-  public getStatusSakitAktif(
+  public getStatusPengajuanSakit(
     uid: string,
     tanggalHariIni: string,
     callback: (isSakitAktif: boolean) => void

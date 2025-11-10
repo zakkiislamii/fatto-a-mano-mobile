@@ -29,7 +29,7 @@ interface FormIzinProps {
   leaveEndDate: Date | null;
 }
 
-const FormTambahIzin = ({
+const FormAddPengajuanIzin = ({
   control,
   errors,
   handlePickEvidence,
@@ -192,4 +192,4 @@ const FormTambahIzin = ({
   );
 };
 
-export default FormTambahIzin;
+export default FormAddPengajuanIzin;
