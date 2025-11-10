@@ -1,11 +1,11 @@
 import { RekapKaryawan } from "@/src/domain/models/rekap";
-import { IExcelExportService } from "@/src/domain/services/i-excel-export-service";
+import { IExportService } from "@/src/domain/services/i-export-service";
 import * as Sharing from "expo-sharing";
 import { Alert, Platform } from "react-native";
 import RNFS from "react-native-fs";
 import * as XLSX from "xlsx";
 
-export class ExcelExportServiceImpl implements IExcelExportService {
+export class ExportServiceImpl implements IExportService {
   public async exportToCSV(
     rekapData: RekapKaryawan[],
     fileName: string = "rekap-presensi.csv"

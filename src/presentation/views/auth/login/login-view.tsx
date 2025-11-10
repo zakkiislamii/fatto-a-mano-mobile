@@ -24,7 +24,7 @@ const LoginView = () => {
     control,
     errors,
     canSubmit,
-    onSubmit,
+    handleLogin,
     loading,
     submitError,
     isPasswordVisible,
@@ -162,7 +162,7 @@ const LoginView = () => {
             {/* Button Login */}
             <Button
               title="Login"
-              onPress={onSubmit}
+              onPress={handleLogin}
               loading={loading}
               disabled={!canSubmit}
               className={`w-full py-4 rounded-lg ${styles.buttonBg}`}

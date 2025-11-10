@@ -1,14 +1,14 @@
 import { mapFirebaseAuthError } from "@/src/common/utils/auth-error-mapper";
 import { LoginFormSchema } from "@/src/common/validators/auth/login-form-schema";
 import { AuthRepositoryImpl } from "@/src/data/repositories/auth-repository-impl";
+import { IAuthRepository } from "@/src/domain/repositories/i-auth-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Toast from "react-native-toast-message";
 
 const useLogin = () => {
-  const vmRef = useRef(new AuthRepositoryImpl());
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -29,11 +29,12 @@ const useLogin = () => {
     reValidateMode: "onChange",
   });
 
-  const onSubmit = handleSubmit(async ({ email, password }) => {
+  const handleLogin = handleSubmit(async ({ email, password }) => {
     setLoading(true);
     setSubmitError(null);
     try {
-      await vmRef.current.login(email, password);
+      const authRepo: IAuthRepository = new AuthRepositoryImpl();
+      await authRepo.login(email, password);
       reset();
       Toast.show({ type: "success", text1: "Login Berhasil!" });
       router.replace("/login");
@@ -72,7 +73,7 @@ const useLogin = () => {
     control,
     errors,
     canSubmit,
-    onSubmit,
+    handleLogin,
     loading,
     submitError,
     isPasswordVisible,

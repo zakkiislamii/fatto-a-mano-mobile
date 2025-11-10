@@ -1,6 +1,6 @@
-import { KaryawanRepositoryImpl } from "@/src/data/repositories/karyawan-repository-impl";
+import { UserRepositoryImpl } from "@/src/data/repositories/user-repository-impl";
 import { Karyawan } from "@/src/domain/models/karyawan";
-import { IKaryawanRepository } from "@/src/domain/repositories/i-karyawan-repository";
+import { IUserRepository } from "@/src/domain/repositories/i-user-repository";
 import usePagination from "@/src/hooks/use-pagination";
 import { useEffect, useMemo, useState } from "react";
 
@@ -11,7 +11,7 @@ export const useKaryawanRealTime = () => {
 
   // Real-time listener
   useEffect(() => {
-    const repo: IKaryawanRepository = new KaryawanRepositoryImpl();
+    const repo: IUserRepository = new UserRepositoryImpl();
     const unsub = repo.getAllKaryawanRealTime((data) => {
       if (data) {
         setKaryawanList(data);

@@ -21,7 +21,7 @@ export default function RegisterView() {
   const {
     control,
     errors,
-    onSubmit,
+    handleRegister,
     canSubmit,
     loading,
     submitError,
@@ -201,7 +201,7 @@ export default function RegisterView() {
             {/* Submit */}
             <Button
               title="Daftar"
-              onPress={onSubmit}
+              onPress={handleRegister}
               loading={loading}
               disabled={!canSubmit}
               className={`w-full py-4 rounded-lg ${styles.buttonBg}`}

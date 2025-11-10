@@ -1,24 +1,23 @@
 import { UserRole } from "@/src/common/enums/user-role";
 import { AuthRepositoryImpl } from "@/src/data/repositories/auth-repository-impl";
-import { useFirebaseAuth } from "@/src/hooks/use-auth";
+import { IAuthRepository } from "@/src/domain/repositories/i-auth-repository";
 import { useDeleteToken } from "@/src/hooks/use-notifikasi";
 import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Toast from "react-native-toast-message";
 
 const useLogout = () => {
-  const { uid, role } = useFirebaseAuth();
   const { mutateAsync: deleteToken } = useDeleteToken();
   const [loading, setLoading] = useState<boolean>(false);
   const [logoutModalVisible, setLogoutModalVisible] = useState<boolean>(false);
-  const vmRef = useRef(new AuthRepositoryImpl());
   const router = useRouter();
   const onLogoutPress = () => setLogoutModalVisible(true);
   const closeLogoutModal = () => setLogoutModalVisible(false);
 
-  const onConfirmLogout = async () => {
+  const handleLogout = async (uid: string, role: UserRole) => {
     setLoading(true);
     try {
+      const authRepo: IAuthRepository = new AuthRepositoryImpl();
       if (uid && role === UserRole.KARYAWAN) {
         try {
           await deleteToken(uid);
@@ -27,7 +26,7 @@ const useLogout = () => {
         }
       }
 
-      await vmRef.current.logout();
+      await authRepo.logout();
 
       setLogoutModalVisible(false);
       router.replace("/(tabs)");
@@ -46,7 +45,7 @@ const useLogout = () => {
 
   return {
     loading,
-    onConfirmLogout,
+    handleLogout,
     logoutModalVisible,
     onLogoutPress,
     closeLogoutModal,

@@ -1,18 +1,23 @@
+import { UserRole } from "@/src/common/enums/user-role";
 import {
   EditProfilData,
   LengkapiProfilData,
 } from "@/src/common/types/user-data";
 import { db } from "@/src/configs/firebase-config";
 import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
+import { Karyawan } from "@/src/domain/models/karyawan";
 import { ProfilKaryawan } from "@/src/domain/models/profil-karyawan";
 import { IUserRepository } from "@/src/domain/repositories/i-user-repository";
 import {
   DocumentData,
   Timestamp,
   Unsubscribe,
+  collection,
   doc,
   onSnapshot,
+  query,
   setDoc,
+  where,
 } from "firebase/firestore";
 
 export class UserRepositoryImpl implements IUserRepository {
@@ -142,6 +147,37 @@ export class UserRepositoryImpl implements IUserRepository {
     } catch (err) {
       console.error("[UserRepository] getLengkapiProfilRealTime error:", err);
       cb(false);
+      return null;
+    }
+  }
+
+  public getAllKaryawanRealTime(
+    cb: (data: Karyawan[] | null) => void
+  ): Unsubscribe | null {
+    try {
+      const q = query(
+        collection(db, "users"),
+        where("role", "==", UserRole.KARYAWAN)
+      );
+
+      const unsubscribe = onSnapshot(
+        q,
+        (snapshot) => {
+          const karyawanList: Karyawan[] = snapshot.docs.map((doc) => ({
+            ...(doc.data() as Karyawan),
+            uid: doc.id,
+          }));
+          cb(karyawanList);
+        },
+        (error) => {
+          console.error("[KaryawanRepository] Error fetching karyawan:", error);
+          cb(null);
+        }
+      );
+
+      return unsubscribe;
+    } catch (err) {
+      console.error("[KaryawanRepository] getAllKaryawanRealTime error:", err);
       return null;
     }
   }

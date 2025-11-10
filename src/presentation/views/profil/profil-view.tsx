@@ -13,13 +13,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useGetProfile } from "../../hooks/profile/use-get-profil";
 import AccountInfoCard from "./components/account-info-card";
 import AccountSettingsCard from "./components/account-settings-card";
+import ProfilError from "./components/profil-error";
 
 const ProfilView = () => {
   const colorScheme = useColorScheme();
   const { uid, role } = useFirebaseAuth();
   const {
     loading: loggingOut,
-    onConfirmLogout,
+    handleLogout,
     logoutModalVisible,
     onLogoutPress,
     closeLogoutModal,
@@ -32,6 +33,18 @@ const ProfilView = () => {
   const cardBg = isDark ? "bg-cardDark" : "bg-cardLight";
   const screenBg = isDark ? "bg-screenDark" : "bg-screenLight";
   const { profilKaryawan, loading, error } = useGetProfile(uid ?? null);
+
+  if (!uid || !role) {
+    return (
+      <ProfilError
+        error="Data pengguna tidak ditemukan"
+        isDark={isDark}
+        textColor={textColor}
+        secondaryTextColor={secondaryTextColor}
+        cardBg={cardBg}
+      />
+    );
+  }
 
   return (
     <SafeAreaView className={`flex-1 ${screenBg}`}>
@@ -78,7 +91,7 @@ const ProfilView = () => {
         secondaryButtonText="Batal"
         onSecondaryButtonPress={closeLogoutModal}
         primaryButtonText={loggingOut ? "Memproses..." : "Logout"}
-        onPrimaryButtonPress={onConfirmLogout}
+        onPrimaryButtonPress={() => handleLogout(uid, role)}
       />
     </SafeAreaView>
   );

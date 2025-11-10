@@ -1,8 +1,8 @@
-import { ExcelExportServiceImpl } from "@/src/data/data-sources/excel-export-service-impl";
+import { ExportServiceImpl } from "@/src/data/data-sources/export-service-impl";
 import { RekapRepositoryImpl } from "@/src/data/repositories/rekap-repository-impl";
 import { RekapKaryawan } from "@/src/domain/models/rekap";
 import { IRekapRepository } from "@/src/domain/repositories/i-rekap-repository";
-import { IExcelExportService } from "@/src/domain/services/i-excel-export-service";
+import { IExportService } from "@/src/domain/services/i-export-service";
 import { useCallback, useState } from "react";
 import Toast from "react-native-toast-message";
 
@@ -22,7 +22,7 @@ const useRekap = () => {
     setShowBottomSheet(false);
   }, []);
 
-  const fetchRekap = async (): Promise<RekapKaryawan[]> => {
+  const fetchRekap = useCallback(async (): Promise<RekapKaryawan[]> => {
     try {
       const startStr = tanggalMulai.toISOString().split("T")[0];
       const endStr = tanggalAkhir.toISOString().split("T")[0];
@@ -59,7 +59,7 @@ const useRekap = () => {
       });
       return [];
     }
-  };
+  }, [tanggalMulai, tanggalAkhir]);
 
   const exportToExcel = async (
     data: RekapKaryawan[],
@@ -75,7 +75,7 @@ const useRekap = () => {
     }
 
     try {
-      const excelService: IExcelExportService = new ExcelExportServiceImpl();
+      const excelService: IExportService = new ExportServiceImpl();
       const timestamp = new Date().getTime();
 
       // ✅ Pilih format berdasarkan parameter
@@ -116,7 +116,7 @@ const useRekap = () => {
     } finally {
       setLoading(false);
     }
-  }, [tanggalMulai, tanggalAkhir, exportFormat]);
+  }, [fetchRekap, exportFormat]);
 
   return {
     loading,

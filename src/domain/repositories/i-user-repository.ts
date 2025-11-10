@@ -4,6 +4,7 @@ import {
 } from "@/src/common/types/user-data";
 import { ProfilKaryawan } from "@/src/domain/models/profil-karyawan";
 import { Unsubscribe } from "firebase/firestore";
+import { Karyawan } from "../models/karyawan";
 
 export interface IUserRepository {
   getProfilRealTime(
@@ -15,5 +16,8 @@ export interface IUserRepository {
   getLengkapiProfilRealTime(
     uid: string,
     cb: (isComplete: boolean) => void
+  ): Unsubscribe | null;
+  getAllKaryawanRealTime(
+    cb: (data: Karyawan[] | null) => void
   ): Unsubscribe | null;
 }

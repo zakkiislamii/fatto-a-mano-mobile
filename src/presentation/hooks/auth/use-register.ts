@@ -1,14 +1,13 @@
 import { mapFirebaseAuthError } from "@/src/common/utils/auth-error-mapper";
 import { RegisterFormSchema } from "@/src/common/validators/auth/register-form-schema";
 import { AuthRepositoryImpl } from "@/src/data/repositories/auth-repository-impl";
+import { IAuthRepository } from "@/src/domain/repositories/i-auth-repository";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import Toast from "react-native-toast-message";
 
 const useRegister = () => {
-  const vmRef = useRef(new AuthRepositoryImpl());
-
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -35,11 +34,12 @@ const useRegister = () => {
     reValidateMode: "onChange",
   });
 
-  const onSubmit = handleSubmit(async ({ email, password }) => {
+  const handleRegister = handleSubmit(async ({ email, password }) => {
     setLoading(true);
     setSubmitError(null);
     try {
-      await vmRef.current.register(email, password);
+      const authRepo: IAuthRepository = new AuthRepositoryImpl();
+      await authRepo.register(email, password);
       reset();
       Toast.show({ type: "success", text1: "Registrasi berhasil!" });
       return true;
@@ -79,7 +79,7 @@ const useRegister = () => {
   return {
     control,
     errors,
-    onSubmit,
+    handleRegister,
     canSubmit,
     loading,
     submitError,

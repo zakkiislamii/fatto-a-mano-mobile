@@ -28,7 +28,7 @@ const defaultValues: LengkapiProfil = {
   },
 };
 
-const useUpdateLengkapiProfil = (uid: string | undefined) => {
+const useEditLengkapiProfil = (uid: string | undefined) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [fetchingData, setFetchingData] = useState<boolean>(true);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -175,7 +175,7 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
       });
       router.replace("/(tabs)");
     } catch (err) {
-      console.error("[useUpdateLengkapiProfil] save error:", err);
+      console.error("[useEditLengkapiProfil] save error:", err);
       setError(err as Error);
       Toast.show({
         type: "error",
@@ -288,4 +288,4 @@ const useUpdateLengkapiProfil = (uid: string | undefined) => {
   };
 };
 
-export default useUpdateLengkapiProfil;
+export default useEditLengkapiProfil;
