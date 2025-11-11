@@ -1,10 +1,18 @@
 import { db } from "@/src/configs/firebase-config";
+import { SheetyServiceImpl } from "@/src/data/data-sources/sheety-service-impl";
 import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
+import { ISheetyService } from "@/src/domain/services/i-sheety-service";
 import { Unsubscribe } from "firebase/auth";
 import { doc, onSnapshot, updateDoc, writeBatch } from "firebase/firestore";
 
 export class JadwalRepositoryImpl implements IJadwalRepository {
+  private sheetyService: ISheetyService;
+
+  constructor() {
+    this.sheetyService = new SheetyServiceImpl();
+  }
+
   public getJadwalKaryawanRealTime(
     uid: string,
     cb: (jadwal: JadwalKaryawan | null) => void
@@ -93,6 +101,10 @@ export class JadwalRepositoryImpl implements IJadwalRepository {
     data: { uid: string; jadwal: JadwalKaryawan; sheetyId: number }[]
   ): Promise<void> {
     try {
+      if (!data || data.length === 0) {
+        throw new Error("Tidak ada data untuk disinkronkan.");
+      }
+
       const batch = writeBatch(db);
 
       data.forEach(({ uid, jadwal, sheetyId }) => {
@@ -109,7 +121,41 @@ export class JadwalRepositoryImpl implements IJadwalRepository {
 
       await batch.commit();
     } catch (error) {
-      console.error("[SinkronRepository] Bulk sinkron error:", error);
+      console.error("[JadwalRepository] Bulk sinkron error:", error);
+      throw error;
+    }
+  }
+
+  public async sinkronJadwalFromSheets(): Promise<number> {
+    try {
+      const freshData = await this.sheetyService.getRows();
+
+      if (!freshData || freshData.length === 0) {
+        return 0;
+      }
+
+      // 2. Transform data
+      const sinkronData = freshData
+        .filter((row) => row.id !== undefined && row.uid)
+        .map((row) => ({
+          uid: row.uid,
+          jadwal: {
+            jam_masuk: row.jamMasuk || "",
+            jam_keluar: row.jamKeluar || "",
+            hari_kerja: row.hariKerja || "",
+            is_wfa: row.isWfa || false,
+          } as JadwalKaryawan,
+          sheetyId: row.id as number,
+        }));
+
+      if (sinkronData.length === 0) {
+        return 0;
+      }
+
+      await this.sinkronJadwal(sinkronData);
+      return sinkronData.length;
+    } catch (error) {
+      console.error("[JadwalRepository] sinkronJadwalFromExcel error:", error);
       throw error;
     }
   }

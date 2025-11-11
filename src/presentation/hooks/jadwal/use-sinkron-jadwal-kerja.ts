@@ -1,8 +1,5 @@
-import { SheetyServiceImpl } from "@/src/data/data-sources/sheety-service-impl";
 import { JadwalRepositoryImpl } from "@/src/data/repositories/jadwal-repository-impl";
-import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
-import { ISheetyService } from "@/src/domain/services/i-sheety-service";
 import { useSendToAll } from "@/src/hooks/use-notifikasi";
 import { useState } from "react";
 import Toast from "react-native-toast-message";
@@ -14,10 +11,11 @@ const useSinkronJadwalKerja = () => {
   const handleSinkronJadwal = async () => {
     setLoading(true);
     try {
-      const sheetyService: ISheetyService = new SheetyServiceImpl();
-      const freshData = await sheetyService.getRows();
+      const jadwalRepo: IJadwalRepository = new JadwalRepositoryImpl();
+      const jumlahDataDisinkron = await jadwalRepo.sinkronJadwalFromSheets();
 
-      if (!freshData || freshData.length === 0) {
+      // Validasi jika tidak ada data
+      if (jumlahDataDisinkron === 0) {
         Toast.show({
           type: "info",
           text1: "Tidak Ada Data",
@@ -25,24 +23,6 @@ const useSinkronJadwalKerja = () => {
         });
         return;
       }
-
-      const sinkronRepo: IJadwalRepository = new JadwalRepositoryImpl();
-
-      const sinkronData = freshData
-        .filter((row) => row.id !== undefined)
-        .map((row) => ({
-          uid: row.uid,
-          jadwal: {
-            jam_masuk: row.jamMasuk,
-            jam_keluar: row.jamKeluar,
-            hari_kerja: row.hariKerja,
-            is_wfa: row.isWfa,
-          } as JadwalKaryawan,
-          sheetyId: row.id as number,
-        }));
-
-      // Sinkron ke Firestore
-      await sinkronRepo.sinkronJadwal(sinkronData);
 
       // Kirim notifikasi ke semua karyawan
       let notifStatus = "";
@@ -60,7 +40,7 @@ const useSinkronJadwalKerja = () => {
       Toast.show({
         type: "success",
         text1: "Sinkronisasi Berhasil",
-        text2: `${sinkronData.length} jadwal telah disinkronkan${notifStatus}`,
+        text2: `${jumlahDataDisinkron} jadwal telah disinkronkan${notifStatus}`,
       });
     } catch (error) {
       console.error("[useSinkronJadwalKerja] Sinkronisasi gagal:", error);

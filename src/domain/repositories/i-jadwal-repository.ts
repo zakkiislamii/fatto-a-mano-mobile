@@ -15,4 +15,6 @@ export interface IJadwalRepository {
   sinkronJadwal(
     data: { uid: string; jadwal: JadwalKaryawan; sheetyId: number }[]
   ): Promise<void>;
+
+  sinkronJadwalFromSheets(): Promise<number>;
 }

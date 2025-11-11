@@ -1,5 +1,5 @@
 import { SheetyServiceImpl } from "@/src/data/data-sources/sheety-service-impl";
-import { Sheets } from "@/src/domain/models/sheets";
+import { Sheety } from "@/src/domain/models/sheety";
 import { ISheetyService } from "@/src/domain/services/i-sheety-service";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -15,7 +15,7 @@ export const useGetRows = () => {
 
 export const useAddRow = () => {
   return useMutation({
-    mutationFn: (data: Sheets) => {
+    mutationFn: (data: Sheety) => {
       return sheetyService.addRow(data);
     },
   });
@@ -23,7 +23,7 @@ export const useAddRow = () => {
 
 export const useEditRow = () => {
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Partial<Sheets> }) => {
+    mutationFn: ({ id, data }: { id: number; data: Partial<Sheety> }) => {
       return sheetyService.editRow(id, data);
     },
   });

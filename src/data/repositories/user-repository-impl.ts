@@ -7,7 +7,7 @@ import { db } from "@/src/configs/firebase-config";
 import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { Karyawan } from "@/src/domain/models/karyawan";
 import { ProfilKaryawan } from "@/src/domain/models/profil-karyawan";
-import { Sheets } from "@/src/domain/models/sheets";
+import { Sheety } from "@/src/domain/models/sheety";
 import { IUserRepository } from "@/src/domain/repositories/i-user-repository";
 import { ISheetyService } from "@/src/domain/services/i-sheety-service";
 import {
@@ -118,7 +118,7 @@ export class UserRepositoryImpl implements IUserRepository {
     try {
       await this.lengkapiProfil(uid, data);
 
-      const excelData: Sheets = {
+      const sheetyData: Sheety = {
         uid: uid,
         email: email,
         nama: data.nama!,
@@ -129,7 +129,7 @@ export class UserRepositoryImpl implements IUserRepository {
         isWfa: !!data.jadwal!.is_wfa,
       };
 
-      const response = await this.sheetyService.addRow(excelData);
+      const response = await this.sheetyService.addRow(sheetyData);
 
       if (response.sheet1.id) {
         await this.lengkapiProfil(uid, {

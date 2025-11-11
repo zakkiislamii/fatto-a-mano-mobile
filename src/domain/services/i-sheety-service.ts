@@ -1,11 +1,11 @@
 import {
   SheetyPartialResponse,
   SheetyResponse,
-} from "@/src/common/types/excel-response";
-import { Sheets } from "@/src/domain/models/sheets";
+} from "@/src/common/types/sheety-response";
+import { Sheety } from "@/src/domain/models/sheety";
 
 export interface ISheetyService {
-  getRows(): Promise<Sheets[]>;
-  addRow(data: Sheets): Promise<SheetyResponse>;
-  editRow(id: number, data: Partial<Sheets>): Promise<SheetyPartialResponse>;
+  getRows(): Promise<Sheety[]>;
+  addRow(data: Sheety): Promise<SheetyResponse>;
+  editRow(id: number, data: Partial<Sheety>): Promise<SheetyPartialResponse>;
 }

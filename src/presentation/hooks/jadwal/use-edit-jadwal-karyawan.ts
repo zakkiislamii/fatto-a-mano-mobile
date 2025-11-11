@@ -4,7 +4,7 @@ import { EditJadwalKaryawanFormSchema } from "@/src/common/validators/jadwal/edi
 import { JadwalRepositoryImpl } from "@/src/data/repositories/jadwal-repository-impl";
 import { UserRepositoryImpl } from "@/src/data/repositories/user-repository-impl";
 import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
-import { Sheets } from "@/src/domain/models/sheets";
+import { Sheety } from "@/src/domain/models/sheety";
 import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
 import { IUserRepository } from "@/src/domain/repositories/i-user-repository";
 import { useSendToKaryawan } from "@/src/hooks/use-notifikasi";
@@ -159,7 +159,7 @@ const useEditJadwalKaryawan = () => {
       // Update Google Sheets
       if (sheetyId) {
         try {
-          const excelData: Partial<Sheets> = {
+          const excelData: Partial<Sheety> = {
             hariKerja: data.hari_kerja,
             jamMasuk: data.jam_masuk,
             jamKeluar: data.jam_keluar,

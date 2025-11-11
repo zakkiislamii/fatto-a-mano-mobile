@@ -3,7 +3,7 @@ import PaginationControls from "@/src/components/ui/pagination-controls";
 import { Karyawan } from "@/src/domain/models/karyawan";
 import { useKaryawanRealTime } from "@/src/presentation/hooks/karyawan/use-karyawan-realtime";
 import useRekap from "@/src/presentation/hooks/rekap/use-rekap";
-import useSinkronJadwalKerja from "@/src/presentation/hooks/sinkron-jadwal-kerja/use-sinkron-jadwal-kerja";
+import useSinkronJadwalKerja from "@/src/presentation/hooks/jadwal/use-sinkron-jadwal-kerja";
 import React from "react";
 import {
   ActivityIndicator,

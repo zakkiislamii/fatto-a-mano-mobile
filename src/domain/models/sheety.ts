@@ -1,4 +1,4 @@
-export interface Sheets {
+export interface Sheety {
   id?: number;
   uid: string;
   email: string;
