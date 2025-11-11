@@ -2,11 +2,9 @@ import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
 import formatHariKerja from "@/src/common/utils/format-hari-kerja";
 import { EditJadwalKaryawanFormSchema } from "@/src/common/validators/jadwal/edit-jadwal-karyawan-form-schema";
 import { JadwalRepositoryImpl } from "@/src/data/repositories/jadwal-repository-impl";
-import { UserRepositoryImpl } from "@/src/data/repositories/user-repository-impl";
 import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { Sheety } from "@/src/domain/models/sheety";
 import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
-import { IUserRepository } from "@/src/domain/repositories/i-user-repository";
 import { useSendToKaryawan } from "@/src/hooks/use-notifikasi";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Unsubscribe } from "firebase/firestore";
@@ -68,7 +66,6 @@ const useEditJadwalKaryawan = () => {
         return;
       }
 
-      // Cleanup previous listener
       if (unsubscribeRef.current) {
         unsubscribeRef.current();
       }
@@ -76,14 +73,14 @@ const useEditJadwalKaryawan = () => {
       setFetchingData(true);
       setCurrentUid(uid);
 
-      const userRepo: IUserRepository = new UserRepositoryImpl();
-      const unsubscribe = userRepo.getProfilRealTime(uid, (profil) => {
-        if (profil) {
-          if (profil.sheety_id) {
-            setSheetyId(profil.sheety_id);
+      const jadwalRepo: IJadwalRepository = new JadwalRepositoryImpl();
+      const unsubscribe = jadwalRepo.getJadwalWithSheetyIdRealTime(
+        uid,
+        ({ jadwal, sheetyId }) => {
+          if (sheetyId) {
+            setSheetyId(sheetyId);
           }
 
-          const jadwal = profil.jadwal;
           if (jadwal) {
             reset({
               jam_masuk: jadwal.jam_masuk || "",
@@ -97,9 +94,9 @@ const useEditJadwalKaryawan = () => {
               setSelectedHari(expandedDays);
             }
           }
+          setFetchingData(false);
         }
-        setFetchingData(false);
-      });
+      );
 
       unsubscribeRef.current = unsubscribe;
     },

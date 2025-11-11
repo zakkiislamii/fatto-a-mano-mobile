@@ -17,4 +17,12 @@ export interface IJadwalRepository {
   ): Promise<void>;
 
   sinkronJadwalFromSheets(): Promise<number>;
+
+  getJadwalWithSheetyIdRealTime(
+    uid: string,
+    cb: (data: {
+      jadwal: JadwalKaryawan | null;
+      sheetyId: number | null;
+    }) => void
+  ): Unsubscribe | null;
 }

@@ -159,4 +159,57 @@ export class JadwalRepositoryImpl implements IJadwalRepository {
       throw error;
     }
   }
+
+  public getJadwalWithSheetyIdRealTime(
+    uid: string,
+    cb: (data: {
+      jadwal: JadwalKaryawan | null;
+      sheetyId: number | null;
+    }) => void
+  ): Unsubscribe | null {
+    try {
+      if (!uid) {
+        console.warn("[JadwalRepository] UID tidak diberikan.");
+        return null;
+      }
+
+      return onSnapshot(
+        doc(db, "users", uid),
+        (snap) => {
+          if (!snap.exists()) {
+            cb({ jadwal: null, sheetyId: null });
+            return;
+          }
+
+          const data = snap.data() as Record<string, any>;
+          const j = data.jadwal;
+          const sheetyId = data.sheety_id ?? null;
+
+          if (!j) {
+            cb({ jadwal: null, sheetyId });
+            return;
+          }
+
+          const jadwalKaryawan: JadwalKaryawan = {
+            jam_masuk: j.jam_masuk ?? "",
+            jam_keluar: j.jam_keluar ?? "",
+            hari_kerja: j.hari_kerja ?? "",
+            is_wfa: !!j.is_wfa,
+          };
+
+          cb({ jadwal: jadwalKaryawan, sheetyId });
+        },
+        (error) => {
+          console.error("[JadwalRepository] onSnapshot error:", error);
+          cb({ jadwal: null, sheetyId: null });
+        }
+      );
+    } catch (error: unknown) {
+      console.error(
+        "[JadwalRepository] getJadwalWithSheetyIdRealTime error:",
+        error
+      );
+      throw error;
+    }
+  }
 }
