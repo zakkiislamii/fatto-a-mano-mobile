@@ -1,5 +1,5 @@
+import { getDateTodayWithTime } from "@/src/common/utils/get-date-today-with-time";
 import Today from "@/src/common/utils/get-today";
-import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
 import { PengajuanRepositoryImpl } from "@/src/data/repositories/pengajuan-repository-impl";
 import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
 import { DetailPengajuanLembur } from "@/src/domain/models/detail-pengajuan-lembur";
@@ -155,7 +155,10 @@ const useAddPresensiKeluar = () => {
     }
 
     const today = new Date();
-    const jamKeluarDate = parseJamToDateToday(jadwalKaryawan.jam_keluar, today);
+    const jamKeluarDate = getDateTodayWithTime(
+      jadwalKaryawan.jam_keluar,
+      today
+    );
 
     if (!jamKeluarDate) {
       Toast.show({ type: "error", text1: "Format jam keluar tidak valid." });

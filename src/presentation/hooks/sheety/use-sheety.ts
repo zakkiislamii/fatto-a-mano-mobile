@@ -1,25 +1,9 @@
 import { SheetyServiceImpl } from "@/src/data/data-sources/sheety-service-impl";
 import { Sheety } from "@/src/domain/models/sheety";
 import { ISheetyService } from "@/src/domain/services/i-sheety-service";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 const sheetyService: ISheetyService = new SheetyServiceImpl();
-
-export const useGetRows = () => {
-  return useQuery({
-    queryKey: ["sheety-rows"],
-    queryFn: () => sheetyService.getRows(),
-    staleTime: 5 * 60 * 1000,
-  });
-};
-
-export const useAddRow = () => {
-  return useMutation({
-    mutationFn: (data: Sheety) => {
-      return sheetyService.addRow(data);
-    },
-  });
-};
 
 export const useEditRow = () => {
   return useMutation({

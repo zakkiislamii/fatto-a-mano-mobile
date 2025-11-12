@@ -77,8 +77,6 @@ const useRekap = () => {
     try {
       const excelService: IExportService = new ExportServiceImpl();
       const timestamp = new Date().getTime();
-
-      // ✅ Pilih format berdasarkan parameter
       if (format === "xlsx") {
         const fileName = `rekap-presensi-${timestamp}.xlsx`;
         await excelService.exportToXLSX(data, fileName);

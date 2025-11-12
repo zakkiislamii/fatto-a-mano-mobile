@@ -1,4 +1,4 @@
-export function parseJamToDateToday(
+export function getDateTodayWithTime(
   jam: string,
   now = new Date()
 ): Date | null {

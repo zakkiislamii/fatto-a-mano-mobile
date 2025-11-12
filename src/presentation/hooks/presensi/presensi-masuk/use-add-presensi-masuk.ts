@@ -1,7 +1,7 @@
 import { StatusPresensi } from "@/src/common/enums/status-presensi";
 import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
+import { getDateTodayWithTime } from "@/src/common/utils/get-date-today-with-time";
 import Today from "@/src/common/utils/get-today";
-import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
 import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
 import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { PresensiMasuk } from "@/src/domain/models/presensi-masuk";
@@ -51,7 +51,7 @@ const useAddPresensiMasuk = () => {
     }
 
     //  Format jam masuk & keluar
-    const jamMasukDate = parseJamToDateToday(jadwalKaryawan.jam_masuk, today);
+    const jamMasukDate = getDateTodayWithTime(jadwalKaryawan.jam_masuk, today);
     if (!jamMasukDate) {
       Toast.show({ type: "error", text1: "Format jam masuk tidak valid." });
       return false;

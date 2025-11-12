@@ -1,6 +1,6 @@
 import { KeteranganFile } from "@/src/common/enums/keterangan-file";
+import { getDateTodayWithTime } from "@/src/common/utils/get-date-today-with-time";
 import { pickImageFromLibrary } from "@/src/common/utils/image-picker";
-import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
 import { uploadToSupabase } from "@/src/common/utils/upload-to-supabase";
 import { PengajuanLemburFormSchema } from "@/src/common/validators/pengajuan/pengajuan-lembur-form-schema";
 import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
@@ -59,7 +59,7 @@ const useAddPresensiKeluarLembur = (props: UseAddPresensiKeluarLemburProps) => {
       if (!jadwalKaryawan) return 0;
 
       const today = new Date();
-      const jamKeluarDate = parseJamToDateToday(
+      const jamKeluarDate = getDateTodayWithTime(
         jadwalKaryawan.jam_keluar,
         today
       );

@@ -237,10 +237,6 @@ const useLengkapiProfil = (uid: string | undefined) => {
     control,
     errors,
     watch,
-    setValue,
-    showModal,
-    openModal,
-    closeModal,
     showConfirmModal,
     closeConfirmModal,
     showJamMasukPicker,
@@ -255,7 +251,6 @@ const useLengkapiProfil = (uid: string | undefined) => {
     handleTimeChange,
     handleSubmit,
     confirmSubmit,
-    error,
   };
 };
 

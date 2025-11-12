@@ -1,7 +1,7 @@
 import { StatusPresensi } from "@/src/common/enums/status-presensi";
 import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
+import { getDateTodayWithTime } from "@/src/common/utils/get-date-today-with-time";
 import Today from "@/src/common/utils/get-today";
-import { parseJamToDateToday } from "@/src/common/utils/parse-jam-to-date-today";
 import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
 import { PresensiMasuk } from "@/src/domain/models/presensi-masuk";
 import { useGetJadwal } from "@/src/presentation/hooks/jadwal/use-get-jadwal";
@@ -17,7 +17,8 @@ const useAutoPresensiChecker = (uid: string) => {
   const { presensiMasukStatus, loading: presensiMasukStatusLoading } =
     useGetStatusPresensiMasukToday(uid);
   const { isIzinAktif, loading: izinLoading } = useGetStatusPengajuanIzin(uid);
-  const { isSakitAktif, loading: sakitLoading } = useGetStatusPengajuanSakit(uid);
+  const { isSakitAktif, loading: sakitLoading } =
+    useGetStatusPengajuanSakit(uid);
   const hasShownAlpaToastRef = useRef<boolean>(false);
   const hasCreatedAlpaRecordRef = useRef<boolean>(false);
   const hasShownIzinToastRef = useRef<boolean>(false);
@@ -186,7 +187,10 @@ const useAutoPresensiChecker = (uid: string) => {
       return;
     }
 
-    const jamKeluarDate = parseJamToDateToday(jadwalKaryawan.jam_keluar, today);
+    const jamKeluarDate = getDateTodayWithTime(
+      jadwalKaryawan.jam_keluar,
+      today
+    );
 
     if (!jamKeluarDate) {
       hasShownAlpaToastRef.current = false;
