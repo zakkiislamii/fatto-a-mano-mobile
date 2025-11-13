@@ -16,8 +16,6 @@ export interface IJadwalRepository {
     data: { uid: string; jadwal: JadwalKaryawan; sheetyId: number }[]
   ): Promise<void>;
 
-  sinkronJadwalFromSheets(): Promise<number>;
-
   getJadwalWithSheetyIdRealTime(
     uid: string,
     cb: (data: {

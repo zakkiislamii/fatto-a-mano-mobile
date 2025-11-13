@@ -130,7 +130,7 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
               >
                 Status Presensi
               </Text>
-              <View className="flex-row items-center justify-between">
+              <View className="flex-col items-start gap-2 justify-between">
                 <Text className={`text-xl font-bold ${statusDisplay.color}`}>
                   {statusDisplay.text}
                 </Text>
@@ -196,7 +196,7 @@ const PresensiView = ({ isDark, uid }: PresensiViewProps) => {
         }
         disabled={finalButtonDisabled}
         className={`py-4 w-full rounded-xl ${buttonBg} mt-auto`}
-        textClassName={`font-bold text-lg ${primaryText}`}
+        textClassName={`font-bold text-lg text-white`}
       />
 
       <DynamicBottomSheet

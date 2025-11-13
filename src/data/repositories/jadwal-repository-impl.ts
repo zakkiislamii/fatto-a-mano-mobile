@@ -1,18 +1,10 @@
 import { db } from "@/src/configs/firebase-config";
-import { SheetyServiceImpl } from "@/src/data/data-sources/sheety-service-impl";
 import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
-import { ISheetyService } from "@/src/domain/services/i-sheety-service";
 import { Unsubscribe } from "firebase/auth";
 import { doc, onSnapshot, updateDoc, writeBatch } from "firebase/firestore";
 
 export class JadwalRepositoryImpl implements IJadwalRepository {
-  private sheetyService: ISheetyService;
-
-  constructor() {
-    this.sheetyService = new SheetyServiceImpl();
-  }
-
   public getJadwalKaryawanRealTime(
     uid: string,
     cb: (jadwal: JadwalKaryawan | null) => void
@@ -98,7 +90,14 @@ export class JadwalRepositoryImpl implements IJadwalRepository {
   }
 
   public async sinkronJadwal(
-    data: { uid: string; jadwal: JadwalKaryawan; sheetyId: number }[]
+    data: {
+      uid: string;
+      jadwal: JadwalKaryawan;
+      sheetyId: number;
+      nama: string;
+      divisi: string;
+      email: string;
+    }[]
   ): Promise<void> {
     try {
       if (!data || data.length === 0) {
@@ -107,14 +106,18 @@ export class JadwalRepositoryImpl implements IJadwalRepository {
 
       const batch = writeBatch(db);
 
-      data.forEach(({ uid, jadwal, sheetyId }) => {
+      data.forEach(({ uid, jadwal, sheetyId, nama, divisi, email }) => {
         const userRef = doc(db, "users", uid);
+
         batch.update(userRef, {
           "jadwal.jam_masuk": jadwal.jam_masuk,
           "jadwal.jam_keluar": jadwal.jam_keluar,
           "jadwal.hari_kerja": jadwal.hari_kerja,
           "jadwal.is_wfa": jadwal.is_wfa,
           sheety_id: sheetyId,
+          nama: nama,
+          divisi: divisi,
+          email: email,
           updated_at: new Date(),
         });
       });
@@ -122,40 +125,6 @@ export class JadwalRepositoryImpl implements IJadwalRepository {
       await batch.commit();
     } catch (error) {
       console.error("[JadwalRepository] Bulk sinkron error:", error);
-      throw error;
-    }
-  }
-
-  public async sinkronJadwalFromSheets(): Promise<number> {
-    try {
-      const freshData = await this.sheetyService.getRows();
-
-      if (!freshData || freshData.length === 0) {
-        return 0;
-      }
-
-      // 2. Transform data
-      const sinkronData = freshData
-        .filter((row) => row.id !== undefined && row.uid)
-        .map((row) => ({
-          uid: row.uid,
-          jadwal: {
-            jam_masuk: row.jamMasuk || "",
-            jam_keluar: row.jamKeluar || "",
-            hari_kerja: row.hariKerja || "",
-            is_wfa: row.isWfa || false,
-          } as JadwalKaryawan,
-          sheetyId: row.id as number,
-        }));
-
-      if (sinkronData.length === 0) {
-        return 0;
-      }
-
-      await this.sinkronJadwal(sinkronData);
-      return sinkronData.length;
-    } catch (error) {
-      console.error("[JadwalRepository] sinkronJadwalFromExcel error:", error);
       throw error;
     }
   }

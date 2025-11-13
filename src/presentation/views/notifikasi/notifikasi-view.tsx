@@ -69,7 +69,7 @@ const NotifikasiView = () => {
             <Text className={`text-base ${bodyColor}`}>{item.body}</Text>
           </View>
           <Text className={`text-xs font-bold ${textMuted}`}>
-            {formatTimestamp(item.createdAt)}
+            {formatTimestamp(item.created_at)}
           </Text>
         </View>
       </TouchableOpacity>

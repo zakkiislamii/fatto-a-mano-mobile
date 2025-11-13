@@ -1,18 +1,20 @@
 import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
 import formatHariKerja from "@/src/common/utils/format-hari-kerja";
 import { EditJadwalKaryawanFormSchema } from "@/src/common/validators/jadwal/edit-jadwal-karyawan-form-schema";
+import { NotifikasiServiceImpl } from "@/src/data/data-sources/notifikasi-service-impl";
+import { SheetyServiceImpl } from "@/src/data/data-sources/sheety-service-impl";
 import { JadwalRepositoryImpl } from "@/src/data/repositories/jadwal-repository-impl";
 import { JadwalKaryawan } from "@/src/domain/models/jadwal-karyawan";
 import { Sheety } from "@/src/domain/models/sheety";
 import { IJadwalRepository } from "@/src/domain/repositories/i-jadwal-repository";
-import { useSendToKaryawan } from "@/src/hooks/use-notifikasi";
+import { INotifikasiService } from "@/src/domain/services/i-notifikasi-service";
+import { ISheetyService } from "@/src/domain/services/i-sheety-service";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Unsubscribe } from "firebase/firestore";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Platform } from "react-native";
 import Toast from "react-native-toast-message";
-import { useEditRow } from "../sheety/use-sheety";
 
 const defaultValues: JadwalKaryawan = {
   jam_masuk: "",
@@ -23,19 +25,15 @@ const defaultValues: JadwalKaryawan = {
 
 const useEditJadwalKaryawan = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [fetchingData, setFetchingData] = useState<boolean>(true);
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [showBottomSheetEditJadwal, setsSowBottomSheetEditJadwal] =
+    useState<boolean>(false);
   const [showJamMasukPicker, setShowJamMasukPicker] = useState(false);
   const [showJamKeluarPicker, setShowJamKeluarPicker] = useState(false);
   const [selectedHari, setSelectedHari] = useState<number[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [sheetyId, setSheetyId] = useState<number | null>(null);
-  const [currentUid, setCurrentUid] = useState<string | null>(null);
+  const [uid, setUid] = useState<string | null>(null);
   const unsubscribeRef = useRef<Unsubscribe | null>(null);
-
-  const { mutateAsync: sendNotification } = useSendToKaryawan();
-  const { mutateAsync: editExcelRow } = useEditRow();
 
   const {
     control,
@@ -62,7 +60,6 @@ const useEditJadwalKaryawan = () => {
   const fetchJadwalByUid = useCallback(
     (uid: string) => {
       if (!uid) {
-        setFetchingData(false);
         return;
       }
 
@@ -70,8 +67,7 @@ const useEditJadwalKaryawan = () => {
         unsubscribeRef.current();
       }
 
-      setFetchingData(true);
-      setCurrentUid(uid);
+      setUid(uid);
 
       const jadwalRepo: IJadwalRepository = new JadwalRepositoryImpl();
       const unsubscribe = jadwalRepo.getJadwalWithSheetyIdRealTime(
@@ -94,7 +90,6 @@ const useEditJadwalKaryawan = () => {
               setSelectedHari(expandedDays);
             }
           }
-          setFetchingData(false);
         }
       );
 
@@ -103,19 +98,17 @@ const useEditJadwalKaryawan = () => {
     [reset]
   );
 
-  const openModal = useCallback(
+  const openBottomSheetEditJadwal = useCallback(
     (uid: string) => {
       fetchJadwalByUid(uid);
-      setShowModal(true);
+      setsSowBottomSheetEditJadwal(true);
     },
     [fetchJadwalByUid]
   );
 
-  const closeModal = useCallback(() => {
-    setShowModal(false);
-    setError(null);
+  const closeBottomSheetEditJadwal = useCallback(() => {
+    setsSowBottomSheetEditJadwal(false);
 
-    // Cleanup listener
     if (unsubscribeRef.current) {
       unsubscribeRef.current();
       unsubscribeRef.current = null;
@@ -134,14 +127,15 @@ const useEditJadwalKaryawan = () => {
   );
 
   const handleSaveEditJadwal = rhfHandleSubmit(async (data) => {
-    setError(null);
     setLoading(true);
     try {
-      if (!currentUid) {
+      if (!uid) {
         throw new Error("UID tidak tersedia.");
       }
 
       const jadwalRepo: IJadwalRepository = new JadwalRepositoryImpl();
+      const sheetyService: ISheetyService = new SheetyServiceImpl();
+      const notifikasiService: INotifikasiService = new NotifikasiServiceImpl();
 
       const jadwalData: Partial<JadwalKaryawan> = {
         jam_masuk: data.jam_masuk,
@@ -150,10 +144,8 @@ const useEditJadwalKaryawan = () => {
         is_wfa: !!data.is_wfa,
       };
 
-      // Update Firestore
-      await jadwalRepo.editJadwalKaryawan(currentUid, jadwalData);
+      await jadwalRepo.editJadwalKaryawan(uid, jadwalData);
 
-      // Update Google Sheets
       if (sheetyId) {
         try {
           const excelData: Partial<Sheety> = {
@@ -163,7 +155,7 @@ const useEditJadwalKaryawan = () => {
             isWfa: !!data.is_wfa,
           };
 
-          await editExcelRow({ id: sheetyId, data: excelData });
+          await sheetyService.editRow(sheetyId, excelData);
         } catch (excelError) {
           console.error(
             "[useEditJadwalKaryawan] Gagal update Excel:",
@@ -176,10 +168,9 @@ const useEditJadwalKaryawan = () => {
         );
       }
 
-      // Kirim notifikasi
       let notifStatus = "";
       try {
-        await sendNotification(currentUid);
+        await notifikasiService.SendToKaryawan(uid);
         notifStatus = " & notifikasi terkirim";
       } catch (notifError) {
         console.error(
@@ -197,7 +188,7 @@ const useEditJadwalKaryawan = () => {
       });
 
       setShowConfirmModal(false);
-      closeModal();
+      closeBottomSheetEditJadwal();
 
       Toast.show({
         type: "success",
@@ -206,7 +197,6 @@ const useEditJadwalKaryawan = () => {
       });
     } catch (err) {
       console.error("[useEditJadwalKaryawan] save error:", err);
-      setError(err as Error);
       Toast.show({
         type: "error",
         text1: "Gagal menyimpan",
@@ -284,14 +274,12 @@ const useEditJadwalKaryawan = () => {
   return {
     canSubmit,
     loading,
-    fetchingData,
     control,
     errors,
     watch,
-    setValue,
-    showModal,
-    openModal,
-    closeModal,
+    showBottomSheetEditJadwal,
+    openBottomSheetEditJadwal,
+    closeBottomSheetEditJadwal,
     showConfirmModal,
     closeConfirmModal,
     showJamMasukPicker,
@@ -303,7 +291,6 @@ const useEditJadwalKaryawan = () => {
     handleTimeChange,
     handleSubmit,
     confirmSubmit,
-    error,
   };
 };
 

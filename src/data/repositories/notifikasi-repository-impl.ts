@@ -22,7 +22,7 @@ export class NotifikasiRepositoryImpl implements INotifikasiRepository {
     try {
       if (!uid) return null;
       const colRef = collection(db, `users/${uid}/notifications`);
-      const q = query(colRef, orderBy("createdAt", "desc"));
+      const q = query(colRef, orderBy("created_at", "desc"));
 
       const unsubscribe = onSnapshot(
         q,
@@ -34,7 +34,7 @@ export class NotifikasiRepositoryImpl implements INotifikasiRepository {
             notifikasi.push({
               id: doc.id,
               body: data.body,
-              createdAt: data.createdAt,
+              created_at: data.created_at,
               read: data.read,
               title: data.title,
             });

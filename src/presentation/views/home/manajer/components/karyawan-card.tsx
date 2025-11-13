@@ -27,9 +27,9 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
     watch,
     canSubmit,
     loading,
-    showModal,
-    openModal,
-    closeModal,
+    showBottomSheetEditJadwal,
+    openBottomSheetEditJadwal,
+    closeBottomSheetEditJadwal,
     showConfirmModal,
     closeConfirmModal,
     showJamMasukPicker,
@@ -121,15 +121,15 @@ const KaryawanCard = ({ karyawan, isDark }: KaryawanCardProps) => {
           primaryButtonText="Edit Jadwal"
           onPrimaryButtonPress={() => {
             setSheetVisible(false);
-            openModal(karyawan.uid);
+            openBottomSheetEditJadwal(karyawan.uid);
           }}
         />
       )}
 
       {/* Bottom Sheet Edit Jadwal */}
       <DynamicBottomSheet
-        isVisible={showModal}
-        onClose={closeModal}
+        isVisible={showBottomSheetEditJadwal}
+        onClose={closeBottomSheetEditJadwal}
         title={`Edit Jadwal\n${karyawan.nama}`}
         isDark={isDark}
         customContent={
