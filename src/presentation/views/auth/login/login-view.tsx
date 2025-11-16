@@ -1,5 +1,4 @@
 import Button from "@/src/components/ui/button";
-import { useLoginTheme } from "@/src/hooks/use-login-theme";
 import useLogin from "@/src/presentation/hooks/auth/use-login";
 import { useLoginWithGoogle } from "@/src/presentation/hooks/auth/use-login-with-google";
 import { AntDesign, Feather } from "@expo/vector-icons";
@@ -13,13 +12,24 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  useColorScheme,
   View,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const LoginView = () => {
-  const { isDark, styles } = useLoginTheme();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const screenBg = isDark ? "bg-screenDark" : "bg-screenLight";
+  const textColor = isDark ? "text-textPrimaryDark" : "text-textPrimaryLight";
+  const secondaryTextColor = isDark
+    ? "text-textSecondaryDark"
+    : "text-textSecondaryLight";
+  const inputBg = isDark ? "bg-cardDark" : "bg-cardLight";
+  const inputBorder = isDark ? "border-slate-600" : "border-slate-300";
+  const placeholderColor = isDark ? "#9ca3af" : "#64748b";
+  const buttonBg = isDark ? "bg-button-dark" : "bg-button-light";
   const {
     control,
     errors,
@@ -37,7 +47,7 @@ const LoginView = () => {
   } = useLoginWithGoogle();
 
   return (
-    <SafeAreaView className={`flex-1 ${styles.screenBg}`}>
+    <SafeAreaView className={`flex-1 ${screenBg}`}>
       <KeyboardAwareScrollView
         contentContainerStyle={{
           justifyContent: "center",
@@ -53,14 +63,14 @@ const LoginView = () => {
                   isDark ? "bg-primary-dark" : "bg-white"
                 }`}
               >
-                <Feather name="lock" size={40} color={styles.buttonBg} />
+                <Feather name="lock" size={40} color={buttonBg} />
               </View>
             </View>
 
-            <Text className={`text-3xl font-bold mb-2 ${styles.textColor}`}>
+            <Text className={`text-3xl font-bold mb-2 ${textColor}`}>
               Selamat Datang Kembali
             </Text>
-            <Text className={`text-base mb-4 ${styles.secondaryTextColor}`}>
+            <Text className={`text-base mb-4 ${secondaryTextColor}`}>
               Masuk untuk melanjutkan ke akun Anda.
             </Text>
 
@@ -74,16 +84,16 @@ const LoginView = () => {
 
             {/* Email */}
             <View className="mb-4">
-              <Text className={`mb-2 font-medium ${styles.secondaryTextColor}`}>
+              <Text className={`mb-2 font-medium ${secondaryTextColor}`}>
                 Email
               </Text>
               <View
-                className={`flex-row items-center border ${styles.inputBorder} ${styles.inputBg} rounded-lg`}
+                className={`flex-row items-center border ${inputBorder} ${inputBg} rounded-lg`}
               >
                 <Feather
                   name="mail"
                   size={20}
-                  color={styles.placeholderColor}
+                  color={placeholderColor}
                   style={{ marginLeft: 16 }}
                 />
                 <Controller
@@ -91,9 +101,9 @@ const LoginView = () => {
                   name="email"
                   render={({ field: { value, onChange, onBlur } }) => (
                     <TextInput
-                      className={`flex-1 ${styles.textColor} p-4 ml-2`}
+                      className={`flex-1 ${textColor} p-4 ml-2`}
                       placeholder="masukkan@email.com"
-                      placeholderTextColor={styles.placeholderColor}
+                      placeholderTextColor={placeholderColor}
                       value={value}
                       onChangeText={onChange}
                       onBlur={onBlur}
@@ -113,16 +123,16 @@ const LoginView = () => {
 
             {/* Password */}
             <View className="mb-6">
-              <Text className={`mb-2 font-medium ${styles.secondaryTextColor}`}>
+              <Text className={`mb-2 font-medium ${secondaryTextColor}`}>
                 Password
               </Text>
               <View
-                className={`flex-row items-center border ${styles.inputBorder} ${styles.inputBg} rounded-lg`}
+                className={`flex-row items-center border ${inputBorder} ${inputBg} rounded-lg`}
               >
                 <Feather
                   name="key"
                   size={20}
-                  color={styles.placeholderColor}
+                  color={placeholderColor}
                   style={{ marginLeft: 16 }}
                 />
                 <Controller
@@ -130,9 +140,9 @@ const LoginView = () => {
                   name="password"
                   render={({ field: { value, onChange, onBlur } }) => (
                     <TextInput
-                      className={`flex-1 ${styles.textColor} p-4 ml-2`}
+                      className={`flex-1 ${textColor} p-4 ml-2`}
                       placeholder="********"
-                      placeholderTextColor={styles.placeholderColor}
+                      placeholderTextColor={placeholderColor}
                       value={value}
                       onChangeText={onChange}
                       onBlur={onBlur}
@@ -148,7 +158,7 @@ const LoginView = () => {
                   <Feather
                     name={isPasswordVisible ? "eye-off" : "eye"}
                     size={20}
-                    color={styles.placeholderColor}
+                    color={placeholderColor}
                   />
                 </TouchableOpacity>
               </View>
@@ -165,7 +175,7 @@ const LoginView = () => {
               onPress={handleLogin}
               loading={loading}
               disabled={!canSubmit}
-              className={`w-full py-4 rounded-lg ${styles.buttonBg}`}
+              className={`w-full py-4 rounded-lg ${buttonBg}`}
               textClassName="text-white font-bold text-base"
             />
 
@@ -176,7 +186,7 @@ const LoginView = () => {
                   isDark ? "bg-gray-700" : "bg-gray-300"
                 }`}
               />
-              <Text className={`mx-3 ${styles.secondaryTextColor}`}>atau</Text>
+              <Text className={`mx-3 ${secondaryTextColor}`}>atau</Text>
               <View
                 className={`flex-1 h-[1px] ${
                   isDark ? "bg-gray-700" : "bg-gray-300"
@@ -219,9 +229,9 @@ const LoginView = () => {
 
             {/* Register Link */}
             <View className="flex-row justify-center items-center mt-8">
-              <Text className={`${styles.textColor}`}>Belum punya akun? </Text>
+              <Text className={`${textColor}`}>Belum punya akun? </Text>
               <TouchableOpacity onPress={() => router.push("/register")}>
-                <Text className={`${styles.secondaryTextColor} font-bold`}>
+                <Text className={`${secondaryTextColor} font-bold underline`}>
                   Daftar sekarang
                 </Text>
               </TouchableOpacity>

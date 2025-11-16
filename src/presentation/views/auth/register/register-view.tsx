@@ -1,5 +1,4 @@
 import Button from "@/src/components/ui/button";
-import { useLoginTheme } from "@/src/hooks/use-login-theme";
 import useRegister from "@/src/presentation/hooks/auth/use-register";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -11,13 +10,25 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  useColorScheme,
   View,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RegisterView() {
-  const { isDark, styles } = useLoginTheme();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const screenBg = isDark ? "bg-screenDark" : "bg-screenLight";
+  const textColor = isDark ? "text-textPrimaryDark" : "text-textPrimaryLight";
+  const secondaryTextColor = isDark
+    ? "text-textSecondaryDark"
+    : "text-textSecondaryLight";
+  const inputBg = isDark ? "bg-cardDark" : "bg-cardLight";
+  const inputBorder = isDark ? "border-slate-600" : "border-slate-300";
+  const placeholderColor = isDark ? "#9ca3af" : "#64748b";
+  const buttonBg = isDark ? "bg-button-dark" : "bg-button-light";
+
   const {
     control,
     errors,
@@ -30,7 +41,7 @@ export default function RegisterView() {
   } = useRegister();
 
   return (
-    <SafeAreaView className={`flex-1 ${styles.screenBg}`}>
+    <SafeAreaView className={`flex-1 ${screenBg}`}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View className="flex-1 justify-center p-6">
           {/* Header Icon */}
@@ -40,15 +51,15 @@ export default function RegisterView() {
                 isDark ? "bg-primary-dark" : "bg-white"
               }`}
             >
-              <Feather name="user-plus" size={40} color={styles.buttonBg} />
+              <Feather name="user-plus" size={40} color={buttonBg} />
             </View>
           </View>
 
           {/* Title */}
-          <Text className={`text-3xl font-bold mb-2 ${styles.textColor}`}>
+          <Text className={`text-3xl font-bold mb-2 ${textColor}`}>
             Buat Akun Baru
           </Text>
-          <Text className={`text-base mb-8 ${styles.secondaryTextColor}`}>
+          <Text className={`text-base mb-8 ${secondaryTextColor}`}>
             Daftar untuk dapat masuk ke aplikasi.
           </Text>
           <KeyboardAwareScrollView
@@ -59,16 +70,16 @@ export default function RegisterView() {
           >
             {/* Email */}
             <View className="mb-4">
-              <Text className={`mb-2 font-medium ${styles.secondaryTextColor}`}>
+              <Text className={`mb-2 font-medium ${secondaryTextColor}`}>
                 Email
               </Text>
               <View
-                className={`flex-row items-center border ${styles.inputBorder} ${styles.inputBg} rounded-lg`}
+                className={`flex-row items-center border ${inputBorder} ${inputBg} rounded-lg`}
               >
                 <Feather
                   name="mail"
                   size={20}
-                  color={styles.placeholderColor}
+                  color={placeholderColor}
                   style={{ marginLeft: 16 }}
                 />
                 <Controller
@@ -76,9 +87,9 @@ export default function RegisterView() {
                   name="email"
                   render={({ field: { value, onChange, onBlur } }) => (
                     <TextInput
-                      className={`flex-1 ${styles.textColor} p-4 ml-2`}
+                      className={`flex-1 ${textColor} p-4 ml-2`}
                       placeholder="masukkan@email.com"
-                      placeholderTextColor={styles.placeholderColor}
+                      placeholderTextColor={placeholderColor}
                       value={value}
                       onChangeText={onChange}
                       onBlur={onBlur}
@@ -100,16 +111,16 @@ export default function RegisterView() {
 
             {/* Password */}
             <View className="mb-4">
-              <Text className={`mb-2 font-medium ${styles.secondaryTextColor}`}>
+              <Text className={`mb-2 font-medium ${secondaryTextColor}`}>
                 Password
               </Text>
               <View
-                className={`flex-row items-center border ${styles.inputBorder} ${styles.inputBg} rounded-lg`}
+                className={`flex-row items-center border ${inputBorder} ${inputBg} rounded-lg`}
               >
                 <Feather
                   name="key"
                   size={20}
-                  color={styles.placeholderColor}
+                  color={placeholderColor}
                   style={{ marginLeft: 16 }}
                 />
                 <Controller
@@ -117,9 +128,9 @@ export default function RegisterView() {
                   name="password"
                   render={({ field: { value, onChange, onBlur } }) => (
                     <TextInput
-                      className={`flex-1 ${styles.textColor} p-4 ml-2`}
+                      className={`flex-1 ${textColor} p-4 ml-2`}
                       placeholder="********"
-                      placeholderTextColor={styles.placeholderColor}
+                      placeholderTextColor={placeholderColor}
                       value={value}
                       onChangeText={onChange}
                       onBlur={onBlur}
@@ -137,7 +148,7 @@ export default function RegisterView() {
                   <Feather
                     name={isPasswordVisible ? "eye-off" : "eye"}
                     size={20}
-                    color={styles.placeholderColor}
+                    color={placeholderColor}
                   />
                 </TouchableOpacity>
               </View>
@@ -150,16 +161,16 @@ export default function RegisterView() {
 
             {/* Konfirmasi Password */}
             <View className="mb-8">
-              <Text className={`mb-2 font-medium ${styles.secondaryTextColor}`}>
+              <Text className={`mb-2 font-medium ${secondaryTextColor}`}>
                 Konfirmasi Password
               </Text>
               <View
-                className={`flex-row items-center border ${styles.inputBorder} ${styles.inputBg} rounded-lg`}
+                className={`flex-row items-center border ${inputBorder} ${inputBg} rounded-lg`}
               >
                 <Feather
                   name="key"
                   size={20}
-                  color={styles.placeholderColor}
+                  color={placeholderColor}
                   style={{ marginLeft: 16 }}
                 />
                 <Controller
@@ -167,9 +178,9 @@ export default function RegisterView() {
                   name="confirm_password" // <- sesuai schema
                   render={({ field: { value, onChange, onBlur } }) => (
                     <TextInput
-                      className={`flex-1 ${styles.textColor} p-4 ml-2`}
+                      className={`flex-1 ${textColor} p-4 ml-2`}
                       placeholder="********"
-                      placeholderTextColor={styles.placeholderColor}
+                      placeholderTextColor={placeholderColor}
                       value={value}
                       onChangeText={onChange}
                       onBlur={onBlur}
@@ -187,7 +198,7 @@ export default function RegisterView() {
                   <Feather
                     name={isPasswordVisible ? "eye-off" : "eye"}
                     size={20}
-                    color={styles.placeholderColor}
+                    color={placeholderColor}
                   />
                 </TouchableOpacity>
               </View>
@@ -204,7 +215,7 @@ export default function RegisterView() {
               onPress={handleRegister}
               loading={loading}
               disabled={!canSubmit}
-              className={`w-full py-4 rounded-lg ${styles.buttonBg}`}
+              className={`w-full py-4 rounded-lg ${buttonBg}`}
               textClassName="text-white font-bold text-base"
             />
 
@@ -217,11 +228,11 @@ export default function RegisterView() {
 
             {/* Link to Login */}
             <View className="flex-row justify-center items-center mt-8">
-              <Text className={`${styles.secondaryTextColor}`}>
+              <Text className={`${secondaryTextColor}`}>
                 Sudah punya akun?{" "}
               </Text>
               <TouchableOpacity onPress={() => router.push("/login")}>
-                <Text className={`${styles.secondaryTextColor} font-bold`}>
+                <Text className={`${secondaryTextColor} font-bold underline`}>
                   Masuk
                 </Text>
               </TouchableOpacity>
