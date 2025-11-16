@@ -3,7 +3,7 @@ import { expandHariKerja } from "@/src/common/utils/expand-hari-kerja";
 import { getDateTodayWithTime } from "@/src/common/utils/get-date-today-with-time";
 import Today from "@/src/common/utils/get-today";
 import { PresensiRepositoryImpl } from "@/src/data/repositories/presensi-repository-impl";
-import { PresensiMasuk } from "@/src/domain/models/presensi-masuk";
+import { IPresensiRepository } from "@/src/domain/repositories/i-presensi-repository";
 import { useGetJadwal } from "@/src/presentation/hooks/jadwal/use-get-jadwal";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
@@ -30,20 +30,13 @@ const useAutoPresensiChecker = (uid: string) => {
     if (hasCreatedAlpaRecordRef.current) return;
 
     try {
-      const presensiMasuk: PresensiMasuk = {
-        waktu: "",
-        terlambat: true,
-      };
-
       const tanggal = Today();
-      const presensiRepo = new PresensiRepositoryImpl();
-      await presensiRepo.addPresensiMasuk(
+      const presensiRepo: IPresensiRepository = new PresensiRepositoryImpl();
+      await presensiRepo.addAutoPresensiChecker(
         uid,
         tanggal,
-        StatusPresensi.ALPA,
-        presensiMasuk
+        StatusPresensi.ALPA
       );
-
       hasCreatedAlpaRecordRef.current = true;
     } catch (err) {
       console.error("[AutoPresensi] createAutoAlpa error:", err);
@@ -54,18 +47,12 @@ const useAutoPresensiChecker = (uid: string) => {
     if (hasCreatedIzinRecordRef.current) return;
 
     try {
-      const presensiMasuk: PresensiMasuk = {
-        waktu: "",
-        terlambat: false,
-      };
-
       const tanggal = Today();
-      const presensiRepo = new PresensiRepositoryImpl();
-      await presensiRepo.addPresensiMasuk(
+      const presensiRepo: IPresensiRepository = new PresensiRepositoryImpl();
+      await presensiRepo.addAutoPresensiChecker(
         uid,
         tanggal,
-        StatusPresensi.IZIN,
-        presensiMasuk
+        StatusPresensi.IZIN
       );
 
       hasCreatedIzinRecordRef.current = true;
@@ -78,18 +65,12 @@ const useAutoPresensiChecker = (uid: string) => {
     if (hasCreatedSakitRecordRef.current) return;
 
     try {
-      const presensiMasuk: PresensiMasuk = {
-        waktu: "",
-        terlambat: false,
-      };
-
       const tanggal = Today();
-      const presensiRepo = new PresensiRepositoryImpl();
-      await presensiRepo.addPresensiMasuk(
+      const presensiRepo: IPresensiRepository = new PresensiRepositoryImpl();
+      await presensiRepo.addAutoPresensiChecker(
         uid,
         tanggal,
-        StatusPresensi.SAKIT,
-        presensiMasuk
+        StatusPresensi.SAKIT
       );
 
       hasCreatedSakitRecordRef.current = true;
@@ -105,8 +86,7 @@ const useAutoPresensiChecker = (uid: string) => {
         createAutoIzin();
         Toast.show({
           type: "info",
-          text1: "Status: IZIN",
-          text2: "Anda sedang dalam periode izin yang disetujui.",
+          text1: "Anda sedang dalam periode izin yang disetujui.",
         });
         hasShownIzinToastRef.current = true;
       }
@@ -206,9 +186,8 @@ const useAutoPresensiChecker = (uid: string) => {
         createAutoAlpa();
         Toast.show({
           type: "error",
-          text1: "Status: ALPA",
-          text2:
-            "Waktu presensi masuk telah terlewat. Hubungi HRD untuk pengurusan lebih lanjut.",
+          text1: "Waktu presensi masuk telah terlewat",
+          text2: "Hubungi HRD untuk pengurusan lebih lanjut.",
         });
         hasShownAlpaToastRef.current = true;
       }

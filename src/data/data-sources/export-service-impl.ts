@@ -146,17 +146,14 @@ export class ExportServiceImpl implements IExportService {
       ];
       worksheet["!cols"] = columnWidths;
 
-      // ✅ Buat workbook
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap Presensi");
 
-      // ✅ Generate binary string
       const xlsxBinary = XLSX.write(workbook, {
         type: "binary",
         bookType: "xlsx",
       });
 
-      // ✅ Convert binary string to base64
       const base64 = this.binaryToBase64(xlsxBinary);
 
       const processingTime = performance.now() - startTime;
@@ -164,7 +161,6 @@ export class ExportServiceImpl implements IExportService {
         `[ExcelExport] XLSX processing took ${processingTime.toFixed(2)}ms`
       );
 
-      // Save file
       const filePath = `${RNFS.DownloadDirectoryPath}/${fileName}`;
 
       const writeStartTime = performance.now();
@@ -197,14 +193,12 @@ export class ExportServiceImpl implements IExportService {
     }
   }
 
-  // convert binary to base64
   private binaryToBase64(binary: string): string {
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {
       bytes[i] = binary.charCodeAt(i);
     }
 
-    // Convert to base64
     let base64 = "";
     const chars =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

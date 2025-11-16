@@ -178,4 +178,31 @@ export class PresensiRepositoryImpl implements IPresensiRepository {
       throw error;
     }
   }
+
+  public async addAutoPresensiChecker(
+    uid: string,
+    tanggal: string,
+    status: StatusPresensi
+  ): Promise<void> {
+    try {
+      if (!uid || !tanggal || !status) {
+        throw new Error("Data presensi masuk tidak lengkap.");
+      }
+
+      await setDoc(
+        doc(db, "presensi", tanggal, "users", uid),
+        {
+          status: status,
+          uid: uid,
+          tanggal: tanggal,
+          created_at: Timestamp.now(),
+          updated_at: Timestamp.now(),
+        },
+        { merge: true }
+      );
+    } catch (error) {
+      console.error("[PresensiRepository] Error adding presensi masuk:", error);
+      throw error;
+    }
+  }
 }

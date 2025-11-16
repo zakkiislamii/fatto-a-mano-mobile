@@ -19,6 +19,12 @@ export interface IPresensiRepository {
     data: PresensiKeluar
   ): Promise<void>;
 
+  addAutoPresensiChecker(
+    uid: string,
+    tanggal: string,
+    status: StatusPresensi
+  ): Promise<void>;
+
   getPresensiMasukToday(
     uid: string,
     cb: (status: PresensiMasukStatus) => void
