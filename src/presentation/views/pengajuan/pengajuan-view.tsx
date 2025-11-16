@@ -184,7 +184,6 @@ const PengajuanView = () => {
     handleViewDetailSakitPress,
     closeDetailSakit,
   } = useDetailPengajuanSakit(uid);
-  console.log("Detail Sakit", detailSakit);
   const screenBg = isDark ? "bg-screenDark" : "bg-screenLight";
   const textPrimary = isDark ? "text-textPrimaryDark" : "text-textPrimaryLight";
   const textSecondary = isDark

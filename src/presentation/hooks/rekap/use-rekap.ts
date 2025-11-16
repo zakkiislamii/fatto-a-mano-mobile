@@ -47,8 +47,6 @@ const useRekap = () => {
         text2: `${data.length} karyawan ditemukan`,
       });
 
-      console.log(`[useRekap] Fetched rekap for ${data.length} employees`);
-
       return data;
     } catch (error) {
       console.error("[useRekap] Error fetching rekap:", error);

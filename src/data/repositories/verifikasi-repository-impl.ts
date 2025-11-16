@@ -216,12 +216,6 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
         status: status,
         updated_at: Timestamp.now(),
       });
-
-      console.log(
-        `[VerifikasiRepo] Pengajuan ${pengajuanId} berhasil ${
-          status === StatusPengajuan.DISETUJUI ? "disetujui" : "ditolak"
-        }`
-      );
     } catch (error) {
       console.error("[VerifikasiRepo] Error verifikasi:", error);
       throw error;

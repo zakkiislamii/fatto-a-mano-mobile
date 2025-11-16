@@ -37,10 +37,6 @@ const useVerifikasiPengajuan = () => {
           text1: "Verifikasi Berhasil",
           text2: `Pengajuan telah ${statusText}`,
         });
-
-        console.log(
-          `[useVerifikasiPengajuan] Pengajuan berhasil ${statusText}`
-        );
       } catch (error) {
         console.error("[useVerifikasiPengajuan] Error:", error);
         Toast.show({
