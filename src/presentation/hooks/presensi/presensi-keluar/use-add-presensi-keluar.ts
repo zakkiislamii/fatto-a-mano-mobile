@@ -21,7 +21,7 @@ const useAddPresensiKeluar = () => {
 
   const handlePresensiKeluarAwal = async (
     uid: string,
-    alasan: string,
+    alasan_keluar_awal: string,
     buktiUrl: string
   ): Promise<boolean> => {
     setLoading(true);
@@ -33,7 +33,7 @@ const useAddPresensiKeluar = () => {
         waktu,
         lembur: false,
         keluar_awal: true,
-        alasan_keluar_awal: alasan,
+        alasan_keluar_awal: alasan_keluar_awal,
         bukti_keluar_awal: buktiUrl,
       };
 
@@ -172,14 +172,12 @@ const useAddPresensiKeluar = () => {
     if (now < keluarLebihAwal) {
       keluarAwal.openBottomSheet(uid);
       return false;
-    }
-
-    if (now > keluarLemburTime) {
+    } else if (now > keluarLemburTime) {
       setShowModal(true);
       return false;
+    } else {
+      return await handlePresensiKeluarBiasa(uid);
     }
-
-    return await handlePresensiKeluarBiasa(uid);
   };
 
   const handlePresensiKeluarBiasa = async (uid: string): Promise<boolean> => {
@@ -237,8 +235,6 @@ const useAddPresensiKeluar = () => {
 
   return {
     handlePresensiKeluar,
-    handlePresensiKeluarAwal,
-    handlePresensiKeluarLembur,
     loading: loading || keluarAwal.loading || lembur.loading,
     showModal,
     closeModal,
