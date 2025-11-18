@@ -23,7 +23,6 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
     callback: (verifikasiList: DaftarVerifikasi[]) => void
   ): Unsubscribe | null {
     try {
-      // Query semua pengajuan dari semua user menggunakan collectionGroup
       const pengajuanQuery = collectionGroup(db, "pengajuan");
 
       return onSnapshot(
@@ -31,12 +30,10 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
         async (snapshot) => {
           const verifikasiList: DaftarVerifikasi[] = [];
 
-          // Process setiap pengajuan
           for (const docSnap of snapshot.docs) {
             const pengajuanData = docSnap.data();
             const uid = pengajuanData.uid;
 
-            // Fetch data karyawan
             const userDocRef = doc(db, "users", uid);
             const userDocSnap = await getDoc(userDocRef);
 
@@ -76,7 +73,6 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
     try {
       if (!uid || !pengajuanId) return null;
 
-      // Listen to both user and pengajuan documents
       const userDocRef = doc(db, "users", uid);
       const pengajuanDocRef = doc(db, `users/${uid}/pengajuan`, pengajuanId);
 
@@ -101,7 +97,6 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
         }
       };
 
-      // Listen to user data
       const unsubUser = onSnapshot(
         userDocRef,
         (userSnap) => {
@@ -117,7 +112,6 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
         }
       );
 
-      // Listen to pengajuan data
       const unsubPengajuan = onSnapshot(
         pengajuanDocRef,
         (pengajuanSnap) => {
@@ -133,10 +127,10 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
                 created_at: data.created_at,
                 updated_at: data.updated_at,
                 detail: {
-                  keterangan: data.keterangan ?? "",
-                  bukti_pendukung: data.bukti_pendukung ?? "",
-                  tanggal_mulai: data.tanggal_mulai ?? "",
-                  tanggal_berakhir: data.tanggal_berakhir ?? "",
+                  keterangan: data.detail.keterangan ?? "",
+                  bukti_pendukung: data.detail.bukti_pendukung ?? "",
+                  tanggal_mulai: data.detail.tanggal_mulai ?? "",
+                  tanggal_berakhir: data.detail.tanggal_berakhir ?? "",
                 },
               };
             } else if (data.tipe === TipePengajuan.LEMBUR) {
@@ -149,9 +143,9 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
                 created_at: data.created_at,
                 updated_at: data.updated_at,
                 detail: {
-                  keterangan: data.keterangan ?? "",
-                  bukti_pendukung: data.bukti_pendukung ?? "",
-                  durasi_lembur: data.durasi_lembur ?? "",
+                  keterangan: data.detail.keterangan ?? "",
+                  bukti_pendukung: data.detail.bukti_pendukung ?? "",
+                  durasi_lembur: data.detail.durasi_lembur ?? "",
                 },
               };
             } else if (data.tipe === TipePengajuan.SAKIT) {
@@ -164,8 +158,8 @@ export class VerifikasiRepositoryImpl implements IVerifikasiRepository {
                 created_at: data.created_at,
                 updated_at: data.updated_at,
                 detail: {
-                  keterangan: data.keterangan ?? "",
-                  bukti_pendukung: data.bukti_pendukung ?? "",
+                  keterangan: data.detail.keterangan ?? "",
+                  bukti_pendukung: data.detail.bukti_pendukung ?? "",
                 },
               };
             }

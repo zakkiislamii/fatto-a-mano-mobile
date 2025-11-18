@@ -339,8 +339,8 @@ export class PengajuanRepositoryImpl implements IPengajuanRepository {
           for (const doc of querySnapshot.docs) {
             const data = doc.data();
             if (
-              tanggalHariIni >= data.tanggal_mulai &&
-              tanggalHariIni <= data.tanggal_berakhir
+              tanggalHariIni >= data.detail.tanggal_mulai &&
+              tanggalHariIni <= data.detail.tanggal_berakhir
             ) {
               isIzinAktif = true;
               break;

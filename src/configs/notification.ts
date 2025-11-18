@@ -1,3 +1,4 @@
+import { db } from "@/src/configs/firebase-config";
 import {
   AuthorizationStatus,
   FirebaseMessagingTypes,
@@ -10,6 +11,7 @@ import {
 } from "@react-native-firebase/messaging";
 import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { Platform } from "react-native";
 
 function toText(v: unknown, fallback?: string): string | undefined {
@@ -30,24 +32,35 @@ export const configureNotifications = () => {
       shouldSetBadge: true,
       shouldShowBanner: true,
       shouldShowList: true as any,
-      priority: Notifications.AndroidNotificationPriority.HIGH,
+      priority: Notifications.AndroidNotificationPriority.MAX,
     }),
   });
 
   if (Platform.OS === "android") {
     const messaging = getMessaging();
     setBackgroundMessageHandler(messaging, async (remoteMessage) => {
-      if (remoteMessage?.notification) return;
-
       await Notifications.scheduleNotificationAsync({
         content: {
           title: toText(remoteMessage?.data?.title, "Notifikasi"),
           body: toText(remoteMessage?.data?.body, ""),
           data: remoteMessage?.data ?? {},
-          priority: Notifications.AndroidNotificationPriority.HIGH,
+          priority: Notifications.AndroidNotificationPriority.MAX,
+          sound: true,
         },
         trigger: null,
       });
+
+      const tKirim = parseInt(String(remoteMessage?.data?.tKirim || "0"), 10);
+      const tTerima = Date.now();
+
+      addDoc(collection(db, "owdLogs"), {
+        feature: remoteMessage.data?.feature,
+        tKirim: tKirim,
+        tTerima: tTerima,
+        owd: tTerima - tKirim,
+        appState: "background",
+        createdAt: serverTimestamp(),
+      }).catch((e) => console.error("[OWD/BG] ERROR:", e));
     });
   }
 };
@@ -80,6 +93,7 @@ export const ensureAndroidChannel = async () => {
     showBadge: true,
     enableLights: true,
     enableVibrate: true,
+    sound: "default",
   });
 };
 
@@ -88,20 +102,36 @@ export const setupNotificationListeners = () => {
 
   const unsubForeground = onMessage(
     messaging,
-    async (rm: FirebaseMessagingTypes.RemoteMessage) => {
+    async (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
       const title =
-        rm.notification?.title ?? toText(rm.data?.title, "Notifikasi");
-      const body = rm.notification?.body ?? toText(rm.data?.body, "");
+        remoteMessage.notification?.title ??
+        toText(remoteMessage.data?.title, "Notifikasi");
+      const body =
+        remoteMessage.notification?.body ??
+        toText(remoteMessage.data?.body, "");
+
       await Notifications.scheduleNotificationAsync({
         content: {
           title: title ?? "Notifikasi",
           body: body ?? "",
-          data: rm.data ?? {},
-          priority: Notifications.AndroidNotificationPriority.HIGH,
+          data: remoteMessage.data ?? {},
+          priority: Notifications.AndroidNotificationPriority.MAX,
           sound: true,
         },
         trigger: null,
       });
+
+      const tKirim = parseInt(String(remoteMessage?.data?.tKirim || "0"), 10);
+      const tTerima = Date.now();
+
+      addDoc(collection(db, "owdLogs"), {
+        feature: remoteMessage.data?.feature,
+        tKirim: tKirim,
+        tTerima: tTerima,
+        owd: tTerima - tKirim,
+        appState: "foreground",
+        createdAt: serverTimestamp(),
+      }).catch((e) => console.error("[OWD/FG] ERROR:", e));
     }
   );
 
@@ -113,12 +143,12 @@ export const setupNotificationListeners = () => {
     if (rm) handleNotificationTap();
   });
 
+  const handleNotificationTap = () => {
+    router.replace("/(tabs)/jadwal");
+  };
+
   return () => {
     unsubForeground();
     unsubTapBg?.();
   };
-};
-
-const handleNotificationTap = () => {
-  router.replace("/(tabs)/jadwal");
 };

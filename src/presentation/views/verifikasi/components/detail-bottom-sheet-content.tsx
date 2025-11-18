@@ -5,7 +5,8 @@ import { PengajuanLembur } from "@/src/domain/models/pengajuan-lembur";
 import { PengajuanSakit } from "@/src/domain/models/pengajuan-sakit";
 import { Image } from "expo-image";
 import React from "react";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
 const DetailBottomSheetContent = ({
   detail,
@@ -105,7 +106,7 @@ const DetailBottomSheetContent = ({
   const pengajuanDetail = getPengajuanDetail();
 
   return (
-    <ScrollView style={{ maxHeight: 400 }}>
+    <ScrollView showsVerticalScrollIndicator={true}>
       <View className="mb-4">
         <Text className={`text-lg font-bold mb-2 ${textColor}`}>
           Data Karyawan
