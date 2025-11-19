@@ -4,10 +4,12 @@ import { INotifikasiRepository } from "@/src/domain/repositories/i-notifikasi-re
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   onSnapshot,
   orderBy,
   query,
+  setDoc,
   Unsubscribe,
   updateDoc,
   where,
@@ -21,37 +23,112 @@ export class NotifikasiRepositoryImpl implements INotifikasiRepository {
   ): Unsubscribe | null {
     try {
       if (!uid) return null;
-      const colRef = collection(db, `users/${uid}/notifications`);
-      const q = query(colRef, orderBy("created_at", "desc"));
 
-      const unsubscribe = onSnapshot(
-        q,
+      let personalNotifications: Notifikasi[] = [];
+      let broadcastNotifications: Notifikasi[] = [];
+      let readBroadcastIds: string[] = [];
+
+      const mergeAndCallback = () => {
+        const processedBroadcasts = broadcastNotifications.map((notif) => ({
+          ...notif,
+          read: readBroadcastIds.includes(notif.id),
+        }));
+
+        const merged = [...personalNotifications, ...processedBroadcasts];
+        merged.sort((a, b) => {
+          const timeA = a.created_at?.toMillis() || 0;
+          const timeB = b.created_at?.toMillis() || 0;
+          return timeB - timeA;
+        });
+        callback(merged);
+      };
+
+      const readBroadcastRef = doc(db, `users/${uid}/readBroadcasts/status`);
+      const unsubscribeReadStatus = onSnapshot(
+        readBroadcastRef,
+        (docSnap) => {
+          if (docSnap.exists()) {
+            readBroadcastIds = docSnap.data().readIds || [];
+          } else {
+            readBroadcastIds = [];
+          }
+          mergeAndCallback();
+        },
+        (error) => {
+          console.error(
+            "[NotifikasiRepository] Error getting read status:",
+            error
+          );
+        }
+      );
+
+      const personalColRef = collection(db, `users/${uid}/notifications`);
+      const personalQuery = query(
+        personalColRef,
+        orderBy("created_at", "desc")
+      );
+
+      const unsubscribePersonal = onSnapshot(
+        personalQuery,
         (querySnapshot) => {
-          const notifikasi: Notifikasi[] = [];
-
+          personalNotifications = [];
           querySnapshot.forEach((doc) => {
             const data = doc.data();
-            notifikasi.push({
+            personalNotifications.push({
               id: doc.id,
               body: data.body,
               created_at: data.created_at,
               read: data.read,
               title: data.title,
+              isBroadcast: false,
             });
           });
-
-          callback(notifikasi);
+          mergeAndCallback();
         },
         (error) => {
           console.error(
-            "[NotifikasiRepository] Error getting notifications realtime:",
+            "[NotifikasiRepository] Error getting personal notifications:",
             error
           );
-          callback([]);
         }
       );
 
-      return unsubscribe;
+      const broadcastColRef = collection(db, "broadcastNotifications");
+      const broadcastQuery = query(
+        broadcastColRef,
+        orderBy("created_at", "desc")
+      );
+
+      const unsubscribeBroadcast = onSnapshot(
+        broadcastQuery,
+        (querySnapshot) => {
+          broadcastNotifications = [];
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            broadcastNotifications.push({
+              id: doc.id,
+              body: data.body,
+              created_at: data.created_at,
+              read: false,
+              title: data.title,
+              isBroadcast: true,
+            });
+          });
+          mergeAndCallback();
+        },
+        (error) => {
+          console.error(
+            "[NotifikasiRepository] Error getting broadcast notifications:",
+            error
+          );
+        }
+      );
+
+      return () => {
+        unsubscribePersonal();
+        unsubscribeBroadcast();
+        unsubscribeReadStatus();
+      };
     } catch (error) {
       console.error(
         "[NotifikasiRepository] Error getting notifications realtime:",
@@ -67,25 +144,75 @@ export class NotifikasiRepositoryImpl implements INotifikasiRepository {
   ): Unsubscribe | null {
     try {
       if (!uid) return null;
-      const colRef = collection(db, `users/${uid}/notifications`);
 
-      const q = query(colRef, where("read", "==", false));
+      let personalUnreadCount = 0;
+      let broadcastUnreadCount = 0;
 
-      const unsubscribe = onSnapshot(
-        q,
+      const updateTotalCount = () => {
+        callback(personalUnreadCount + broadcastUnreadCount);
+      };
+
+      const personalColRef = collection(db, `users/${uid}/notifications`);
+      const personalQuery = query(personalColRef, where("read", "==", false));
+
+      const unsubscribePersonal = onSnapshot(
+        personalQuery,
         (querySnapshot) => {
-          callback(querySnapshot.size);
+          personalUnreadCount = querySnapshot.size;
+          updateTotalCount();
         },
         (error) => {
           console.error(
-            "[NotifikasiRepository] Error getting unread count:",
+            "[NotifikasiRepository] Error getting personal unread count:",
             error
           );
-          callback(0);
         }
       );
 
-      return unsubscribe;
+      let totalBroadcasts = 0;
+      let userReadBroadcasts = 0;
+
+      const broadcastColRef = collection(db, "broadcastNotifications");
+      const unsubscribeBroadcast = onSnapshot(
+        broadcastColRef,
+        (querySnapshot) => {
+          totalBroadcasts = querySnapshot.size;
+          broadcastUnreadCount = totalBroadcasts - userReadBroadcasts;
+          updateTotalCount();
+        },
+        (error) => {
+          console.error(
+            "[NotifikasiRepository] Error getting broadcast count:",
+            error
+          );
+        }
+      );
+
+      const readBroadcastRef = doc(db, `users/${uid}/readBroadcasts/status`);
+      const unsubscribeReadStatus = onSnapshot(
+        readBroadcastRef,
+        (docSnap) => {
+          if (docSnap.exists()) {
+            userReadBroadcasts = (docSnap.data().readIds || []).length;
+          } else {
+            userReadBroadcasts = 0;
+          }
+          broadcastUnreadCount = totalBroadcasts - userReadBroadcasts;
+          updateTotalCount();
+        },
+        (error) => {
+          console.error(
+            "[NotifikasiRepository] Error getting read status:",
+            error
+          );
+        }
+      );
+
+      return () => {
+        unsubscribePersonal();
+        unsubscribeBroadcast();
+        unsubscribeReadStatus();
+      };
     } catch (error) {
       console.error(
         "[NotifikasiRepository] Error getting unread count realtime:",
@@ -98,10 +225,29 @@ export class NotifikasiRepositoryImpl implements INotifikasiRepository {
   public async markAsRead(uid: string, notificationId: string): Promise<void> {
     try {
       if (!uid || !notificationId) return;
-      const docRef = doc(db, `users/${uid}/notifications`, notificationId);
-      await updateDoc(docRef, {
-        read: true,
-      });
+
+      const broadcastDocRef = doc(db, "broadcastNotifications", notificationId);
+      const broadcastDoc = await getDoc(broadcastDocRef);
+
+      if (broadcastDoc.exists()) {
+        const userReadRef = doc(db, `users/${uid}/readBroadcasts/status`);
+        const userReadDoc = await getDoc(userReadRef);
+
+        let readIds: string[] = [];
+        if (userReadDoc.exists()) {
+          readIds = userReadDoc.data().readIds || [];
+        }
+
+        if (!readIds.includes(notificationId)) {
+          readIds.push(notificationId);
+          await setDoc(userReadRef, { readIds });
+        }
+      } else {
+        const docRef = doc(db, `users/${uid}/notifications`, notificationId);
+        await updateDoc(docRef, {
+          read: true,
+        });
+      }
     } catch (error) {
       console.error(
         "[NotifikasiRepository] Error marking notification as read:",
@@ -124,6 +270,14 @@ export class NotifikasiRepositoryImpl implements INotifikasiRepository {
       });
 
       await batch.commit();
+      const broadcastColRef = collection(db, "broadcastNotifications");
+      const broadcastSnapshot = await getDocs(broadcastColRef);
+      const allBroadcastIds = broadcastSnapshot.docs.map((doc) => doc.id);
+
+      if (allBroadcastIds.length > 0) {
+        const readBroadcastRef = doc(db, `users/${uid}/readBroadcasts/status`);
+        await setDoc(readBroadcastRef, { readIds: allBroadcastIds });
+      }
     } catch (error) {
       console.error("[NotifikasiRepository] Error marking all as read:", error);
       throw error;

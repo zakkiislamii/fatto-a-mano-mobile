@@ -79,15 +79,6 @@ const RiwayatView = ({ uid }: { uid?: string }) => {
   return (
     <SafeAreaView className={`flex-1 ${screenBg}`}>
       <StatusBar barStyle={barStyleColor} />
-
-      {!uid && (
-        <View className="px-5 pt-5 pb-3 mb-5">
-          <Text className={`text-3xl font-bold ${textPrimary}`}>
-            Riwayat Presensi
-          </Text>
-        </View>
-      )}
-
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
