@@ -1,7 +1,7 @@
 export default {
   expo: {
-    name: "fatto-a-mano-mobile",
-    slug: "fatto-a-mano-mobile",
+    name: "fatto a mano",
+    slug: "fatto a mano",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./src/assets/images/notification-icon.jpeg",
