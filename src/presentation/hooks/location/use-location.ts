@@ -173,8 +173,6 @@ const useLocation = () => {
 
   return {
     location,
-    isInsideOffice,
-    address,
     isLocationValid,
     refresh: updateLocation,
   };

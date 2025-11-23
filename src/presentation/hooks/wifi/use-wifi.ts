@@ -7,21 +7,17 @@ const useWifi = () => {
   const [isBssid, setIsBssid] = useState<boolean>(false);
   const [isOnline, setIsOnline] = useState<boolean>(false);
   const [wifiLoading, setWifiLoading] = useState<boolean>(true);
-  const [networkLoading, setNetworkLoading] = useState<boolean>(true);
   const mountedRef = useRef(true);
 
   const checkWifi = async () => {
     if (!mountedRef.current) return;
 
     try {
-      setNetworkLoading(true);
       const netState = await NetInfo.fetch();
       if (!mountedRef.current) return;
       setIsOnline(Boolean(netState.isConnected ?? false));
     } catch {
       if (mountedRef.current) setIsOnline(false);
-    } finally {
-      if (mountedRef.current) setNetworkLoading(false);
     }
 
     try {
@@ -80,7 +76,6 @@ const useWifi = () => {
         setIsWifiConnected(false);
         setIsBssid(false);
       }
-      setNetworkLoading(false);
       setWifiLoading(false);
     });
 
@@ -101,7 +96,6 @@ const useWifi = () => {
     isWifiValid,
     wifiLoading,
     isOnline,
-    networkLoading,
     refreshWifi,
   };
 };

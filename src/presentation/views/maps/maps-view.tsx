@@ -24,7 +24,7 @@ interface MapsViewProps {
 }
 
 const MapsView = ({ isDark }: MapsViewProps) => {
-  const { location, isInsideOffice, address, refresh } = useLocation();
+  const { location, isLocationValid, refresh } = useLocation();
   const { width } = Dimensions.get("window");
   const mapRef = useRef<MapView>(null);
   const [mapRegion, setMapRegion] = useState<Region | undefined>(undefined);
@@ -133,14 +133,13 @@ const MapsView = ({ isDark }: MapsViewProps) => {
           <Marker
             coordinate={{ latitude: location.lat, longitude: location.lon }}
             title="Lokasi Anda"
-            description={
-              address ||
-              `${location.lat.toFixed(6)}, ${location.lon.toFixed(6)}`
-            }
+            description={`${location.lat.toFixed(6)}, ${location.lon.toFixed(
+              6
+            )}`}
           >
             <View
               className={`${
-                isInsideOffice ? "bg-green-500" : "bg-red-500"
+                isLocationValid ? "bg-green-500" : "bg-red-500"
               } p-2 rounded-full border-2 border-white`}
             >
               <Feather name="user" size={16} color="white" />
