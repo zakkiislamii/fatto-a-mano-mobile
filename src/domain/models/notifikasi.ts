@@ -6,4 +6,5 @@ export interface Notifikasi {
   created_at: Timestamp;
   read: boolean;
   title: string;
+  isBroadcast?: boolean;
 }

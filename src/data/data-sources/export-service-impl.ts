@@ -58,20 +58,8 @@ export class ExportServiceImpl implements IExportService {
       }
 
       const csvContent = csvLines.join("\n");
-
-      const processingTime = performance.now() - startTime;
-      console.log(
-        `[ExcelExport] CSV processing took ${processingTime.toFixed(2)}ms`
-      );
-
       const filePath = `${RNFS.DownloadDirectoryPath}/${fileName}`;
-
-      const writeStartTime = performance.now();
       await RNFS.writeFile(filePath, csvContent, "utf8");
-      const writeTime = performance.now() - writeStartTime;
-
-      console.log(`[ExcelExport] File write took ${writeTime.toFixed(2)}ms`);
-      console.log(`[ExcelExport] File saved to: ${filePath}`);
 
       if (Platform.OS === "android") {
         Alert.alert(
@@ -155,22 +143,9 @@ export class ExportServiceImpl implements IExportService {
       });
 
       const base64 = this.binaryToBase64(xlsxBinary);
-
-      const processingTime = performance.now() - startTime;
-      console.log(
-        `[ExcelExport] XLSX processing took ${processingTime.toFixed(2)}ms`
-      );
-
       const filePath = `${RNFS.DownloadDirectoryPath}/${fileName}`;
-
-      const writeStartTime = performance.now();
       await RNFS.writeFile(filePath, base64, "base64");
-      const writeTime = performance.now() - writeStartTime;
 
-      console.log(`[ExcelExport] File write took ${writeTime.toFixed(2)}ms`);
-      console.log(`[ExcelExport] File saved to: ${filePath}`);
-
-      // Show success notification
       if (Platform.OS === "android") {
         Alert.alert(
           "Export Berhasil",

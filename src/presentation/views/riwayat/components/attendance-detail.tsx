@@ -203,63 +203,60 @@ export const AttendanceDetail = ({
           )}
         </View>
 
-        {showFullDetails && (
-          <View
-            className={`${cardBg} mx-5 mt-4 rounded-xl p-5 shadow-sm border ${separator}`}
-          >
-            <Text className={`font-bold mb-4 ${textPrimary}`}>
-              Rincian Presensi
-            </Text>
-            <View className="gap-4">
-              <InfoRow
-                icon="map-pin"
-                label="Lokasi"
-                value="Di Kantor"
-                isDark={isDark}
-              />
-              {selectedPresensi.presensi_masuk.terlambat && (
-                <InfoRow
-                  icon="clock"
-                  label="Terlambat"
-                  value={
-                    selectedPresensi.presensi_masuk.durasi_terlambat || "-"
-                  }
-                  isDark={isDark}
-                  color={warningColor}
-                />
-              )}
-              {keluarLebihAwal && (
-                <View className="justify-center items-center gap-3">
-                  <InfoRow
-                    icon="alert-circle"
-                    label="Keluar Awal"
-                    value={alasanKeluarAwal || "-"}
-                    isDark={isDark}
-                    color={infoColor}
-                  />
-                  {buktiKeluarAwalUrl && (
-                    <TouchableOpacity
-                      onPress={() =>
-                        setEvidence({
-                          url: buktiKeluarAwalUrl,
-                          title: "Bukti Keluar Awal",
-                        })
+        {showFullDetails &&
+          (selectedPresensi?.presensi_masuk?.terlambat || keluarLebihAwal) && (
+            <View
+              className={`${cardBg} mx-5 mt-4 rounded-xl p-5 shadow-sm border ${separator}`}
+            >
+              <View className="gap-4">
+                {selectedPresensi.presensi_masuk.terlambat && (
+                  <>
+                    <Text className={`font-bold mb-4 ${textPrimary}`}>
+                      Rincian Presensi
+                    </Text>
+                    <InfoRow
+                      icon="clock"
+                      label="Terlambat"
+                      value={
+                        selectedPresensi.presensi_masuk.durasi_terlambat || "-"
                       }
-                      className="pl-1"
-                    >
-                      <Text
-                        className={`text-sm font-medium underline`}
-                        style={{ color: infoColor }}
+                      isDark={isDark}
+                      color={warningColor}
+                    />
+                  </>
+                )}
+                {keluarLebihAwal && (
+                  <View className="justify-center items-center gap-3">
+                    <InfoRow
+                      icon="alert-circle"
+                      label="Keluar Awal"
+                      value={alasanKeluarAwal || "-"}
+                      isDark={isDark}
+                      color={infoColor}
+                    />
+                    {buktiKeluarAwalUrl && (
+                      <TouchableOpacity
+                        onPress={() =>
+                          setEvidence({
+                            url: buktiKeluarAwalUrl,
+                            title: "Bukti Keluar Awal",
+                          })
+                        }
+                        className="pl-1"
                       >
-                        Lihat Bukti Keluar Awal
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              )}
+                        <Text
+                          className={`text-sm font-medium underline`}
+                          style={{ color: infoColor }}
+                        >
+                          Lihat Bukti Keluar Awal
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                )}
+              </View>
             </View>
-          </View>
-        )}
+          )}
 
         {showFullDetails && hasOvertime && (
           <View

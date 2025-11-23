@@ -1,3 +1,4 @@
+import { UserRole } from "@/src/common/enums/user-role";
 import formatDateToString from "@/src/common/utils/format-date-to-string";
 import { useFirebaseAuth } from "@/src/hooks/use-auth";
 import React, { useState } from "react";
@@ -16,7 +17,7 @@ import { AttendanceDetail } from "./components/attendance-detail";
 import CalendarView from "./components/calender-view";
 
 const RiwayatView = ({ uid }: { uid?: string }) => {
-  const { uid: currentUserUid } = useFirebaseAuth();
+  const { uid: currentUserUid, role } = useFirebaseAuth();
   const targetUid = uid || currentUserUid;
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -79,15 +80,13 @@ const RiwayatView = ({ uid }: { uid?: string }) => {
   return (
     <SafeAreaView className={`flex-1 ${screenBg}`}>
       <StatusBar barStyle={barStyleColor} />
-
-      {!uid && (
+      {role === UserRole.KARYAWAN && (
         <View className="px-5 pt-5 pb-3 mb-5">
           <Text className={`text-3xl font-bold ${textPrimary}`}>
             Riwayat Presensi
           </Text>
         </View>
       )}
-
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
